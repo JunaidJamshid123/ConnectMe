@@ -30,7 +30,7 @@
             android:text="Welcome!"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="#1976D2" />
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/textView2"
@@ -40,15 +40,15 @@
 continue."
             android:textSize="18sp"
             android:textStyle="normal"
-            android:textColor="#1976D2" />
+            android:textColor="#58484F" />
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="25dp"
             app:startIconDrawable="@drawable/ic_email"
-            app:startIconTint="#1976D2"
-            app:boxStrokeColor="#1976D2"
-            app:hintTextColor="#1976D2"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -65,11 +65,11 @@ continue."
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             app:startIconDrawable="@drawable/ic_lock"
-            app:startIconTint="#1976D2"
-            app:boxStrokeColor="#1976D2"
-            app:hintTextColor="#1976D2"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#1976D2"
+            app:passwordToggleTint="#58484F"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -95,7 +95,7 @@ continue."
             android:layout_height="55dp"
             android:layout_marginTop="20dp"
             android:text="Login"
-            app:backgroundTint="#1976D2"
+            app:backgroundTint="#58484F"
             android:textColor="@color/white"
             android:textSize="16sp" />
     </LinearLayout>
@@ -118,10 +118,10 @@ continue."
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Or Login With"
+            android:text="Or Continue With"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="#1976D2"
+            android:textColor="#58484F"
             android:layout_marginStart="10dp"
             android:layout_marginEnd="10dp" />
 
@@ -197,7 +197,7 @@ continue."
             android:text="Register here"
             android:textSize="14sp"
             android:textStyle="bold"
-            android:textColor="#1976D2"
+            android:textColor="#58484F"
             android:clickable="true"
             android:focusable="true" />
 
