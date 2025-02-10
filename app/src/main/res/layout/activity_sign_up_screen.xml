@@ -32,7 +32,7 @@
             android:text="Great!"
             android:textSize="32sp"
             android:textStyle="bold"
-            android:textColor="#1976D2" />
+            android:textColor="@color/black" />
 
         <TextView
             android:id="@+id/textView2"
@@ -41,16 +41,78 @@
             android:text="We’re so excited to get you onboard!"
             android:textSize="18sp"
             android:textStyle="normal"
-            android:textColor="#1976D2" />
+            android:textColor="#58484F" />
+
+
 
         <com.google.android.material.textfield.TextInputLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="25dp"
+            android:layout_marginTop="15dp"
+            app:startIconDrawable="@drawable/ic_person"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="Please Enter Your Full Name"
+                android:textColorHint="#757575"
+                android:padding="15dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:startIconDrawable="@drawable/ic_person"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="Please Enter Your Name"
+                android:textColorHint="#757575"
+                android:padding="15dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            app:startIconDrawable="@drawable/ic_phone"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:inputType="number"
+                android:hint="Please Enter Your Username"
+                android:textColorHint="#757575"
+                android:padding="15dp"/>
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
             app:startIconDrawable="@drawable/ic_email"
-            app:startIconTint="#1976D2"
-            app:boxStrokeColor="#1976D2"
-            app:hintTextColor="#1976D2"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -67,11 +129,11 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="15dp"
             app:startIconDrawable="@drawable/ic_lock"
-            app:startIconTint="#1976D2"
-            app:boxStrokeColor="#1976D2"
-            app:hintTextColor="#1976D2"
+            app:startIconTint="#58484F"
+            app:boxStrokeColor="#58484F"
+            app:hintTextColor="#58484F"
             app:passwordToggleEnabled="true"
-            app:passwordToggleTint="#1976D2"
+            app:passwordToggleTint="#58484F"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox">
 
             <com.google.android.material.textfield.TextInputEditText
@@ -83,8 +145,87 @@
                 android:padding="15dp"/>
         </com.google.android.material.textfield.TextInputLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="By clicking Agree and continue below, I agree to "
+            android:textSize="16sp"
+            android:textStyle="normal"
+            android:textColor="@color/black"
+            android:layout_height="wrap_content">
+        </TextView>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="2dp"
+            android:orientation="horizontal"
+            android:layout_height="wrap_content">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Terms of Service"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="#757575"
+                android:layout_height="wrap_content">
+            </TextView>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="and"
+                android:layout_marginLeft="3dp"
+                android:textSize="16sp"
+                android:textStyle="normal"
+                android:textColor="@color/black"
+                android:layout_height="wrap_content">
+            </TextView>
 
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:text="Privacy Policy"
+                android:textSize="16sp"
+                android:layout_marginLeft="5dp"
+                android:textStyle="bold"
+                android:textColor="#757575"
+                android:layout_height="wrap_content">
+            </TextView>
+        </LinearLayout>
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="55dp"
+            android:layout_marginTop="15dp"
+            android:text="Register"
+            app:backgroundTint="#58484F"
+            android:textColor="@color/white"
+            android:textSize="16sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Already have an account? "
+                android:textSize="14sp"
+                android:textColor="@color/black" />
+
+            <TextView
+                android:id="@+id/registerLink"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Login"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:textColor="#58484F"
+                android:clickable="true"
+                android:focusable="true" />
+        </LinearLayout>
     </LinearLayout>
 
 
