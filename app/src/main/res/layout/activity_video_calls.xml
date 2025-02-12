@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         android:layout_weight="0.9"
         android:orientation="vertical"
-        android:background="#28C4B1B1"
+        android:background="#99C4B1B1"
         android:layout_gravity="center">
 
 
@@ -27,7 +27,31 @@
             android:layout_gravity="center"
             android:layout_marginTop="30dp"/>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="10:32"
+            android:textSize="25sp"
+            android:textStyle="normal"
+            android:textColor="@color/black"
+            android:layout_gravity="center"
+            android:layout_height="wrap_content">
+        </TextView>
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <View
+                android:layout_width="120dp"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentEnd="true"
+                android:layout_margin="10dp"
+                android:elevation="10dp"
+                android:background="@color/white"
+                android:layout_height="150dp">
+            </View>
+
+        </RelativeLayout>
 
     </LinearLayout>
 
@@ -35,6 +59,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
+        android:id="@+id/callOptions"
         android:orientation="horizontal"
         android:layout_weight="0.1"
         android:layout_margin="15dp"
