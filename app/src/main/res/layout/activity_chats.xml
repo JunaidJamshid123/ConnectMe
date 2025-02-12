@@ -1,9 +1,179 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:weightSum="1"
     tools:context=".chats">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_weight="0.1"
+        android:layout_height="0dp">
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="10dp"
+            android:src="@drawable/back">
+        </ImageView>
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/back"
+            android:textStyle="bold"
+            android:layout_centerVertical="true"
+            android:text="Junaid Jamshid"
+            android:textColor="#000"
+            android:textSize="20sp">
+        </TextView>
+        <ImageView
+            android:id="@+id/camera"
+            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="10dp"
+            android:layout_alignParentEnd="true"
+            android:src="@drawable/video_camera">
+        </ImageView>
+        <ImageView
+            android:id="@+id/telephone"
+            android:layout_width="35dp"
+            android:layout_height="30dp"
+            android:layout_marginStart="10dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginEnd="10dp"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="10dp"
+            android:layout_toLeftOf="@id/camera"
+            android:src="@drawable/telephone">
+        </ImageView>
+
+    </RelativeLayout>
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_weight="0.8"
+        android:layout_height="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:orientation="vertical"
+            android:layout_height="wrap_content">
+
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:layout_width="80dp"
+                android:layout_marginTop="15dp"
+                android:src="@drawable/junaid2"
+                android:layout_gravity="center"
+                android:layout_height="80dp">
+            </de.hdodenhof.circleimageview.CircleImageView>
+
+            <Button
+                android:layout_width="wrap_content"
+                android:textStyle="bold"
+                android:layout_gravity="center"
+                android:layout_marginTop="20dp"
+                android:text="view profile"
+                android:layout_height="wrap_content">
+            </Button>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textStyle="bold"
+                    android:id="@+id/message1"
+                    android:text="Hello How are you?"
+                    android:background="#95875F5F"
+                    android:padding="10dp"
+                    android:layout_alignParentEnd="true"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginEnd="15dp"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="10:00 AM"
+                    android:layout_below="@id/message1"
+                    android:layout_alignParentEnd="true"
+                    android:layout_marginEnd="15dp"
+                    android:layout_height="wrap_content">
+                </TextView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginTop="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="30dp"
+                    android:id="@+id/image2"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="15dp"
+                    android:src="@drawable/junaid2"
+                    android:layout_height="30dp">
+
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:textStyle="bold"
+                    android:layout_toRightOf="@id/image2"
+                    android:id="@+id/message2"
+                    android:text="Hello How are you?"
+                    android:background="#95875F5F"
+                    android:padding="10dp"
+                    android:textColor="@color/white"
+                    android:layout_marginTop="15dp"
+                    android:layout_marginStart="15dp"
+                    android:layout_height="wrap_content">
+                </TextView>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="10:00 AM"
+                    android:layout_below="@id/message2"
+                    android:layout_toRightOf="@id/image2"
+                    android:layout_marginStart="15dp"
+                    android:layout_height="wrap_content">
+                </TextView>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_weight="0.1"
+        android:orientation="vertical"
+        android:layout_height="0dp">
+
+        <EditText
+            android:layout_width="match_parent"
+            android:hint="Type a message..."
+            android:background="#95875F5F"
+            android:padding="15dp"
+            android:textColorHint="@color/white"
+            android:drawableEnd="@drawable/ic_send_24"
+            android:layout_margin="10dp"
+            android:layout_height="wrap_content">
+        </EditText>
+    </LinearLayout>
+</LinearLayout>
