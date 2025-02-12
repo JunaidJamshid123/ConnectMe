@@ -3,19 +3,20 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
     android:weightSum="1"
-    tools:context=".Calls">
+    android:orientation="vertical"
+    tools:context=".VideoCalls">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.9"
         android:orientation="vertical"
+        android:background="#28C4B1B1"
         android:layout_gravity="center">
 
-        <!-- Caller Name (Centered at the Top) -->
+
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -26,32 +27,7 @@
             android:layout_gravity="center"
             android:layout_marginTop="30dp"/>
 
-        <!-- Centered Content: Caller Image & Call Status -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="0dp"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
 
-            <!-- Caller Image -->
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="150dp"
-                android:layout_height="150dp"
-                android:src="@drawable/junaid1"
-                android:layout_gravity="center"
-                android:layout_marginBottom="20dp"/>
-
-            <!-- Call Status -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="10:32"
-                android:textSize="28sp"
-                android:textColor="@android:color/black"
-                android:textStyle="bold"
-                android:layout_gravity="center"/>
-        </LinearLayout>
 
     </LinearLayout>
 
