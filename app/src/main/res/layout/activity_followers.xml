@@ -1,9 +1,339 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:orientation="vertical"
     android:layout_height="match_parent"
     tools:context=".Followers">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:padding="15dp">
+
+
+        <ImageView
+            android:id="@+id/back"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/back"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"/>
+
+
+        <TextView
+            android:id="@+id/user_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Junaid Jamshid"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#000000"
+            android:layout_toEndOf="@id/back"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true"/>
+
+
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:src="@drawable/edit"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"/>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_marginTop="10dp"
+        android:layout_height="wrap_content">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="410 Followers"
+            android:id="@+id/dms"
+            android:textSize="20sp"
+            android:textStyle="bold"
+            android:textColor="#664242"
+            android:layout_marginStart="40sp"
+            android:layout_height="wrap_content">
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:text="387 Following"
+            android:id="@+id/requests"
+            android:textSize="20sp"
+            android:textStyle="normal"
+            android:textColor="@color/black"
+            android:layout_alignParentEnd="true"
+            android:layout_marginEnd="40dp"
+            android:layout_height="wrap_content">
+        </TextView>
+    </RelativeLayout>
+
+    <View
+        android:layout_width="120dp"
+        android:background="#664242"
+        android:layout_marginStart="45dp"
+        android:layout_height="3dp">
+    </View>
+
+    <EditText
+        android:layout_width="match_parent"
+        android:inputType="text"
+        android:layout_marginStart="20dp"
+        android:padding="10dp"
+        android:drawableEnd="@drawable/ic_search"
+        android:layout_marginEnd="20dp"
+        android:background="#5CF1E7E7"
+        android:hint="search follower"
+        android:layout_marginTop="20sp"
+
+        android:layout_height="wrap_content">
+
+    </EditText>
+
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_margin="20dp"
+        android:layout_height="match_parent">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_marginTop="10dp"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/junaid1"
+                    android:id="@+id/image1"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Junaid Jamshid"
+                    android:id="@+id/text1"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image1"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/junaid2"
+                    android:id="@+id/image2"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Ahmad Ali"
+                    android:id="@+id/text2"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image2"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/person1"
+                    android:id="@+id/image3"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Alexa"
+                    android:id="@+id/text3"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image3"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/person2"
+                    android:id="@+id/image4"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Muhammad Ali"
+                    android:id="@+id/text4"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image4"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/person3"
+                    android:id="@+id/image5"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Nafeesa Khan"
+                    android:id="@+id/text5"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image5"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_marginBottom="10dp"
+                android:layout_height="wrap_content">
+
+                <de.hdodenhof.circleimageview.CircleImageView
+                    android:layout_width="50sp"
+                    android:src="@drawable/person4"
+                    android:id="@+id/image6"
+                    android:layout_height="50sp">
+                </de.hdodenhof.circleimageview.CircleImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:text="Ahmad Khan"
+                    android:id="@+id/text6"
+                    android:textSize="20sp"
+                    android:textStyle="normal"
+                    android:textColor="#000000"
+                    android:layout_marginStart="10dp"
+                    android:layout_height="wrap_content"
+                    android:layout_toEndOf="@id/image6"
+                    android:layout_marginTop="10dp">
+                </TextView>
+
+                <ImageView
+                    android:layout_width="40dp"
+                    android:src="@drawable/cameraa"
+                    android:layout_marginTop="3dp"
+                    android:layout_marginEnd="5dp"
+                    android:layout_alignParentEnd="true"
+                    android:layout_height="40dp">
+
+                </ImageView>
+
+            </RelativeLayout>
+
+
+
+
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>
