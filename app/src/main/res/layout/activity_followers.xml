@@ -93,9 +93,7 @@
         android:background="#5CF1E7E7"
         android:hint="search follower"
         android:layout_marginTop="20sp"
-
         android:layout_height="wrap_content">
-
     </EditText>
 
 
