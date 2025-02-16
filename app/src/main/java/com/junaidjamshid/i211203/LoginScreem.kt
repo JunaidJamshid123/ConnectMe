@@ -22,6 +22,7 @@ class LoginScreem : AppCompatActivity() {
         val loginBtn = findViewById<Button>(R.id.LoginBtn)
         registerLink.setOnClickListener {
             val intent = Intent(this, SignUpScreen::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
 

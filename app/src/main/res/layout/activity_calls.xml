@@ -116,6 +116,7 @@
         <ImageView
             android:layout_width="50dp"
             android:layout_height="50dp"
+            android:id="@+id/EndCall"
             android:src="@drawable/telephone"
             android:background="@drawable/red_circle"
             android:padding="12dp"

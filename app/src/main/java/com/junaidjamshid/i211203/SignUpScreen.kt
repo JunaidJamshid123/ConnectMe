@@ -25,6 +25,7 @@ class SignUpScreen : AppCompatActivity() {
 
         loginLink.setOnClickListener {
             val intent = Intent(this, LoginScreem::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
 
@@ -40,6 +41,7 @@ class SignUpScreen : AppCompatActivity() {
                 Toast.makeText(this, "All fields are required", Toast.LENGTH_SHORT).show()
             } else {
                 val intent = Intent(this, HomePage::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
                 startActivity(intent)
                 finish()
             }
