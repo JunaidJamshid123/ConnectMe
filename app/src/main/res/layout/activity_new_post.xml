@@ -43,9 +43,11 @@
             android:layout_centerInParent="true"
             android:layout_marginEnd="20dp"
             android:text="Next"
+            android:id="@+id/next_text"
             android:textColor="@color/black"
             android:textSize="20dp"
             android:textStyle="bold">
+
         </TextView>
     </RelativeLayout>
         <ImageView

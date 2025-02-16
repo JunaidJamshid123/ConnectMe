@@ -10,6 +10,7 @@ class ContactsPage : AppCompatActivity() {
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        supportActionBar?.hide()
         setContentView(R.layout.activity_contacts_page)
         val home = findViewById<LinearLayout>(R.id.Home)
         val search = findViewById<LinearLayout>(R.id.Search)

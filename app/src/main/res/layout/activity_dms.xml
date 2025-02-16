@@ -114,6 +114,7 @@
                 <RelativeLayout
                     android:layout_width="match_parent"
                     android:layout_marginBottom="10dp"
+                    android:id="@+id/chat1"
                     android:layout_height="wrap_content">
 
                     <de.hdodenhof.circleimageview.CircleImageView

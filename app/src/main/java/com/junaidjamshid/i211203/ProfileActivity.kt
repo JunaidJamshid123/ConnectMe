@@ -5,6 +5,7 @@ import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.GridView
+import android.widget.ImageView
 import android.widget.LinearLayout
 
 class ProfileActivity : AppCompatActivity() {
@@ -32,6 +33,24 @@ class ProfileActivity : AppCompatActivity() {
         val newPost = findViewById<LinearLayout>(R.id.NewPost)
         val profile = findViewById<LinearLayout>(R.id.Profile)
         val contacts = findViewById<LinearLayout>(R.id.Contacts)
+        val followers_btn = findViewById<LinearLayout>(R.id.followers);
+        val following_btn = findViewById<LinearLayout>(R.id.following);
+        val edit = findViewById<ImageView>(R.id.edit_profile);
+
+        edit.setOnClickListener{
+            val intent = Intent(this, EditProfile::class.java);
+            startActivity(intent)
+        }
+
+        following_btn.setOnClickListener{
+            val intent = Intent(this,Following::class.java);
+            startActivity(intent);
+        }
+
+        followers_btn.setOnClickListener{
+            val intent = Intent(this, Followers::class.java);
+            startActivity(intent)
+        }
 
         home.setOnClickListener {
             val intent = Intent(this, HomePage::class.java)
