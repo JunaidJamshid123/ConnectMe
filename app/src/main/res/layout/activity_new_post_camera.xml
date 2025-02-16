@@ -107,6 +107,7 @@
     <Button
         android:layout_width="match_parent"
         android:text="Share"
+        android:id="@+id/share"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="20dp"
         android:textStyle="bold"
