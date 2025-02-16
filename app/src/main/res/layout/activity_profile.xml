@@ -8,56 +8,60 @@
     android:background="@color/white"
     tools:context=".ProfileActivity">
 
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.9"
-        android:orientation="vertical"
-        android:padding="16dp">
+        android:orientation="vertical">
 
+        <!-- Header Section -->
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_medium">
 
             <TextView
                 android:id="@+id/tv_profile"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="My Profile"
-                android:textSize="22sp"
+                android:textSize="@dimen/text_xlarge"
                 android:textStyle="bold"
                 android:textColor="@color/black"
                 android:layout_centerVertical="true" />
 
             <ImageView
                 android:id="@+id/edit_profile"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
                 android:layout_alignParentEnd="true"
                 android:src="@drawable/edit"
+                android:padding="@dimen/spacing_xxsmall"
+                android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_centerVertical="true" />
         </RelativeLayout>
 
-
+        <!-- Profile Info Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:gravity="center"
-            android:layout_marginTop="16dp">
+            android:padding="@dimen/spacing_medium">
 
             <de.hdodenhof.circleimageview.CircleImageView
-                android:layout_width="100dp"
-                android:layout_height="100dp"
+                android:layout_width="@dimen/profile_image_size"
+                android:layout_height="@dimen/profile_image_size"
                 android:src="@drawable/junaid1"
-                android:layout_marginBottom="8dp" />
+                app:civ_border_width="2dp"
+                app:civ_border_color="#58484F"
+                android:layout_marginBottom="@dimen/spacing_small" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Junaid Jamshid"
-                android:textSize="20sp"
+                android:textSize="@dimen/text_xlarge"
                 android:textStyle="bold"
                 android:textColor="@color/black" />
 
@@ -65,18 +69,19 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="two bananas for a pound, three bananas for a euro"
-                android:textSize="14sp"
+                android:textSize="@dimen/text_small"
                 android:textColor="@color/black"
-                android:layout_marginTop="4dp" />
+                android:layout_marginTop="@dimen/spacing_xsmall"
+                android:gravity="center" />
         </LinearLayout>
 
-
+        <!-- Stats Section -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:weightSum="3"
-            android:layout_marginTop="16dp">
+            android:padding="@dimen/spacing_medium">
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -89,7 +94,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="7"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_large"
                     android:textStyle="bold"
                     android:textColor="@color/black" />
 
@@ -97,7 +102,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="posts"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_small"
                     android:textColor="@color/black" />
             </LinearLayout>
 
@@ -112,7 +117,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="410"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_large"
                     android:textStyle="bold"
                     android:textColor="@color/black" />
 
@@ -120,7 +125,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="followers"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_small"
                     android:textColor="@color/black" />
             </LinearLayout>
 
@@ -135,7 +140,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="387"
-                    android:textSize="18sp"
+                    android:textSize="@dimen/text_large"
                     android:textStyle="bold"
                     android:textColor="@color/black" />
 
@@ -143,121 +148,142 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="following"
-                    android:textSize="14sp"
+                    android:textSize="@dimen/text_small"
                     android:textColor="@color/black" />
             </LinearLayout>
         </LinearLayout>
 
-
+        <!-- Grid View -->
         <GridView
             android:id="@+id/grid_view"
             android:layout_width="match_parent"
             android:layout_height="0dp"
             android:layout_weight="1"
             android:numColumns="3"
-        android:stretchMode="columnWidth"
-        android:gravity="center"
-        android:layout_margin="8dp"
-            android:padding="5dp"
-        android:verticalSpacing="3dp"
-        android:horizontalSpacing="5dp"
-        android:clipToPadding="false"/>
-
-
-
+            android:stretchMode="columnWidth"
+            android:gravity="center"
+            android:layout_margin="@dimen/spacing_small"
+            android:padding="@dimen/spacing_xsmall"
+            android:verticalSpacing="@dimen/spacing_xxsmall"
+            android:horizontalSpacing="@dimen/spacing_xsmall"
+            android:clipToPadding="false"/>
     </LinearLayout>
 
-
+    <!-- Bottom Navigation -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="0.1"
         android:background="#23D4BFBF"
-        android:orientation="horizontal"
-        android:weightSum="5">
+        android:orientation="vertical"
+        android:elevation="@dimen/spacing_small">
 
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_home" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Home"
-                android:textSize="12sp" />
-        </LinearLayout>
+            android:orientation="horizontal"
+            android:weightSum="5">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_search" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Search"
-                android:textSize="12sp" />
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/Home"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="40dp"
-                android:layout_height="40dp"
-                android:padding="8dp"
-                android:background="@drawable/circle_brown"
-                android:src="@drawable/add" />
-        </LinearLayout>
+                <ImageView
+                    android:layout_width="@dimen/nav_icon_size"
+                    android:layout_height="@dimen/nav_icon_size"
+                    android:src="@drawable/ic_home"
+                    app:tint="#382B2B" />
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_person" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Profile"
-                android:textSize="12sp" />
-        </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Home"
+                    android:textSize="@dimen/text_xxsmall"/>
+            </LinearLayout>
 
-        <LinearLayout
-            android:layout_width="0dp"
-            android:layout_height="match_parent"
-            android:layout_weight="1"
-            android:gravity="center"
-            android:orientation="vertical">
-            <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_grid" />
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Contacts"
-                android:textSize="12sp" />
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/Search"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
 
+                <ImageView
+                    android:layout_width="@dimen/nav_icon_size"
+                    android:layout_height="@dimen/nav_icon_size"
+                    android:src="@drawable/ic_search"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Search"
+                    android:textSize="@dimen/text_xxsmall"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/NewPost"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/nav_add_icon_size"
+                    android:layout_height="@dimen/nav_add_icon_size"
+                    android:padding="@dimen/spacing_small"
+                    android:background="@drawable/circle_brown"
+                    android:src="@drawable/add"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Profile"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/nav_icon_size"
+                    android:layout_height="@dimen/nav_icon_size"
+                    android:src="@drawable/ic_person"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Profile"
+                    android:textSize="@dimen/text_xxsmall"/>
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/Contacts"
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="1"
+                android:gravity="center"
+                android:background="?attr/selectableItemBackground"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="@dimen/nav_icon_size"
+                    android:layout_height="@dimen/nav_icon_size"
+                    android:src="@drawable/ic_grid"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Contacts"
+                    android:textSize="@dimen/text_xxsmall"/>
+            </LinearLayout>
+        </LinearLayout>
     </LinearLayout>
-
 </LinearLayout>

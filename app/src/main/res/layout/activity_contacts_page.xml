@@ -367,12 +367,14 @@
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"
+                android:id="@+id/Home"
                 android:gravity="center"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/ic_home"/>
+                    android:src="@drawable/ic_home"
+                    app:tint="#382B2B" />
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -385,6 +387,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:id="@+id/Search"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="24dp"
@@ -402,6 +405,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:id="@+id/NewPost"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="40dp"
@@ -416,6 +420,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:id="@+id/Profile"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="24dp"
@@ -433,6 +438,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="1"
                 android:gravity="center"
+                android:id="@+id/Contacts"
                 android:orientation="vertical">
                 <ImageView
                     android:layout_width="24dp"
