@@ -1,21 +1,21 @@
-package com.junaidjamshid.i211203.Models
+package com.junaidjamshid.i211203.models
 
 data class User(
     val userId: String = "",  // Unique Firebase UID
-    var username: String = "",  // Unique username
-    var email: String = "",
-    var fullName: String = "",  // Full name
-    var phoneNumber: String? = null,  // Optional phone number
-    var profilePictureUrl: String = "",  // Profile picture URL (Firebase Storage)
-    var coverPhotoUrl: String = "",  // Cover photo URL
-    var bio: String = "",  // Short user bio
-    var followers: MutableList<String> = mutableListOf(),  // List of user IDs who follow this user
-    var following: MutableList<String> = mutableListOf(),  // List of user IDs this user follows
-    var blockedUsers: MutableList<String> = mutableListOf(),  // List of blocked users
-    var onlineStatus: Boolean = false,  // True = online, False = offline
-    var pushToken: String = "",  // Firebase Cloud Messaging (FCM) token
-    val createdAt: Long = System.currentTimeMillis(),  // Account creation timestamp
-    var lastSeen: Long = System.currentTimeMillis(),  // Last active timestamp
-    var vanishModeEnabled: Boolean = false,  // Vanish mode for messages
-    var storyExpiryTimestamp: Long? = null // Timestamp for the latest story expiry
+    val username: String = "",  // Unique username
+    val email: String = "",
+    val fullName: String = "",  // Full name
+    val phoneNumber: String = "",  // Phone number (default empty)
+    val profilePictureUrl: String = "",  // Profile picture URL (Firebase Storage)
+    val coverPhotoUrl: String = "",  // Cover photo URL
+    val bio: String = "",  // User bio
+    val followers: MutableList<String> = mutableListOf(),  // ✅ Ensures empty list is stored
+    val following: MutableList<String> = mutableListOf(),  // ✅ Ensures empty list is stored
+    val blockedUsers: MutableList<String> = mutableListOf(),  // ✅ Ensures empty list is stored
+    val onlineStatus: Boolean = false,
+    val pushToken: String = "",
+    val createdAt: Long = System.currentTimeMillis(),
+    val lastSeen: Long = System.currentTimeMillis(),
+    val vanishModeEnabled: Boolean = false,
+    val storyExpiryTimestamp: Long? = null  // ✅ Ensures nullable field is stored
 )

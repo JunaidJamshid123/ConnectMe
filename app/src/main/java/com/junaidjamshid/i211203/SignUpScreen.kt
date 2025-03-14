@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203
 
+import android.app.ProgressDialog
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Button
@@ -10,12 +11,13 @@ import androidx.appcompat.app.AppCompatActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
-import com.junaidjamshid.i211203.Models.User
+import com.junaidjamshid.i211203.models.User
 
 class SignUpScreen : AppCompatActivity() {
 
     private lateinit var auth: FirebaseAuth
     private lateinit var database: DatabaseReference
+    private lateinit var progressDialog: ProgressDialog
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -25,6 +27,11 @@ class SignUpScreen : AppCompatActivity() {
         auth = FirebaseAuth.getInstance()
         database = FirebaseDatabase.getInstance().reference
 
+        // Initialize Progress Dialog
+        progressDialog = ProgressDialog(this)
+        progressDialog.setMessage("Creating account...")
+        progressDialog.setCancelable(false)
+
         val loginLink = findViewById<TextView>(R.id.LoginLink)
         val fullName = findViewById<EditText>(R.id.FullName)
         val username = findViewById<EditText>(R.id.username)
@@ -33,12 +40,14 @@ class SignUpScreen : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.Password)
         val registerBtn = findViewById<Button>(R.id.registerBtn)
 
+        // Navigate to Login Screen
         loginLink.setOnClickListener {
             val intent = Intent(this, LoginScreem::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
 
+        // Handle Register Button Click
         registerBtn.setOnClickListener {
             val fullNameInput = fullName.text.toString().trim()
             val usernameInput = username.text.toString().trim()
@@ -56,6 +65,8 @@ class SignUpScreen : AppCompatActivity() {
     }
 
     private fun signUpUser(fullName: String, username: String, phone: String, email: String, password: String) {
+        progressDialog.show() // Show loading dialog
+
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {
@@ -70,28 +81,33 @@ class SignUpScreen : AppCompatActivity() {
                             profilePictureUrl = "",
                             coverPhotoUrl = "",
                             bio = "",
-                            followers = mutableListOf(),
-                            following = mutableListOf(),
-                            blockedUsers = mutableListOf(),
+                            followers = mutableListOf(),  // ✅ Stored as empty list
+                            following = mutableListOf(),  // ✅ Stored as empty list
+                            blockedUsers = mutableListOf(),  // ✅ Stored as empty list
                             onlineStatus = false,
                             pushToken = "",
                             createdAt = System.currentTimeMillis(),
                             lastSeen = System.currentTimeMillis(),
                             vanishModeEnabled = false,
-                            storyExpiryTimestamp = null
+                            storyExpiryTimestamp = null  // ✅ Stored properly
                         )
+
+                        // Save user data to Firebase Database
                         database.child("Users").child(userId).setValue(user)
-                            .addOnCompleteListener {
-                                if (it.isSuccessful) {
-                                    Toast.makeText(this, "Registration successful", Toast.LENGTH_SHORT).show()
-                                    startActivity(Intent(this, HomePage::class.java))
+                            .addOnCompleteListener { dbTask ->
+                                progressDialog.dismiss() // Hide loading dialog
+
+                                if (dbTask.isSuccessful) {
+                                    Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
+                                    startActivity(Intent(this, LoginScreem::class.java))
                                     finish()
                                 } else {
-                                    Toast.makeText(this, "Failed to store user data", Toast.LENGTH_SHORT).show()
+                                    Toast.makeText(this, "Failed to store user data: ${dbTask.exception?.message}", Toast.LENGTH_SHORT).show()
                                 }
                             }
                     }
                 } else {
+                    progressDialog.dismiss() // Hide loading dialog
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
