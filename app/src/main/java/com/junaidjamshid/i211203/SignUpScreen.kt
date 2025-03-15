@@ -81,19 +81,38 @@ class SignUpScreen : AppCompatActivity() {
                             profilePictureUrl = "",
                             coverPhotoUrl = "",
                             bio = "",
-                            followers = mutableListOf(),  // ✅ Stored as empty list
-                            following = mutableListOf(),  // ✅ Stored as empty list
-                            blockedUsers = mutableListOf(),  // ✅ Stored as empty list
+                            followers = hashMapOf(),  // ✅ Store as a HashMap
+                            following = hashMapOf(),  // ✅ Store as a HashMap
+                            blockedUsers = hashMapOf(),  // ✅ Store as a HashMap
                             onlineStatus = false,
                             pushToken = "",
                             createdAt = System.currentTimeMillis(),
                             lastSeen = System.currentTimeMillis(),
                             vanishModeEnabled = false,
-                            storyExpiryTimestamp = null  // ✅ Stored properly
+                            storyExpiryTimestamp = null // ✅ Stored properly
                         )
 
+                        val userMap = HashMap<String, Any?>()
+                        userMap["userId"] = user.userId
+                        userMap["username"] = user.username
+                        userMap["email"] = user.email
+                        userMap["fullName"] = user.fullName
+                        userMap["phoneNumber"] = user.phoneNumber
+                        userMap["profilePictureUrl"] = user.profilePictureUrl
+                        userMap["coverPhotoUrl"] = user.coverPhotoUrl
+                        userMap["bio"] = user.bio
+                        userMap["followers"] = user.followers // ✅ Store as a HashMap
+                        userMap["following"] = user.following // ✅ Store as a HashMap
+                        userMap["blockedUsers"] = user.blockedUsers // ✅ Store as a HashMap
+                        userMap["onlineStatus"] = user.onlineStatus
+                        userMap["pushToken"] = user.pushToken
+                        userMap["createdAt"] = user.createdAt
+                        userMap["lastSeen"] = user.lastSeen
+                        userMap["vanishModeEnabled"] = user.vanishModeEnabled
+                        userMap["storyExpiryTimestamp"] = user.storyExpiryTimestamp
+
                         // Save user data to Firebase Database
-                        database.child("Users").child(userId).setValue(user)
+                        database.child("Users").child(userId).setValue(userMap)
                             .addOnCompleteListener { dbTask ->
                                 progressDialog.dismiss() // Hide loading dialog
 
