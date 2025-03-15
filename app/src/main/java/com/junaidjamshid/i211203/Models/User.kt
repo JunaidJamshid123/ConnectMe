@@ -1,15 +1,15 @@
 package com.junaidjamshid.i211203.models
 
 class User {
-    var userId: String = ""  // Unique Firebase UID
-    var username: String = ""  // Unique username
+    var userId: String = ""
+    var username: String = ""
     var email: String = ""
-    var fullName: String = ""  // Full name
-    var phoneNumber: String = ""  // Phone number (default empty)
-    var profilePictureUrl: String = ""  // Profile picture URL (Firebase Storage)
-    var coverPhotoUrl: String = ""  // Cover photo URL
-    var bio: String = ""  // User bio
-    var followers: HashMap<String, Any> = hashMapOf()  // ✅ Store as a HashMap
+    var fullName: String = ""
+    var phoneNumber: String = ""
+    var profilePictureUrl: String = ""
+    var coverPhotoUrl: String = ""
+    var bio: String = ""
+    var followers: HashMap<String, Any> = hashMapOf()
     var following: HashMap<String, Any> = hashMapOf()
     var blockedUsers: HashMap<String, Any> = hashMapOf()
     var onlineStatus: Boolean = false
@@ -17,12 +17,12 @@ class User {
     var createdAt: Long = System.currentTimeMillis()
     var lastSeen: Long = System.currentTimeMillis()
     var vanishModeEnabled: Boolean = false
-    var storyExpiryTimestamp: Long? = null  // Ensures nullable field is stored
+    var storyExpiryTimestamp: Long? = null
 
-    // Default constructor required for Firebase
+
     constructor()
 
-    // Constructor with parameters
+
     constructor(
         userId: String,
         username: String,

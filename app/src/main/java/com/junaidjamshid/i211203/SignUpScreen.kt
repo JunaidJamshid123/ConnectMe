@@ -40,14 +40,14 @@ class SignUpScreen : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.Password)
         val registerBtn = findViewById<Button>(R.id.registerBtn)
 
-        // Navigate to Login Screen
+
         loginLink.setOnClickListener {
             val intent = Intent(this, LoginScreem::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
 
-        // Handle Register Button Click
+
         registerBtn.setOnClickListener {
             val fullNameInput = fullName.text.toString().trim()
             val usernameInput = username.text.toString().trim()
@@ -65,7 +65,7 @@ class SignUpScreen : AppCompatActivity() {
     }
 
     private fun signUpUser(fullName: String, username: String, phone: String, email: String, password: String) {
-        progressDialog.show() // Show loading dialog
+        progressDialog.show()
 
         auth.createUserWithEmailAndPassword(email, password)
             .addOnCompleteListener { task ->
@@ -81,15 +81,15 @@ class SignUpScreen : AppCompatActivity() {
                             profilePictureUrl = "",
                             coverPhotoUrl = "",
                             bio = "",
-                            followers = hashMapOf(),  // ✅ Store as a HashMap
-                            following = hashMapOf(),  // ✅ Store as a HashMap
-                            blockedUsers = hashMapOf(),  // ✅ Store as a HashMap
+                            followers = hashMapOf(),
+                            following = hashMapOf(),
+                            blockedUsers = hashMapOf(),
                             onlineStatus = false,
                             pushToken = "",
                             createdAt = System.currentTimeMillis(),
                             lastSeen = System.currentTimeMillis(),
                             vanishModeEnabled = false,
-                            storyExpiryTimestamp = null // ✅ Stored properly
+                            storyExpiryTimestamp = null
                         )
 
                         val userMap = HashMap<String, Any?>()
@@ -101,9 +101,9 @@ class SignUpScreen : AppCompatActivity() {
                         userMap["profilePictureUrl"] = user.profilePictureUrl
                         userMap["coverPhotoUrl"] = user.coverPhotoUrl
                         userMap["bio"] = user.bio
-                        userMap["followers"] = user.followers // ✅ Store as a HashMap
-                        userMap["following"] = user.following // ✅ Store as a HashMap
-                        userMap["blockedUsers"] = user.blockedUsers // ✅ Store as a HashMap
+                        userMap["followers"] = user.followers
+                        userMap["following"] = user.following
+                        userMap["blockedUsers"] = user.blockedUsers
                         userMap["onlineStatus"] = user.onlineStatus
                         userMap["pushToken"] = user.pushToken
                         userMap["createdAt"] = user.createdAt
@@ -111,10 +111,10 @@ class SignUpScreen : AppCompatActivity() {
                         userMap["vanishModeEnabled"] = user.vanishModeEnabled
                         userMap["storyExpiryTimestamp"] = user.storyExpiryTimestamp
 
-                        // Save user data to Firebase Database
+
                         database.child("Users").child(userId).setValue(userMap)
                             .addOnCompleteListener { dbTask ->
-                                progressDialog.dismiss() // Hide loading dialog
+                                progressDialog.dismiss()
 
                                 if (dbTask.isSuccessful) {
                                     Toast.makeText(this, "Registration successful!", Toast.LENGTH_SHORT).show()
@@ -126,7 +126,7 @@ class SignUpScreen : AppCompatActivity() {
                             }
                     }
                 } else {
-                    progressDialog.dismiss() // Hide loading dialog
+                    progressDialog.dismiss()
                     Toast.makeText(this, "Registration failed: ${task.exception?.message}", Toast.LENGTH_SHORT).show()
                 }
             }
