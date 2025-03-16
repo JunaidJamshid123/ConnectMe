@@ -39,6 +39,18 @@
                 android:padding="@dimen/spacing_xxsmall"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:layout_centerVertical="true" />
+
+            <ImageView
+                android:id="@+id/logout"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_marginRight="15dp"
+                android:layout_toLeftOf="@+id/edit_profile"
+                android:src="@drawable/logout"
+                android:padding="@dimen/spacing_xxsmall"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_centerVertical="true" />
+
         </RelativeLayout>
 
 
