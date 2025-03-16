@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center"
+    android:orientation="vertical"
+    android:padding="3dp">
+
+    <!-- Story Circle with Gradient Border -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardViewStory"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        app:cardCornerRadius="40dp"
+        app:cardElevation="0dp"
+        app:cardBackgroundColor="@android:color/transparent">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- Gradient Border -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/gradientBorder"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="2dp"
+                android:src="@drawable/story_gradient"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CircleImageView" />
+
+            <!-- Profile Image -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/imgStoryProfile"
+                android:layout_width="74dp"
+                android:layout_height="74dp"
+                android:padding="3dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/junaid1"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:shapeAppearanceOverlay="@style/CircleImageView"
+                app:strokeColor="#FFFFFF"
+                app:strokeWidth="3dp" />
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
+
+    <!-- Username Text -->
+    <TextView
+        android:id="@+id/tvUsername"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:maxWidth="80dp"
+        android:maxLines="1"
+        android:text="Junaid"
+        android:textColor="#000000"
+        android:textSize="12sp" />
+
+</LinearLayout>

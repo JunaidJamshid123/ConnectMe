@@ -63,6 +63,7 @@
 
             <de.hdodenhof.circleimageview.CircleImageView
                 android:layout_width="@dimen/profile_image_size"
+                android:id="@+id/profile_image"
                 android:layout_height="@dimen/profile_image_size"
                 android:src="@drawable/junaid1"
                 app:civ_border_width="2dp"
@@ -72,6 +73,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:id="@+id/username_text"
                 android:text="Junaid Jamshid"
                 android:textSize="@dimen/text_xlarge"
                 android:textStyle="bold"
@@ -79,6 +81,7 @@
 
             <TextView
                 android:layout_width="wrap_content"
+                android:id="@+id/bio_text"
                 android:layout_height="wrap_content"
                 android:text="two bananas for a pound, three bananas for a euro"
                 android:textSize="@dimen/text_small"
@@ -104,6 +107,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
+                    android:id="@+id/posts_count"
                     android:layout_height="wrap_content"
                     android:text="7"
                     android:textSize="@dimen/text_large"
@@ -128,6 +132,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
+                    android:id="@+id/followers_count"
                     android:layout_height="wrap_content"
                     android:text="410"
                     android:textSize="@dimen/text_large"
@@ -152,6 +157,7 @@
 
                 <TextView
                     android:layout_width="wrap_content"
+                    android:id="@+id/following_count"
                     android:layout_height="wrap_content"
                     android:text="387"
                     android:textSize="@dimen/text_large"
