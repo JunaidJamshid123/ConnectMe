@@ -11,6 +11,7 @@
                   <entry key="Duration" value="90" />
                   <entry key="Personal_Mobile_Device" value="120" />
                   <entry key="Tests" value="360" />
+                  <entry key="flutter_emulator" value="120" />
                 </map>
               </option>
             </AndroidTestResultsTableState>
