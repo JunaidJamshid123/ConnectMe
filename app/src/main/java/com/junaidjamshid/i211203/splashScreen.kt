@@ -17,7 +17,7 @@ class SplashScreen : AppCompatActivity() {
             val currentUser = FirebaseAuth.getInstance().currentUser
             if (currentUser != null) {
                 // User is already logged in, navigate to HomePage
-                startActivity(Intent(this, HomePage::class.java))
+                startActivity(Intent(this, MainActivity::class.java))
             } else {
                 // User not logged in, navigate to LoginScreen
                 startActivity(Intent(this, LoginScreem::class.java))
