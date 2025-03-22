@@ -82,7 +82,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="350dp"
                 android:scaleType="centerCrop"
-                android:src="@drawable/junaid2"/>
+                android:src="@drawable/junaid2" />
 
             <View
                 android:layout_width="match_parent"
@@ -111,7 +111,7 @@
                     android:id="@+id/heart"
                     android:layout_width="24dp"
                     android:layout_height="24dp"
-                    android:src="@drawable/heart"
+                    android:src="@drawable/simple_heart"
                     android:layout_marginEnd="16dp"
                     android:clickable="true"
                     android:focusable="true"
