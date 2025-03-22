@@ -4,20 +4,13 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".NewPostCamera">
+    tools:context=".PostFragment">
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_marginTop="15dp"
         android:id="@+id/RL1"
         android:layout_height="wrap_content">
-        <ImageView
-            android:layout_width="30dp"
-            android:src="@drawable/close"
-            android:layout_marginStart="20dp"
-            android:layout_alignParentStart="true"
-            android:layout_height="30dp">
-        </ImageView>
 
         <TextView
             android:layout_width="wrap_content"
@@ -28,8 +21,16 @@
             android:textColor="@color/black"
             android:layout_height="wrap_content">
         </TextView>
-    </RelativeLayout>
 
+        <ImageView
+            android:id="@+id/back_button"
+            android:layout_width="30dp"
+            android:src="@drawable/close"
+            android:layout_marginStart="20dp"
+            android:layout_alignParentStart="true"
+            android:layout_height="30dp">
+        </ImageView>
+    </RelativeLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -38,7 +39,8 @@
         android:layout_marginTop="20dp"
         android:layout_marginStart="15dp"
         android:layout_marginEnd="15dp"
-        android:layout_height="wrap_content">
+        android:layout_above="@id/share"
+        android:layout_height="match_parent">
 
         <HorizontalScrollView
             android:layout_width="match_parent"
@@ -53,54 +55,50 @@
                 android:layout_height="match_parent"
                 android:orientation="horizontal">
 
-                <!-- Image 1 -->
-                <ImageView
-                    android:layout_width="200dp"
+                <!-- Default image placeholder -->
+                <FrameLayout
+                    android:id="@+id/image_placeholder"
+                    android:layout_width="350dp"
                     android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/junaid1"
-                    android:layout_marginEnd="10dp" />
+                    android:background="#EFEFEF">
 
-                <!-- Image 2 -->
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/junaid2"
-                    android:layout_marginEnd="10dp" />
+                    <ImageView
+                        android:id="@+id/post_image"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:scaleType="centerCrop"
+                        android:visibility="gone" />
 
-                <!-- Image 3 -->
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/junaid1"
-                    android:layout_marginEnd="10dp" />
+                    <ImageButton
+                        android:id="@+id/select_image_button"
+                        android:layout_width="70dp"
+                        android:layout_height="70dp"
+                        android:layout_gravity="center"
+                        android:background="@android:color/transparent"
+                        app:tint="#664242" />
 
-                <!-- Image 4 -->
-                <ImageView
-                    android:layout_width="200dp"
-                    android:layout_height="match_parent"
-                    android:scaleType="centerCrop"
-                    android:src="@drawable/junaid2"
-                    android:layout_marginEnd="10dp" />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Tap to select image"
+                        android:layout_gravity="center"
+                        android:layout_marginTop="50dp"
+                        android:textColor="#664242" />
+                </FrameLayout>
 
             </LinearLayout>
-
         </HorizontalScrollView>
 
-
-
         <EditText
+            android:id="@+id/caption_input"
             android:layout_width="match_parent"
             android:padding="25dp"
             android:layout_marginTop="20dp"
             android:backgroundTint="#B2664242"
-            android:hint="Enter Catopn Here ..."
+            android:hint="Enter Caption Here..."
             android:textColorHint="@color/white"
             android:background="@drawable/edit_text_background"
             android:layout_height="wrap_content">
-
         </EditText>
     </LinearLayout>
 
@@ -116,7 +114,6 @@
         android:backgroundTint="#664242"
         android:padding="15dp"
         android:layout_height="wrap_content">
-
     </Button>
 
 </RelativeLayout>
