@@ -1,13 +1,16 @@
 package com.junaidjamshid.i211203.models
 
+import android.util.Base64
+
 class User {
     var userId: String = ""
     var username: String = ""
     var email: String = ""
     var fullName: String = ""
     var phoneNumber: String = ""
-    var profilePictureUrl: String = ""
-    var coverPhotoUrl: String = ""
+    // Changed from ByteArray to String to store Base64-encoded image
+    var profilePicture: String? = null
+    var coverPhoto: String? = null
     var bio: String = ""
     var followers: HashMap<String, Any> = hashMapOf()
     var following: HashMap<String, Any> = hashMapOf()
@@ -19,9 +22,7 @@ class User {
     var vanishModeEnabled: Boolean = false
     var storyExpiryTimestamp: Long? = null
 
-
     constructor()
-
 
     constructor(
         userId: String,
@@ -29,8 +30,8 @@ class User {
         email: String,
         fullName: String,
         phoneNumber: String,
-        profilePictureUrl: String,
-        coverPhotoUrl: String,
+        profilePicture: ByteArray?,
+        coverPhoto: ByteArray?,
         bio: String,
         followers: HashMap<String, Any>,
         following: HashMap<String, Any>,
@@ -47,8 +48,9 @@ class User {
         this.email = email
         this.fullName = fullName
         this.phoneNumber = phoneNumber
-        this.profilePictureUrl = profilePictureUrl
-        this.coverPhotoUrl = coverPhotoUrl
+        // Convert ByteArray to Base64 String if not null
+        this.profilePicture = profilePicture?.let { Base64.encodeToString(it, Base64.DEFAULT) }
+        this.coverPhoto = coverPhoto?.let { Base64.encodeToString(it, Base64.DEFAULT) }
         this.bio = bio
         this.followers = followers
         this.following = following
@@ -59,5 +61,43 @@ class User {
         this.lastSeen = lastSeen
         this.vanishModeEnabled = vanishModeEnabled
         this.storyExpiryTimestamp = storyExpiryTimestamp
+    }
+
+    // Helper method to get profile picture as ByteArray
+    fun getProfilePictureBytes(): ByteArray? {
+        return profilePicture?.let { Base64.decode(it, Base64.DEFAULT) }
+    }
+
+    // Helper method to get cover photo as ByteArray
+    fun getCoverPhotoBytes(): ByteArray? {
+        return coverPhoto?.let { Base64.decode(it, Base64.DEFAULT) }
+    }
+
+    // Helper method to set profile picture from ByteArray
+    fun setProfilePictureFromBytes(bytes: ByteArray?) {
+        profilePicture = bytes?.let { Base64.encodeToString(it, Base64.DEFAULT) }
+    }
+
+    // Helper method to set cover photo from ByteArray
+    fun setCoverPhotoFromBytes(bytes: ByteArray?) {
+        coverPhoto = bytes?.let { Base64.encodeToString(it, Base64.DEFAULT) }
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is User) return false
+
+        if (userId != other.userId) return false
+        if (profilePicture != other.profilePicture) return false
+        if (coverPhoto != other.coverPhoto) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = userId.hashCode()
+        result = 31 * result + (profilePicture?.hashCode() ?: 0)
+        result = 31 * result + (coverPhoto?.hashCode() ?: 0)
+        return result
     }
 }

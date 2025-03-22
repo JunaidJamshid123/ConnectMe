@@ -51,6 +51,7 @@
         <!-- Profile picture with plus icon -->
         <FrameLayout
             android:layout_width="120dp"
+            android:id="@+id/profile_image_container"
             android:layout_height="120dp">
 
             <de.hdodenhof.circleimageview.CircleImageView

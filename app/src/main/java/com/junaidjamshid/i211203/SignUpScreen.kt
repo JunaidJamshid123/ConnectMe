@@ -40,13 +40,11 @@ class SignUpScreen : AppCompatActivity() {
         val password = findViewById<EditText>(R.id.Password)
         val registerBtn = findViewById<Button>(R.id.registerBtn)
 
-
         loginLink.setOnClickListener {
             val intent = Intent(this, LoginScreem::class.java)
             intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
             startActivity(intent)
         }
-
 
         registerBtn.setOnClickListener {
             val fullNameInput = fullName.text.toString().trim()
@@ -78,8 +76,8 @@ class SignUpScreen : AppCompatActivity() {
                             email = email,
                             fullName = fullName,
                             phoneNumber = phone,
-                            profilePictureUrl = "",
-                            coverPhotoUrl = "",
+                            profilePicture = null,
+                            coverPhoto = null,
                             bio = "",
                             followers = hashMapOf(),
                             following = hashMapOf(),
@@ -92,27 +90,7 @@ class SignUpScreen : AppCompatActivity() {
                             storyExpiryTimestamp = null
                         )
 
-                        val userMap = HashMap<String, Any?>()
-                        userMap["userId"] = user.userId
-                        userMap["username"] = user.username
-                        userMap["email"] = user.email
-                        userMap["fullName"] = user.fullName
-                        userMap["phoneNumber"] = user.phoneNumber
-                        userMap["profilePictureUrl"] = user.profilePictureUrl
-                        userMap["coverPhotoUrl"] = user.coverPhotoUrl
-                        userMap["bio"] = user.bio
-                        userMap["followers"] = user.followers
-                        userMap["following"] = user.following
-                        userMap["blockedUsers"] = user.blockedUsers
-                        userMap["onlineStatus"] = user.onlineStatus
-                        userMap["pushToken"] = user.pushToken
-                        userMap["createdAt"] = user.createdAt
-                        userMap["lastSeen"] = user.lastSeen
-                        userMap["vanishModeEnabled"] = user.vanishModeEnabled
-                        userMap["storyExpiryTimestamp"] = user.storyExpiryTimestamp
-
-
-                        database.child("Users").child(userId).setValue(userMap)
+                        database.child("Users").child(userId).setValue(user)
                             .addOnCompleteListener { dbTask ->
                                 progressDialog.dismiss()
 
