@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    tools:context=".UserProfile">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <!-- Top bar with back button and title -->
+        <RelativeLayout
+            android:id="@+id/top_bar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/spacing_medium"
+            android:elevation="2dp">
+
+            <ImageView
+                android:id="@+id/back_button"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:src="@drawable/back"
+                android:padding="@dimen/spacing_xxsmall"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_centerVertical="true" />
+
+            <TextView
+                android:id="@+id/tv_user_profile"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="User Profile"
+                android:textSize="@dimen/text_xlarge"
+                android:textStyle="bold"
+                android:textColor="@color/black"
+                android:layout_centerInParent="true" />
+
+            <ImageView
+                android:id="@+id/more_options"
+                android:layout_width="@dimen/icon_size"
+                android:layout_height="@dimen/icon_size"
+                android:layout_alignParentEnd="true"
+                android:src="@drawable/menuu"
+                android:padding="@dimen/spacing_xxsmall"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:layout_centerVertical="true" />
+        </RelativeLayout>
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <!-- User profile info section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:padding="@dimen/spacing_medium">
+
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/user_profile_image"
+                        android:layout_width="@dimen/profile_image_size"
+                        android:layout_height="@dimen/profile_image_size"
+                        android:src="@drawable/junaid1"
+                        app:civ_border_width="2dp"
+                        app:civ_border_color="#58484F"
+                        android:layout_marginBottom="@dimen/spacing_small" />
+
+                    <TextView
+                        android:id="@+id/user_name_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Sarah Johnson"
+                        android:textSize="@dimen/text_xlarge"
+                        android:textStyle="bold"
+                        android:textColor="@color/black" />
+
+                    <TextView
+                        android:id="@+id/user_bio_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Professional photographer | Nature lover | Coffee enthusiast"
+                        android:textSize="@dimen/text_small"
+                        android:textColor="@color/black"
+                        android:layout_marginTop="@dimen/spacing_xsmall"
+                        android:gravity="center" />
+                </LinearLayout>
+
+                <!-- Stats section (posts, followers, following) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:weightSum="3"
+                    android:padding="@dimen/spacing_medium">
+
+                    <LinearLayout
+                        android:id="@+id/posts_container"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/user_posts_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="23"
+                            android:textSize="@dimen/text_large"
+                            android:textStyle="bold"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="posts"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/user_followers"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/user_followers_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="1,245"
+                            android:textSize="@dimen/text_large"
+                            android:textStyle="bold"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="followers"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+
+                    <LinearLayout
+                        android:id="@+id/user_following"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:orientation="vertical"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center">
+
+                        <TextView
+                            android:id="@+id/user_following_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="843"
+                            android:textSize="@dimen/text_large"
+                            android:textStyle="bold"
+                            android:textColor="@color/black" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="following"
+                            android:textSize="@dimen/text_small"
+                            android:textColor="@color/black" />
+                    </LinearLayout>
+                </LinearLayout>
+
+                <!-- Action buttons (Follow, Message, etc.) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingHorizontal="@dimen/spacing_medium"
+                    android:paddingBottom="@dimen/spacing_medium"
+                    android:gravity="center">
+
+                    <Button
+                        android:id="@+id/btn_follow"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginEnd="@dimen/spacing_small"
+                        android:text="Follow"
+                        android:textAllCaps="false"
+                        android:textColor="@color/white"
+                        android:textSize="@dimen/text_medium"
+                        android:paddingVertical="@dimen/spacing_small"
+                        android:background="@drawable/button_primary"
+                        android:elevation="2dp" />
+
+                    <Button
+                        android:id="@+id/btn_message"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:layout_marginStart="@dimen/spacing_small"
+                        android:text="Message"
+                        android:textAllCaps="false"
+                        android:textColor="@color/black"
+                        android:textSize="@dimen/text_medium"
+                        android:paddingVertical="@dimen/spacing_small"
+                        android:background="@drawable/button_secondary" />
+                </LinearLayout>
+
+                <!-- Posts Section Header -->
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="@dimen/spacing_medium"
+                    android:paddingVertical="@dimen/spacing_small">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Posts"
+                        android:textSize="@dimen/text_medium"
+                        android:textStyle="bold"
+                        android:textColor="@color/black"
+                        android:layout_centerVertical="true" />
+
+                    <ImageView
+                        android:id="@+id/grid_view"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:src="@drawable/menuu"
+                        android:layout_alignParentEnd="true"
+                        android:layout_marginEnd="@dimen/spacing_small"
+                        android:background="?attr/selectableItemBackgroundBorderless" />
+
+
+                </RelativeLayout>
+
+                <!-- Posts RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/posts_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:clipToPadding="false"
+                    android:padding="1dp" />
+
+                <!-- Empty state for no posts -->
+                <LinearLayout
+                    android:id="@+id/empty_posts_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:gravity="center"
+                    android:visibility="gone"
+                    android:padding="@dimen/spacing_large">
+
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="No posts yet"
+                        android:textSize="@dimen/text_large"
+
+                        android:textStyle="bold" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Posts will appear here when this user shares something"
+                        android:textSize="@dimen/text_small"
+                        android:gravity="center"
+                        android:layout_marginTop="@dimen/spacing_small" />
+                </LinearLayout>
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

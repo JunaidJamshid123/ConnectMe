@@ -19,7 +19,9 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.junaidjamshid.i211203.Adapters.PostAdapter
+import com.junaidjamshid.i211203.Adapters.StoryAdapter
 import com.junaidjamshid.i211203.models.Post
+import com.junaidjamshid.i211203.models.Story
 import java.util.*
 
 class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
@@ -29,6 +31,8 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
     private lateinit var databaseRef: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private val TAG = "HomeFragment"
+    private lateinit var storiesRecyclerView: RecyclerView
+    private lateinit var storyAdapter: StoryAdapter
 
     @SuppressLint("MissingInflatedId")
     override fun onCreateView(
@@ -61,11 +65,64 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
         postAdapter.setOnPostInteractionListener(this)
         recyclerView.adapter = postAdapter
 
+
+        storiesRecyclerView = view.findViewById(R.id.recycler_view_stories)
+        storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        storyAdapter = StoryAdapter(requireContext())
+
+        storiesRecyclerView.adapter = storyAdapter
+
+
+
         // Load posts
         loadPosts()
-
+        loadStories()
         return view
     }
+
+
+
+    // Add this new function to load stories
+    private fun loadStories() {
+        val storiesRef = FirebaseDatabase.getInstance().getReference("stories")
+
+        storiesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val storiesList = mutableListOf<Story>()
+
+                for (storySnapshot in snapshot.children) {
+                    try {
+                        val story = storySnapshot.getValue(Story::class.java)
+                        story?.let {
+                            // Only add stories that haven't expired
+                            val currentTime = System.currentTimeMillis()
+                            if (it.expiryTimestamp > currentTime) {
+                                storiesList.add(it)
+                            }
+                        }
+                    } catch (e: Exception) {
+                        Log.e(TAG, "Error parsing story: ${e.message}")
+                    }
+                }
+
+                // Update adapter with stories
+                storyAdapter.setStories(storiesList)
+
+                // Show empty state or handle no stories case if needed
+                if (storiesList.isEmpty()) {
+                    // Handle empty state
+                    Log.d(TAG, "No active stories found")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Failed to load stories: ${error.message}")
+            }
+        })
+    }
+
+
+
 
     private fun loadCurrentUserProfileImage(imageView: ImageView) {
         val currentUser = auth.currentUser ?: return
