@@ -68,8 +68,8 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
         holder.authorName.text = post.username
         holder.postCaption.text = post.caption
 
-        // Set likes count
-        holder.likesCount.text = "0 likes"
+        // Load likes count from Firebase
+        fetchLikesCount(post.postId, holder)
 
         // Set timestamp
         holder.timestamp.text = getTimeAgo(post.timestamp)
@@ -102,7 +102,7 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
     override fun getItemCount(): Int = postList.size
 
     private fun loadUserData(holder: PostViewHolder, userId: String) {
-        val databaseReference = FirebaseDatabase.getInstance().getReference("users").child(userId)
+        val databaseReference = FirebaseDatabase.getInstance().getReference("Users").child(userId)
         databaseReference.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
@@ -111,7 +111,7 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
                     holder.authorName.text = username
 
                     // Load profile image if exists
-                    val profileImageBase64 = snapshot.child("profileImageBase64").getValue(String::class.java)
+                    val profileImageBase64 = snapshot.child("profilePicture").getValue(String::class.java)
                     if (!profileImageBase64.isNullOrEmpty()) {
                         val bitmap = decodeBase64Image(profileImageBase64)
                         bitmap?.let {
@@ -125,6 +125,40 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
                 // Handle error
             }
         })
+    }
+
+    private fun fetchLikesCount(postId: String, holder: PostViewHolder) {
+        // Method 1: Fetching from the post object in 'posts' node
+        val postRef = FirebaseDatabase.getInstance().getReference("posts").child(postId)
+        postRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val likesCount = snapshot.child("likesCount").getValue(Int::class.java) ?: 0
+                    updateLikesCount(holder, likesCount)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+
+        // Method 2: If likes are stored as a collection of user IDs, count them
+        val likesRef = FirebaseDatabase.getInstance().getReference("likes").child(postId)
+        likesRef.addValueEventListener(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val likesCount = snapshot.childrenCount.toInt()
+                updateLikesCount(holder, likesCount)
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle error
+            }
+        })
+    }
+
+    private fun updateLikesCount(holder: PostViewHolder, count: Int) {
+        holder.likesCount.text = if (count == 1) "$count like" else "$count likes"
     }
 
     private fun decodeBase64Image(base64String: String): Bitmap? {
@@ -167,8 +201,10 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         holder.heartIcon.setImageResource(R.drawable.heart)
+                        holder.heartIcon.tag = true
                     } else {
                         holder.heartIcon.setImageResource(R.drawable.simple_heart)
+                        holder.heartIcon.tag = false
                     }
                 }
 
@@ -188,8 +224,10 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {
                         holder.saveIcon.setImageResource(R.drawable.save_instagram)
+                        holder.saveIcon.tag = true
                     } else {
                         holder.saveIcon.setImageResource(R.drawable.save_instagram)
+                        holder.saveIcon.tag = false
                     }
                 }
 
@@ -205,15 +243,57 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
         holder.heartIcon.setOnClickListener {
             val isCurrentlyLiked = (holder.heartIcon.tag as? Boolean) ?: false
 
-            if (isCurrentlyLiked) {
-                holder.heartIcon.setImageResource(R.drawable.simple_heart)
-                holder.heartIcon.tag = false
-            } else {
-                holder.heartIcon.setImageResource(R.drawable.heart)
-                holder.heartIcon.tag = true
-            }
+            if (currentUser != null) {
+                val likesRef = FirebaseDatabase.getInstance().getReference("likes")
+                    .child(post.postId).child(currentUser.uid)
 
-            listener?.onLikeClicked(post.postId, !isCurrentlyLiked)
+                val postRef = FirebaseDatabase.getInstance().getReference("posts")
+                    .child(post.postId).child("likesCount")
+
+                if (isCurrentlyLiked) {
+                    // Unlike the post
+                    holder.heartIcon.setImageResource(R.drawable.simple_heart)
+                    holder.heartIcon.tag = false
+
+                    // Remove like from likes collection
+                    likesRef.removeValue()
+
+                    // Decrement likes count
+                    postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val currentLikes = snapshot.getValue(Int::class.java) ?: 0
+                            if (currentLikes > 0) {
+                                postRef.setValue(currentLikes - 1)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle error
+                        }
+                    })
+                } else {
+                    // Like the post
+                    holder.heartIcon.setImageResource(R.drawable.heart)
+                    holder.heartIcon.tag = true
+
+                    // Add like to likes collection
+                    likesRef.setValue(true)
+
+                    // Increment likes count
+                    postRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val currentLikes = snapshot.getValue(Int::class.java) ?: 0
+                            postRef.setValue(currentLikes + 1)
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            // Handle error
+                        }
+                    })
+                }
+
+                listener?.onLikeClicked(post.postId, !isCurrentlyLiked)
+            }
         }
 
         // Comment button click
@@ -230,21 +310,35 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
         holder.saveIcon.setOnClickListener {
             val isCurrentlySaved = (holder.saveIcon.tag as? Boolean) ?: false
 
-            if (isCurrentlySaved) {
-                holder.saveIcon.setImageResource(R.drawable.save_instagram)
-                holder.saveIcon.tag = false
-            } else {
-                holder.saveIcon.setImageResource(R.drawable.save_instagram)
-                holder.saveIcon.tag = true
-            }
+            if (currentUser != null) {
+                val saveRef = FirebaseDatabase.getInstance().getReference("saves")
+                    .child(currentUser.uid).child(post.postId)
 
-            listener?.onSaveClicked(post.postId, !isCurrentlySaved)
+                if (isCurrentlySaved) {
+                    // Unsave the post
+                    holder.saveIcon.setImageResource(R.drawable.save_instagram)
+                    holder.saveIcon.tag = false
+
+                    // Remove from saves
+                    saveRef.removeValue()
+                } else {
+                    // Save the post
+                    holder.saveIcon.setImageResource(R.drawable.save_instagram)
+                    holder.saveIcon.tag = true
+
+                    // Add to saves
+                    saveRef.setValue(true)
+                }
+
+                listener?.onSaveClicked(post.postId, !isCurrentlySaved)
+            }
         }
 
         // Profile click
         holder.profileImage.setOnClickListener {
             listener?.onProfileClicked(post.userId)
         }
+
         holder.usernameText.setOnClickListener {
             listener?.onProfileClicked(post.userId)
         }
