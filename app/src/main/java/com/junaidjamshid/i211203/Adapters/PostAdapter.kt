@@ -17,7 +17,6 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.junaidjamshid.i211203.R
-import com.junaidjamshid.i211203.ProfileActivity
 import com.junaidjamshid.i211203.UserProfile
 import com.junaidjamshid.i211203.models.Post
 import de.hdodenhof.circleimageview.CircleImageView

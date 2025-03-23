@@ -76,7 +76,7 @@
                         android:id="@+id/user_profile_image"
                         android:layout_width="@dimen/profile_image_size"
                         android:layout_height="@dimen/profile_image_size"
-                        android:src="@drawable/junaid1"
+                        android:src="@drawable/default_profile"
                         app:civ_border_width="2dp"
                         app:civ_border_color="#58484F"
                         android:layout_marginBottom="@dimen/spacing_small" />
