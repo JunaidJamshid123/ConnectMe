@@ -1,6 +1,7 @@
 package com.junaidjamshid.i211203.Adapters
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -16,6 +17,8 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.junaidjamshid.i211203.R
+import com.junaidjamshid.i211203.ProfileActivity
+import com.junaidjamshid.i211203.UserProfile
 import com.junaidjamshid.i211203.models.Post
 import de.hdodenhof.circleimageview.CircleImageView
 import java.text.SimpleDateFormat
@@ -334,19 +337,35 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
             }
         }
 
-        // Profile click
+        // Profile click - Added navigation to ProfileActivity
         holder.profileImage.setOnClickListener {
-            listener?.onProfileClicked(post.userId)
+            navigateToUserProfile(post.userId)
         }
 
+        // Username click - Added navigation to ProfileActivity
         holder.usernameText.setOnClickListener {
-            listener?.onProfileClicked(post.userId)
+            navigateToUserProfile(post.userId)
         }
 
         // Menu dots click
         holder.menuDots.setOnClickListener {
             listener?.onMenuClicked(post, position)
         }
+    }
+
+    // New method to handle navigation to user profile
+    private fun navigateToUserProfile(userId: String) {
+        // Notify listener (optional - can be used for tracking or other purposes)
+        listener?.onProfileClicked(userId)
+
+        // Create intent to navigate to ProfileActivity
+        val intent = Intent(context, UserProfile::class.java).apply {
+            putExtra("USER_ID", userId)
+            // Add any additional data needed for the profile page
+        }
+
+        // Start the ProfileActivity
+        context.startActivity(intent)
     }
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {

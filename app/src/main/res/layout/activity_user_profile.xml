@@ -5,6 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:layout_marginTop="15dp"
     android:background="@color/white"
     tools:context=".UserProfile">
 
@@ -84,7 +85,7 @@
                         android:id="@+id/user_name_text"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Sarah Johnson"
+                        android:text="User Name"
                         android:textSize="@dimen/text_xlarge"
                         android:textStyle="bold"
                         android:textColor="@color/black" />
@@ -120,7 +121,7 @@
                             android:id="@+id/user_posts_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="23"
+                            android:text="0"
                             android:textSize="@dimen/text_large"
                             android:textStyle="bold"
                             android:textColor="@color/black" />
@@ -148,7 +149,7 @@
                             android:id="@+id/user_followers_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="1,245"
+                            android:text="0"
                             android:textSize="@dimen/text_large"
                             android:textStyle="bold"
                             android:textColor="@color/black" />
@@ -176,7 +177,7 @@
                             android:id="@+id/user_following_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="843"
+                            android:text="0"
                             android:textSize="@dimen/text_large"
                             android:textStyle="bold"
                             android:textColor="@color/black" />
@@ -221,7 +222,7 @@
                         android:layout_marginStart="@dimen/spacing_small"
                         android:text="Message"
                         android:textAllCaps="false"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="@dimen/text_medium"
                         android:paddingVertical="@dimen/spacing_small"
                         android:background="@drawable/button_secondary" />

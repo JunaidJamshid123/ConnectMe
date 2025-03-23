@@ -21,6 +21,7 @@
     <dimen name="button_corner_radius">8dp</dimen>
     <dimen name="social_icon_size">35dp</dimen>
 
+    <dimen name="button_radius">8dp</dimen>
     <dimen name="profile_image_size">100dp</dimen>
     <dimen name="icon_size">24dp</dimen>
     <dimen name="nav_icon_size">24dp</dimen>
