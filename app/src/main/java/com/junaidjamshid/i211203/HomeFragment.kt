@@ -42,7 +42,13 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
         val addStroy = view.findViewById<FrameLayout>(R.id.addStroy)
+        val dms = view.findViewById<ImageView>(R.id.DMs)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
+
+        dms.setOnClickListener{
+            val intent = Intent(context, DMs::class.java)
+            startActivity(intent)
+        }
 
         addStroy.setOnClickListener{
             val intent = Intent(context, newPostNext::class.java)

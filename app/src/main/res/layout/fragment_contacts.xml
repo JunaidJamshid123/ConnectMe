@@ -31,7 +31,7 @@
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Junaid Jamshid"
+            android:text="username"
             android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"
@@ -132,7 +132,7 @@
                 android:id="@+id/contacts_count"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="78"
+                android:text="0"
                 android:textColor="#757575"
                 android:textSize="16sp"
                 android:layout_marginStart="8dp"/>

@@ -1,343 +1,200 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".Following">
 
-
-
-    <RelativeLayout
+    <!-- Top Bar with Back Button, Username and Edit Button -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="20sp"
-        android:padding="15dp">
-
+        android:paddingHorizontal="16dp"
+        android:paddingVertical="12dp"
+        android:layout_marginTop="20dp"
+        app:layout_constraintTop_toTopOf="parent">
 
         <ImageView
             android:id="@+id/back"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/back"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
-
+            android:contentDescription="Back"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
             android:id="@+id/user_name"
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:text="Junaid Jamshid"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#000000"
-            android:layout_toEndOf="@id/back"
             android:layout_marginStart="10dp"
-            android:layout_centerVertical="true"/>
-
+            android:layout_marginEnd="10dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            app:layout_constraintStart_toEndOf="@id/back"
+            app:layout_constraintEnd_toStartOf="@id/edit"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <ImageView
             android:id="@+id/edit"
             android:layout_width="30dp"
             android:layout_height="30dp"
             android:src="@drawable/edit"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
+            android:contentDescription="Edit"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
-    <RelativeLayout
+    <!-- Followers/Following Text -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:id="@+id/statsLayout"
         android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:layout_marginTop="10dp"
-        android:layout_height="wrap_content">
+        app:layout_constraintTop_toBottomOf="@id/topBar">
 
         <TextView
-            android:layout_width="wrap_content"
-            android:text="410 Followers"
             android:id="@+id/dms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="410 Followers"
             android:textSize="20sp"
             android:textStyle="normal"
             android:textColor="@color/black"
-            android:layout_marginStart="40sp"
-            android:layout_height="wrap_content" />
+            android:layout_marginStart="40dp"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:text="387 Following"
             android:id="@+id/requests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="387 Following"
             android:textSize="20sp"
             android:textStyle="bold"
             android:textColor="#664242"
-            android:layout_alignParentEnd="true"
             android:layout_marginEnd="40dp"
-            android:layout_height="wrap_content" />
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintBottom_toBottomOf="parent" />
 
-        <View
-            android:layout_width="120dp"
-            android:background="#664242"
-            android:layout_below="@id/requests"
-            android:layout_alignEnd="@id/requests"
-            android:layout_marginTop="5dp"
-            android:layout_marginEnd="8dp"
-            android:layout_height="3dp" />
-    </RelativeLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Indicator for active section -->
+    <View
+        android:id="@+id/activeIndicator"
+        android:layout_width="120dp"
+        android:layout_height="3dp"
+        android:background="#664242"
+        android:layout_marginEnd="48dp"
+        app:layout_constraintTop_toBottomOf="@id/statsLayout"
+        app:layout_constraintEnd_toEndOf="parent" />
 
-
-
-    <EditText
+    <!-- Search Bar -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/searchCardView"
         android:layout_width="match_parent"
-        android:inputType="text"
-        android:layout_marginStart="20dp"
-        android:padding="10dp"
-        android:drawableEnd="@drawable/ic_search"
-        android:layout_marginEnd="20dp"
-        android:background="#5CF1E7E7"
-        android:hint="search following"
-        android:layout_marginTop="20sp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        app:cardCornerRadius="8dp"
+        app:cardElevation="0dp"
+        app:layout_constraintTop_toBottomOf="@id/activeIndicator">
 
-        android:layout_height="wrap_content">
-
-    </EditText>
-
-
-    <ScrollView
-        android:layout_width="match_parent"
-        android:layout_margin="20dp"
-        android:layout_height="match_parent">
-
-
-        <LinearLayout
+        <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_marginTop="10dp"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:background="#5CF1E7E7">
 
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+            <EditText
+                android:id="@+id/searchEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:background="@android:color/transparent"
+                android:hint="Search following"
+                android:inputType="text"
+                android:padding="10dp"
+                android:textSize="16sp"
+                android:textColorHint="#97000000"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintEnd_toStartOf="@id/searchIcon"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/junaid1"
-                    android:id="@+id/image1"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
+            <ImageView
+                android:id="@+id/searchIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/ic_search"
+                android:contentDescription="Search"
+                android:layout_marginEnd="10dp"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Junaid Jamshid"
-                    android:id="@+id/text1"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image1"
-                    android:layout_marginTop="10dp">
-                </TextView>
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.cardview.widget.CardView>
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
+    <!-- Following RecyclerView -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/followingRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="20dp"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="8dp"
+        android:clipToPadding="false"
+        android:paddingBottom="16dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+        app:layout_constraintTop_toBottomOf="@id/searchCardView"
+        app:layout_constraintBottom_toBottomOf="parent" />
 
-                </ImageView>
+    <!-- Empty State View -->
+    <LinearLayout
+        android:id="@+id/emptyStateView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:visibility="gone"
+        app:layout_constraintTop_toBottomOf="@id/searchCardView"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
+        <ImageView
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:src="@drawable/empty_inbox"
+            android:contentDescription="No following" />
 
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/junaid2"
-                    android:id="@+id/image2"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="You're not following anyone yet"
+            android:textSize="18sp"
+            android:textColor="#664242"
+            android:layout_marginTop="16dp" />
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Ahmad Ali"
-                    android:id="@+id/text2"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image2"
-                    android:layout_marginTop="10dp">
-                </TextView>
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Start following people you're interested in"
+            android:textSize="14sp"
+            android:textColor="#97000000"
+            android:layout_marginTop="4dp" />
+    </LinearLayout>
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
-
-                </ImageView>
-
-            </RelativeLayout>
-
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/person1"
-                    android:id="@+id/image3"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Alexa"
-                    android:id="@+id/text3"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image3"
-                    android:layout_marginTop="10dp">
-                </TextView>
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
-
-                </ImageView>
-
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/person2"
-                    android:id="@+id/image4"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Muhammad Ali"
-                    android:id="@+id/text4"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image4"
-                    android:layout_marginTop="10dp">
-                </TextView>
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
-
-                </ImageView>
-
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/person3"
-                    android:id="@+id/image5"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Nafeesa Khan"
-                    android:id="@+id/text5"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image5"
-                    android:layout_marginTop="10dp">
-                </TextView>
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
-
-                </ImageView>
-
-            </RelativeLayout>
-            <RelativeLayout
-                android:layout_width="match_parent"
-                android:layout_marginBottom="10dp"
-                android:layout_height="wrap_content">
-
-                <de.hdodenhof.circleimageview.CircleImageView
-                    android:layout_width="50sp"
-                    android:src="@drawable/person4"
-                    android:id="@+id/image6"
-                    android:layout_height="50sp">
-                </de.hdodenhof.circleimageview.CircleImageView>
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:text="Ahmad Khan"
-                    android:id="@+id/text6"
-                    android:textSize="20sp"
-                    android:textStyle="normal"
-                    android:textColor="#000000"
-                    android:layout_marginStart="10dp"
-                    android:layout_height="wrap_content"
-                    android:layout_toEndOf="@id/image6"
-                    android:layout_marginTop="10dp">
-                </TextView>
-
-                <ImageView
-                    android:layout_width="40dp"
-                    android:src="@drawable/cameraa"
-                    android:layout_marginTop="3dp"
-                    android:layout_marginEnd="5dp"
-                    android:layout_alignParentEnd="true"
-                    android:layout_height="40dp">
-
-                </ImageView>
-
-            </RelativeLayout>
-
-
-
-
-
-        </LinearLayout>
-    </ScrollView>
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
