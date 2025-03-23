@@ -83,6 +83,7 @@
 
                     <FrameLayout
                         android:layout_width="68dp"
+                        android:id="@+id/addStroy"
                         android:layout_height="68dp">
 
                         <de.hdodenhof.circleimageview.CircleImageView
@@ -97,13 +98,14 @@
                             android:layout_width="22dp"
                             android:layout_height="22dp"
                             app:cardCornerRadius="11dp"
-                            app:cardBackgroundColor="#4CABFF"
+                            app:cardBackgroundColor="#664242"
                             android:layout_gravity="bottom|end">
 
                             <ImageView
                                 android:layout_width="match_parent"
                                 android:layout_height="match_parent"
                                 android:src="@drawable/add"
+                                app:tint="@color/white"
                                 android:padding="5dp" />
                         </androidx.cardview.widget.CardView>
                     </FrameLayout>

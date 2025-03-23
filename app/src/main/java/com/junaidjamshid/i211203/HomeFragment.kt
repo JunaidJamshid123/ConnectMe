@@ -1,10 +1,17 @@
 package com.junaidjamshid.i211203
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.os.Bundle
+import android.util.Base64
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
@@ -12,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.junaidjamshid.i211203.Adapters.PostAdapter
-import com.junaidjamshid.i211203.models.Comment
 import com.junaidjamshid.i211203.models.Post
 import java.util.*
 
@@ -24,16 +30,27 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
     private lateinit var auth: FirebaseAuth
     private val TAG = "HomeFragment"
 
+    @SuppressLint("MissingInflatedId")
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val view = inflater.inflate(R.layout.fragment_home, container, false)
+        val addStroy = view.findViewById<FrameLayout>(R.id.addStroy)
+        val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
+
+        addStroy.setOnClickListener{
+            val intent = Intent(context, newPostNext::class.java)
+            startActivity(intent)
+        }
 
         // Initialize Firebase components
         auth = FirebaseAuth.getInstance()
         databaseRef = FirebaseDatabase.getInstance().getReference("posts")
+
+        // Load current user's profile image
+        loadCurrentUserProfileImage(currentUserImage)
 
         // Initialize RecyclerView
         recyclerView = view.findViewById(R.id.recycler_view_posts)
@@ -48,6 +65,57 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
         loadPosts()
 
         return view
+    }
+
+    private fun loadCurrentUserProfileImage(imageView: ImageView) {
+        val currentUser = auth.currentUser ?: return
+        val userId = currentUser.uid
+
+        // Reference to user data in the database
+        val userRef = FirebaseDatabase.getInstance().getReference("Users").child(userId)
+
+        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    // Get profile picture as Base64 string
+                    val profileImageBase64 = snapshot.child("profilePicture").getValue(String::class.java)
+
+                    if (!profileImageBase64.isNullOrEmpty()) {
+                        // Decode Base64 to bitmap and set to ImageView
+                        val bitmap = decodeBase64Image(profileImageBase64)
+                        bitmap?.let {
+                            imageView.setImageBitmap(it)
+                        } ?: run {
+                            // Use default image if decoding fails
+                            imageView.setImageResource(R.drawable.junaid1)
+                        }
+                    } else {
+                        // Use default image if no profile picture
+                        imageView.setImageResource(R.drawable.junaid1)
+                    }
+                } else {
+                    // Use default image if user data doesn't exist
+                    imageView.setImageResource(R.drawable.junaid1)
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                Log.e(TAG, "Failed to load user profile image: ${error.message}")
+                // Set default image on error
+                imageView.setImageResource(R.drawable.junaid1)
+            }
+        })
+    }
+
+    // Helper function to decode Base64 string to Bitmap
+    private fun decodeBase64Image(base64String: String): Bitmap? {
+        return try {
+            val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
+            BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error decoding Base64 image: ${e.message}")
+            null
+        }
     }
 
     private fun loadPosts() {
