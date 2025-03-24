@@ -86,6 +86,8 @@ class ProfileFragment : Fragment() {
             // Reference to the current user's data in the database
             val userRef = database.child("Users").child(userId)
 
+
+
             userRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (snapshot.exists()) {

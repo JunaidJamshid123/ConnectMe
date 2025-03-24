@@ -91,7 +91,9 @@ class UserProfile : AppCompatActivity() {
 
         // Message Button
         messageBtn.setOnClickListener {
+            // Pass the OTHER user's ID (the profile being viewed), not the current user's ID
             val intent = Intent(this, chats::class.java)
+            intent.putExtra("USER_ID", userId)  // Use the userId of the profile being viewed
             startActivity(intent)
         }
     }
