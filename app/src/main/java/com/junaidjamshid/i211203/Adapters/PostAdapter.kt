@@ -16,6 +16,7 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.junaidjamshid.i211203.ProfileActivity
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.UserProfile
 import com.junaidjamshid.i211203.models.Post
@@ -352,20 +353,27 @@ class PostAdapter(private val context: Context) : RecyclerView.Adapter<PostAdapt
         }
     }
 
-    // New method to handle navigation to user profile
     private fun navigateToUserProfile(userId: String) {
-        // Notify listener (optional - can be used for tracking or other purposes)
-        listener?.onProfileClicked(userId)
 
-        // Create intent to navigate to ProfileActivity
-        val intent = Intent(context, UserProfile::class.java).apply {
-            putExtra("USER_ID", userId)
-            // Add any additional data needed for the profile page
+
+        if (userId == currentUser?.uid) {
+            // Navigate to own profile
+            val intent = Intent(context, UserProfile::class.java)
+            context.startActivity(intent)
+        } else {
+            // Navigate to other user's profile
+            val intent = Intent(context, ProfileActivity::class.java).apply {
+                putExtra("USER_ID", userId)
+            }
+            context.startActivity(intent)
         }
-
-        // Start the ProfileActivity
-        context.startActivity(intent)
     }
+
+    // Example method to get current logged-in user ID (Replace this with your actual implementation)
+    private fun getCurrentUserId(): String {
+        return FirebaseAuth.getInstance().currentUser?.uid ?: ""
+    }
+
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         val profileImage: CircleImageView = itemView.findViewById(R.id.profile_image)

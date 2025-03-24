@@ -29,6 +29,8 @@ class ProfileActivity : AppCompatActivity() {
     private lateinit var followersCountText: TextView
     private lateinit var followingCountText: TextView
 
+    private var userId: String? = null
+
     @SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -47,29 +49,24 @@ class ProfileActivity : AppCompatActivity() {
         followersCountText = findViewById(R.id.followers_count)
         followingCountText = findViewById(R.id.following_count)
 
+        // Get user ID from intent or use current user's ID
+        userId = intent.getStringExtra("USER_ID") ?: auth.currentUser?.uid
+
         // Set default values
         setDefaultValues()
-
-        // Initialize grid view for thumbnails
-        val gridView = findViewById<GridView>(R.id.grid_view)
-
-        // Temporary image list - this will be replaced with actual user posts later
-        val imageList = listOf(
-            R.drawable.junaid1,
-            R.drawable.junaid2,
-            R.drawable.junaid1,
-            R.drawable.junaid2,
-            R.drawable.junaid1
-        )
-
-        val adapter = ImageAdapter(this, imageList)
-        gridView.adapter = adapter
 
         // Set up button click listeners
         setupClickListeners()
 
         // Load user profile data
-        loadUserProfile()
+        if (userId != null) {
+            loadUserProfile()
+        } else {
+            // If no user ID is found, redirect to login or show an error
+            Toast.makeText(this, "User not found", Toast.LENGTH_SHORT).show()
+            startActivity(Intent(this, LoginScreem::class.java))
+            finish()
+        }
     }
 
     private fun setDefaultValues() {
@@ -83,103 +80,7 @@ class ProfileActivity : AppCompatActivity() {
         followingCountText.text = "0"
     }
 
-    private fun loadUserProfile() {
-        val currentUser = auth.currentUser
-
-        if (currentUser == null) {
-            // User not logged in, redirect to login screen
-            startActivity(Intent(this, LoginScreem::class.java))
-            finish()
-            return
-        }
-
-        val userId = currentUser.uid
-
-        // Reference to the user's data in Firebase
-        val userRef = database.child("Users").child(userId)
-
-        userRef.addValueEventListener(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    // Get user data
-                    val username = snapshot.child("username").getValue(String::class.java) ?: "Username"
-                    val fullName = snapshot.child("fullName").getValue(String::class.java) ?: "Full Name"
-                    val bio = snapshot.child("bio").getValue(String::class.java)
-                    val profilePictureUrl = snapshot.child("profilePictureUrl").getValue(String::class.java)
-
-                    // Update UI with user data
-                    usernameText.text = fullName
-
-                    // Set bio text - if bio is null or empty, show "No Bio"
-                    bioText.text = if (!bio.isNullOrEmpty()) bio else "No Bio"
-
-                    // Load profile image if available, otherwise use default avatar
-                    if (!profilePictureUrl.isNullOrEmpty()) {
-                        Glide.with(this@ProfileActivity)
-                            .load(profilePictureUrl)
-                            .placeholder(R.drawable.junaid1)
-                            .error(R.drawable.junaid1)
-                            .into(profileImage)
-                    } else {
-                        // Use default avatar
-                        profileImage.setImageResource(R.drawable.junaid1)
-                    }
-
-                    // Handle followers and following counts
-                    val followersSnapshot = snapshot.child("followers")
-                    val followingSnapshot = snapshot.child("following")
-
-                    if (followersSnapshot.exists()) {
-                        val followers = followersSnapshot.childrenCount
-                        followersCountText.text = followers.toString()
-                    } else {
-                        followersCountText.text = "0"
-                    }
-
-                    if (followingSnapshot.exists()) {
-                        val following = followingSnapshot.childrenCount
-                        followingCountText.text = following.toString()
-                    } else {
-                        followingCountText.text = "0"
-                    }
-
-                    // For posts count
-                    countUserPosts(userId)
-                } else {
-                    // If user data doesn't exist, keep default values
-                    Toast.makeText(this@ProfileActivity, "User profile not found", Toast.LENGTH_SHORT).show()
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                Toast.makeText(this@ProfileActivity, "Failed to load profile: ${error.message}", Toast.LENGTH_SHORT).show()
-            }
-        })
-    }
-
-    private fun countUserPosts(userId: String) {
-        // Assuming you'll store posts in a structure like "Posts" -> "userId" -> "postId"
-        val postsRef = database.child("Posts").child(userId)
-
-        postsRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                if (snapshot.exists()) {
-                    val postsCount = snapshot.childrenCount
-                    postsCountText.text = postsCount.toString()
-                } else {
-                    // No posts found
-                    postsCountText.text = "0"
-                }
-            }
-
-            override fun onCancelled(error: DatabaseError) {
-                // If there's an error, show 0 posts
-                postsCountText.text = "0"
-            }
-        })
-    }
-
-    private fun setupClickListeners() {
+    fun setupClickListeners() {
         val home = findViewById<LinearLayout>(R.id.Home)
         val search = findViewById<LinearLayout>(R.id.Search)
         val newPost = findViewById<LinearLayout>(R.id.NewPost)
@@ -231,6 +132,28 @@ class ProfileActivity : AppCompatActivity() {
         }
     }
 
+    fun countUserPosts(userId: String) {
+        // Assuming you'll store posts in a structure like "Posts" -> "userId" -> "postId"
+        val postsRef = database.child("Posts").child(userId)
+
+        postsRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                if (snapshot.exists()) {
+                    val postsCount = snapshot.childrenCount
+                    postsCountText.text = postsCount.toString()
+                } else {
+                    // No posts found
+                    postsCountText.text = "0"
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // If there's an error, show 0 posts
+                postsCountText.text = "0"
+            }
+        })
+    }
+
     private fun showLogoutConfirmationDialog() {
         val builder = AlertDialog.Builder(this)
         builder.setTitle("Logout")
@@ -260,5 +183,70 @@ class ProfileActivity : AppCompatActivity() {
         intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         startActivity(intent)
         finish()
+    }
+
+    private fun loadUserProfile() {
+        userId?.let { uid ->
+            // Reference to the user's data in Firebase
+            val userRef = database.child("Users").child(uid)
+
+            userRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    if (snapshot.exists()) {
+                        // Get user data
+                        val username = snapshot.child("username").getValue(String::class.java) ?: "Username"
+                        val fullName = snapshot.child("fullName").getValue(String::class.java) ?: "Full Name"
+                        val bio = snapshot.child("bio").getValue(String::class.java)
+                        val profilePictureUrl = snapshot.child("profilePictureUrl").getValue(String::class.java)
+
+                        // Update UI with user data
+                        usernameText.text = fullName
+
+                        // Set bio text - if bio is null or empty, show "No Bio"
+                        bioText.text = if (!bio.isNullOrEmpty()) bio else "No Bio"
+
+                        // Load profile image if available, otherwise use default avatar
+                        if (!profilePictureUrl.isNullOrEmpty()) {
+                            Glide.with(this@ProfileActivity)
+                                .load(profilePictureUrl)
+                                .placeholder(R.drawable.junaid1)
+                                .error(R.drawable.junaid1)
+                                .into(profileImage)
+                        } else {
+                            // Use default avatar
+                            profileImage.setImageResource(R.drawable.junaid1)
+                        }
+
+                        // Handle followers and following counts
+                        val followersSnapshot = snapshot.child("followers")
+                        val followingSnapshot = snapshot.child("following")
+
+                        if (followersSnapshot.exists()) {
+                            val followers = followersSnapshot.childrenCount
+                            followersCountText.text = followers.toString()
+                        } else {
+                            followersCountText.text = "0"
+                        }
+
+                        if (followingSnapshot.exists()) {
+                            val following = followingSnapshot.childrenCount
+                            followingCountText.text = following.toString()
+                        } else {
+                            followingCountText.text = "0"
+                        }
+
+                        // For posts count
+                        countUserPosts(uid)
+                    } else {
+                        // If user data doesn't exist, keep default values
+                        Toast.makeText(this@ProfileActivity, "User profile not found", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(this@ProfileActivity, "Failed to load profile: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 }

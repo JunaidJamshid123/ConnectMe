@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -112,16 +113,19 @@ class ContactsFragment : Fragment() {
         // Show loading state
         showLoading(true)
 
-        // Reference to the following list of current user
-        val followingRef = databaseReference.child("Users")
+        // Reference to the Users list
+        val usersRef = databaseReference.child("Users")
 
-        followingRef.addListenerForSingleValueEvent(object : ValueEventListener {
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val followingIds = mutableListOf<String>()
 
-                // Get all users the current user is following
+                // Get all user IDs except the current user
                 for (childSnapshot in snapshot.children) {
-                    childSnapshot.key?.let { followingIds.add(it) }
+                    val userId = childSnapshot.key
+                    if (userId != currentUserId) {
+                        userId?.let { followingIds.add(it) }
+                    }
                 }
 
                 if (followingIds.isEmpty()) {
@@ -130,7 +134,7 @@ class ContactsFragment : Fragment() {
                     return
                 }
 
-                // Fetch user details for each followingId
+                // Fetch user details for each user ID
                 fetchUserDetails(followingIds)
             }
 
@@ -196,11 +200,18 @@ class ContactsFragment : Fragment() {
 
     private fun navigateToUserProfile(user: User) {
         // TODO: Implement navigation to user profile
+        val intent = Intent(requireContext(), UserProfile::class.java).apply {
+            // Pass user data to the profile activity
+            putExtra("USER_ID", user.userId)
+        }
+        startActivity(intent)
         Toast.makeText(context, "Navigate to ${user.username}'s profile", Toast.LENGTH_SHORT).show()
     }
 
     private fun navigateToChat(user: User) {
         // TODO: Implement navigation to chat with user
+        val intent = Intent(requireContext(), chats::class.java)
+        startActivity(intent)
         Toast.makeText(context, "Start chat with ${user.username}", Toast.LENGTH_SHORT).show()
     }
 }
