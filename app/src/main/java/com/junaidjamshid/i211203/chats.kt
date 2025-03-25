@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203
 
+import android.app.AlertDialog
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -16,7 +17,6 @@ import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.junaidjamshid.i211203.Models.Message
 import de.hdodenhof.circleimageview.CircleImageView
 
 class chats : AppCompatActivity() {
@@ -31,12 +31,17 @@ class chats : AppCompatActivity() {
     private lateinit var recyclerViewChats: RecyclerView
     private lateinit var editTextMessage: TextInputEditText
     private lateinit var btnSendMessage: FloatingActionButton
+    private lateinit var btnVanishMode: ImageView
 
     // Message-related variables
     private lateinit var messageAdapter: MessageAdapter
     private lateinit var messageList: ArrayList<Message>
     private lateinit var receiverUserId: String
     private lateinit var senderUserId: String
+
+    // Additional features
+    private var isVanishModeEnabled = false
+    private var currentEditingMessage: Message? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -57,10 +62,18 @@ class chats : AppCompatActivity() {
         recyclerViewChats = findViewById(R.id.recyclerViewChats)
         editTextMessage = findViewById(R.id.editTextMessage)
         btnSendMessage = findViewById(R.id.btnSendMessage)
+        btnVanishMode = findViewById(R.id.btnVanishMode)
 
         // Initialize message list and adapter
         messageList = ArrayList()
-        messageAdapter = MessageAdapter(messageList, userProfileImage)
+        messageAdapter = MessageAdapter(
+            this,
+            messageList,
+            userProfileImage
+        ) { messageToEdit ->
+            // Enable message editing
+            showMessageEditDialog(messageToEdit)
+        }
 
         // Setup RecyclerView
         recyclerViewChats.layoutManager = LinearLayoutManager(this)
@@ -85,8 +98,68 @@ class chats : AppCompatActivity() {
             sendMessage()
         }
 
+        // Setup vanish mode toggle
+        setupVanishModeToggle()
+
         // Load messages
         loadMessages()
+    }
+
+    private fun setupVanishModeToggle() {
+        btnVanishMode.setOnClickListener {
+            isVanishModeEnabled = !isVanishModeEnabled
+
+            // Update button appearance
+            btnVanishMode.setImageResource(
+                if (isVanishModeEnabled) R.drawable.switchh
+                else R.drawable.switchh
+            )
+
+            Toast.makeText(
+                this,
+                if (isVanishModeEnabled) "Vanish Mode Enabled" else "Vanish Mode Disabled",
+                Toast.LENGTH_SHORT
+            ).show()
+        }
+    }
+
+    private fun showMessageEditDialog(message: Message) {
+        val editDialog = AlertDialog.Builder(this)
+        val dialogView = layoutInflater.inflate(R.layout.dialog_edit_message, null)
+        val editMessageInput: TextInputEditText = dialogView.findViewById(R.id.editMessageInput)
+
+        // Populate existing message
+        editMessageInput.setText(message.message)
+
+        editDialog.setView(dialogView)
+            .setTitle("Edit Message")
+            .setPositiveButton("Save") { _, _ ->
+                val newMessageText = editMessageInput.text.toString().trim()
+
+                if (newMessageText.isNotEmpty()) {
+                    editMessage(message, newMessageText)
+                }
+            }
+            .setNegativeButton("Cancel", null)
+            .show()
+    }
+
+    private fun editMessage(originalMessage: Message, newMessageText: String) {
+        val messageRef = database.reference.child("Chats").child(originalMessage.messageId)
+
+        val updateMap = mapOf(
+            "message" to newMessageText,
+            "isEdited" to true,
+            "editedTimestamp" to System.currentTimeMillis()
+        )
+
+        messageRef.updateChildren(updateMap)
+            .addOnSuccessListener {
+                Toast.makeText(this, "Message edited", Toast.LENGTH_SHORT).show()
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Failed to edit message", Toast.LENGTH_SHORT).show()
+            }
     }
 
     private fun fetchUserDetails(userId: String) {
@@ -131,14 +204,16 @@ class chats : AppCompatActivity() {
         val messageText = editTextMessage.text.toString().trim()
         if (messageText.isEmpty()) return
 
-        // Create message object
+        // Create message object with vanish mode option
         val messageRef = database.reference.child("Chats").push()
         val messageId = messageRef.key ?: ""
         val message = Message(
             senderId = senderUserId,
             receiverId = receiverUserId,
             message = messageText,
-            messageId = messageId
+            messageId = messageId,
+            isVanishMode = isVanishModeEnabled,
+            isRead = false
         )
 
         // Save message to Firebase
@@ -185,7 +260,10 @@ class chats : AppCompatActivity() {
                         if ((it.senderId == senderUserId && it.receiverId == receiverUserId) ||
                             (it.senderId == receiverUserId && it.receiverId == senderUserId)
                         ) {
-                            messageList.add(it)
+                            // Handle vanish mode messages
+                            if (!it.isVanishMode || !it.isRead) {
+                                messageList.add(it)
+                            }
                         }
                     }
                 }
@@ -203,5 +281,30 @@ class chats : AppCompatActivity() {
                 Toast.makeText(this@chats, "Failed to load messages", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        // Delete vanish mode messages when chat is closed
+        deleteVanishModeMessages()
+    }
+
+    private fun deleteVanishModeMessages() {
+        val messagesRef = database.reference.child("Chats")
+        messagesRef.orderByChild("isVanishMode").equalTo(true)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (messageSnapshot in snapshot.children) {
+                        val message = messageSnapshot.getValue(Message::class.java)
+                        if (message?.isRead == true) {
+                            messageSnapshot.ref.removeValue()
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle potential errors
+                }
+            })
     }
 }

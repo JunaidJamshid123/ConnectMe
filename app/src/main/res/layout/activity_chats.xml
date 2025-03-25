@@ -51,6 +51,17 @@
             android:layout_marginEnd="16dp"
             android:gravity="center_vertical">
 
+            <!-- Vanish Mode Toggle Button -->
+            <ImageView
+                android:id="@+id/btnVanishMode"
+                android:layout_width="35dp"
+                android:layout_height="35dp"
+                android:src="@drawable/switchh"
+                android:background="?attr/selectableItemBackgroundBorderless"
+                android:padding="6dp"
+                android:layout_marginEnd="16dp"
+                app:tint="@color/white" />
+
             <ImageView
                 android:id="@+id/btnVideoCall"
                 android:layout_width="35dp"

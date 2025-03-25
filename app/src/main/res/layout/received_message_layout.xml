@@ -37,5 +37,14 @@
             android:layout_marginTop="4dp"
             android:textSize="12sp"
             android:textColor="#666666"/>
+        <TextView
+            android:id="@+id/txtSentMessageStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Sent"
+            android:layout_gravity="start"
+            android:layout_marginTop="4dp"
+            android:textSize="12sp"
+            android:textColor="#666666"/>
     </LinearLayout>
 </LinearLayout>
