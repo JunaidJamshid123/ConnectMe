@@ -28,7 +28,7 @@ class StoryDisplayActivity : AppCompatActivity() {
 
     // UI Components
     private lateinit var imgStoryContent: ImageView
-    private lateinit var imgUserProfile: ShapeableImageView
+    private lateinit var imgUserProfile: ImageView
     private lateinit var tvUsername: TextView
     private lateinit var tvTimePosted: TextView
     private lateinit var tvCaption: TextView

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item name="imgStoryContent" type="id">imgStoryContent</item>
-    <item name="storyProgressBar" type="id">storyProgressBar</item>
-    <item name="imgUserProfile" type="id">imgUserProfile</item>
-    <item name="tvTimePosted" type="id">tvTimePosted</item>
-    <item name="btnClose" type="id">btnClose</item>
+    <item name="imgStoryContent" type="id" />
+    <item name="storyProgressBar" type="id" />
+    <item name="imgUserProfile" type="id" />
+    <item name="tvTimePosted" type="id" />
+    <item name="btnClose" type="id" />
 </resources>

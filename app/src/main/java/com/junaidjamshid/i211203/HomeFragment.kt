@@ -71,13 +71,21 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
         postAdapter.setOnPostInteractionListener(this)
         recyclerView.adapter = postAdapter
 
-        setupStoryAdapter()
 
 
+        storiesRecyclerView = view.findViewById(R.id.recycler_view_stories)
+        storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        storyAdapter = StoryAdapter(requireContext())
 
+        storyAdapter.setOnStoryClickListener(object : StoryAdapter.OnStoryClickListener {
+            override fun onStoryClick(story: Story, position: Int) {
+                // This is optional since we're already handling the click in the adapter
+                // But you could do additional processing here if needed
+            }
+        })
+        storiesRecyclerView.adapter = storyAdapter
         // Load posts
         loadPosts()
-
         loadStories()
         return view
     }
@@ -87,21 +95,6 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
     // Add this new function to load stories
     // Add this to your HomeFragment class
 
-    private fun setupStoryAdapter() {
-        storiesRecyclerView = view?.findViewById(R.id.recycler_view_stories)!!
-        storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        storyAdapter = StoryAdapter(requireContext())
-
-        // Set click listener for stories
-        storyAdapter.setOnStoryClickListener(object : StoryAdapter.OnStoryClickListener {
-            override fun onStoryClick(story: Story, position: Int) {
-                // This is optional since we're already handling the click in the adapter
-                // But you could do additional processing here if needed
-            }
-        })
-
-        storiesRecyclerView.adapter = storyAdapter
-    }
 
     // Replace your loadStories() function with this updated version if you want
     private fun loadStories() {
