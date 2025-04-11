@@ -1,6 +1,7 @@
 package com.junaidjamshid.i211203.Adapters
 
 import android.content.Context
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.util.Base64
@@ -13,6 +14,7 @@ import androidx.cardview.widget.CardView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.imageview.ShapeableImageView
 import com.junaidjamshid.i211203.R
+import com.junaidjamshid.i211203.StoryDisplayActivity
 import com.junaidjamshid.i211203.models.Story
 import java.util.*
 
@@ -44,7 +46,17 @@ class StoryAdapter(private val context: Context) :
             itemView.setOnClickListener {
                 val position = adapterPosition
                 if (position != RecyclerView.NO_POSITION) {
-                    storyListener?.onStoryClick(stories[position], position)
+                    val story = stories[position]
+
+                    // Notify listener if set
+                    storyListener?.onStoryClick(story, position)
+
+                    // Launch StoryDisplayActivity directly
+                    val intent = Intent(context, StoryDisplayActivity::class.java).apply {
+                        putExtra("storyId", story.storyId)
+                        putExtra("userId", story.userId)
+                    }
+                    context.startActivity(intent)
                 }
             }
         }

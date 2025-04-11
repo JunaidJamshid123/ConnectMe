@@ -71,17 +71,13 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
         postAdapter.setOnPostInteractionListener(this)
         recyclerView.adapter = postAdapter
 
-
-        storiesRecyclerView = view.findViewById(R.id.recycler_view_stories)
-        storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
-        storyAdapter = StoryAdapter(requireContext())
-
-        storiesRecyclerView.adapter = storyAdapter
+        setupStoryAdapter()
 
 
 
         // Load posts
         loadPosts()
+
         loadStories()
         return view
     }
@@ -89,12 +85,34 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
 
 
     // Add this new function to load stories
+    // Add this to your HomeFragment class
+
+    private fun setupStoryAdapter() {
+        storiesRecyclerView = view?.findViewById(R.id.recycler_view_stories)!!
+        storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
+        storyAdapter = StoryAdapter(requireContext())
+
+        // Set click listener for stories
+        storyAdapter.setOnStoryClickListener(object : StoryAdapter.OnStoryClickListener {
+            override fun onStoryClick(story: Story, position: Int) {
+                // This is optional since we're already handling the click in the adapter
+                // But you could do additional processing here if needed
+            }
+        })
+
+        storiesRecyclerView.adapter = storyAdapter
+    }
+
+    // Replace your loadStories() function with this updated version if you want
     private fun loadStories() {
         val storiesRef = FirebaseDatabase.getInstance().getReference("stories")
 
         storiesRef.addValueEventListener(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 val storiesList = mutableListOf<Story>()
+
+                // Group stories by user for better organization
+                val userStoriesMap = mutableMapOf<String, MutableList<Story>>()
 
                 for (storySnapshot in snapshot.children) {
                     try {
@@ -103,12 +121,24 @@ class HomeFragment : Fragment(), PostAdapter.OnPostInteractionListener {
                             // Only add stories that haven't expired
                             val currentTime = System.currentTimeMillis()
                             if (it.expiryTimestamp > currentTime) {
-                                storiesList.add(it)
+                                // Group by userId
+                                if (!userStoriesMap.containsKey(it.userId)) {
+                                    userStoriesMap[it.userId] = mutableListOf()
+                                }
+                                userStoriesMap[it.userId]?.add(it)
                             }
                         }
                     } catch (e: Exception) {
                         Log.e(TAG, "Error parsing story: ${e.message}")
                     }
+                }
+
+                // Get the most recent story for each user
+                for (userStories in userStoriesMap.values) {
+                    // Sort by timestamp (newest first)
+                    userStories.sortByDescending { it.timestamp }
+                    // Add the most recent story to our list
+                    storiesList.add(userStories.first())
                 }
 
                 // Update adapter with stories
