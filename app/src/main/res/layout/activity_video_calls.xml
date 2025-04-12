@@ -1,131 +1,129 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:weightSum="1"
-    android:orientation="vertical"
+    android:background="#1A1A1A"
     tools:context=".VideoCalls">
 
-    <LinearLayout
+    <!-- Remote Video View (Full Screen) -->
+    <FrameLayout
+        android:id="@+id/remoteVideoContainer"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="0.9"
-        android:orientation="vertical"
-        android:background="#99C4B1B1"
-        android:layout_gravity="center">
+        android:layout_height="match_parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent" />
 
+    <!-- User Info at Top -->
+    <LinearLayout
+        android:id="@+id/userInfoLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp"
+        android:background="#66000000"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <TextView
+            android:id="@+id/txtCallerName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Junaid Jamshid"
+            android:text="User Name"
             android:textSize="24sp"
-            android:textColor="@android:color/black"
+            android:textColor="@android:color/white"
             android:textStyle="bold"
-            android:layout_gravity="center"
-            android:layout_marginTop="30dp"/>
+            android:layout_gravity="center" />
 
         <TextView
+            android:id="@+id/txtCallDuration"
             android:layout_width="wrap_content"
-            android:text="10:32"
-            android:textSize="25sp"
-            android:textStyle="normal"
-            android:textColor="@color/black"
+            android:layout_height="wrap_content"
+            android:text="00:00"
+            android:textSize="18sp"
+            android:textColor="@android:color/white"
             android:layout_gravity="center"
-            android:layout_height="wrap_content">
-        </TextView>
-
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <View
-                android:layout_width="120dp"
-                android:layout_alignParentBottom="true"
-                android:layout_alignParentEnd="true"
-                android:layout_margin="10dp"
-                android:elevation="10dp"
-                android:background="@color/white"
-                android:layout_height="150dp">
-            </View>
-
-        </RelativeLayout>
-
+            android:layout_marginTop="4dp" />
     </LinearLayout>
 
+    <!-- Local Video View (Small Overlay) -->
+    <FrameLayout
+        android:id="@+id/localVideoContainer"
+        android:layout_width="120dp"
+        android:layout_height="160dp"
+        android:layout_margin="16dp"
+        android:background="@android:color/black"
+        android:elevation="8dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintBottom_toTopOf="@id/callControlsLayout" />
 
+    <!-- Call Controls at Bottom -->
     <LinearLayout
+        android:id="@+id/callControlsLayout"
         android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:id="@+id/callOptions"
+        android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_weight="0.1"
-        android:layout_margin="15dp"
-        android:background="@drawable/rounded_bg"
-        android:padding="12dp"
-        android:elevation="6dp"
+        android:padding="16dp"
         android:gravity="center"
-        android:layout_gravity="center">
-
+        android:background="#66000000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
 
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/btnFlipCamera"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/point"
             android:background="@drawable/icon_bg"
             android:padding="12dp"
-            android:scaleType="centerInside"
             android:layout_margin="8dp"
             app:tint="@android:color/white" />
 
-
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/btnToggleVideo"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/video_camera"
             android:background="@drawable/icon_bg"
             android:padding="12dp"
-            android:scaleType="centerInside"
             android:layout_margin="8dp"
             app:tint="@android:color/white" />
 
-
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/btnToggleSpeaker"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/loud_speaker"
             android:background="@drawable/icon_bg"
             android:padding="12dp"
-            android:scaleType="centerInside"
             android:layout_margin="8dp"
             app:tint="@android:color/white" />
 
-
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/btnToggleMic"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/mute"
             android:background="@drawable/icon_bg"
             android:padding="12dp"
-            android:scaleType="centerInside"
             android:layout_margin="8dp"
             app:tint="@android:color/white" />
 
-
         <ImageView
-            android:layout_width="50dp"
-            android:layout_height="50dp"
+            android:id="@+id/EndCall"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
             android:src="@drawable/telephone"
             android:background="@drawable/red_circle"
             android:padding="12dp"
-            android:id="@+id/EndCall"
-            android:scaleType="centerInside"
             android:layout_margin="8dp"
             app:tint="@android:color/white" />
     </LinearLayout>
 
-
-
-</LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

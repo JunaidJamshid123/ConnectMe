@@ -1,6 +1,7 @@
 package com.junaidjamshid.i211203
 
 import android.app.AlertDialog
+import android.content.Intent
 import android.graphics.BitmapFactory
 import android.os.Bundle
 import android.util.Base64
@@ -32,6 +33,8 @@ class chats : AppCompatActivity() {
     private lateinit var editTextMessage: TextInputEditText
     private lateinit var btnSendMessage: FloatingActionButton
     private lateinit var btnVanishMode: ImageView
+    private lateinit var btnVideoCall: ImageView
+    private lateinit var btnVoiceCall: ImageView
 
     // Message-related variables
     private lateinit var messageAdapter: MessageAdapter
@@ -63,6 +66,8 @@ class chats : AppCompatActivity() {
         editTextMessage = findViewById(R.id.editTextMessage)
         btnSendMessage = findViewById(R.id.btnSendMessage)
         btnVanishMode = findViewById(R.id.btnVanishMode)
+        btnVideoCall = findViewById(R.id.btnVideoCall)
+        btnVoiceCall = findViewById(R.id.btnVoiceCall)
 
         // Initialize message list and adapter
         messageList = ArrayList()
@@ -98,12 +103,44 @@ class chats : AppCompatActivity() {
             sendMessage()
         }
 
+        // Set up video call button click listener
+        btnVideoCall.setOnClickListener {
+            initiateVideoCall()
+        }
+
+// Set up voice call button click listener
+        btnVoiceCall.setOnClickListener {
+            initiateVideoCall()
+        }
+
+
         // Setup vanish mode toggle
         setupVanishModeToggle()
 
         // Load messages
         loadMessages()
     }
+
+    // Add these methods to handle calls
+    private fun initiateVideoCall() {
+        // Create a unique channel name using both user IDs to ensure the same channel for both users
+        val channelName = if (senderUserId < receiverUserId) {
+            "${senderUserId}_${receiverUserId}"
+        } else {
+            "${receiverUserId}_${senderUserId}"
+        }
+
+        // Create intent to start video call activity
+        val intent = Intent(this, VideoCalls::class.java).apply {
+            putExtra("CHANNEL_NAME", "i211203")
+            putExtra("USER_ID", receiverUserId)
+            putExtra("IS_CALLER", true) // Flag to identify who initiated the call
+        }
+        startActivity(intent)
+    }
+
+
+
 
     private fun setupVanishModeToggle() {
         btnVanishMode.setOnClickListener {
