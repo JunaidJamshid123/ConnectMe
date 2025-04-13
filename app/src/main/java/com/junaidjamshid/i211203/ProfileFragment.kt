@@ -12,10 +12,15 @@ import android.widget.ImageView
 import android.widget.TextView
 import android.widget.Toast
 import android.util.Base64
+import android.widget.LinearLayout
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import de.hdodenhof.circleimageview.CircleImageView
 import com.junaidjamshid.i211203.models.User
+import com.junaidjamshid.i211203.models.Post
+import com.junaidjamshid.i211203.Adapters.PostGridAdapter
 
 class ProfileFragment : Fragment() {
     private var param1: String? = null
@@ -31,6 +36,11 @@ class ProfileFragment : Fragment() {
     private lateinit var postsCount: TextView
     private lateinit var followersCount: TextView
     private lateinit var followingCount: TextView
+    private lateinit var follower: LinearLayout
+    private lateinit var following: LinearLayout
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var postGridAdapter: PostGridAdapter
+    private val postsList = ArrayList<Post>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -61,11 +71,25 @@ class ProfileFragment : Fragment() {
         postsCount = view.findViewById(R.id.posts_count)
         followersCount = view.findViewById(R.id.followers_count)
         followingCount = view.findViewById(R.id.following_count)
+        follower = view.findViewById(R.id.followers)
+        following = view.findViewById(R.id.following)
+        recyclerView = view.findViewById(R.id.recycler_view)
+
+        // Set up RecyclerView with GridLayoutManager
+        setupRecyclerView()
 
         // Set up button click listeners
         val editProfileButton = view.findViewById<ImageView>(R.id.edit_profile)
         val logoutButton = view.findViewById<ImageView>(R.id.logout)
 
+        follower.setOnClickListener {
+            val intent = Intent(requireContext(), Followers::class.java)
+            startActivity(intent)
+        }
+        following.setOnClickListener {
+            val intent = Intent(requireContext(), Following::class.java)
+            startActivity(intent)
+        }
         editProfileButton.setOnClickListener {
             navigateToEditProfileActivity()
         }
@@ -76,6 +100,56 @@ class ProfileFragment : Fragment() {
 
         // Load user data
         loadUserData()
+
+        // Load user posts
+        loadUserPosts()
+    }
+
+    private fun setupRecyclerView() {
+        // Create a GridLayoutManager with 3 columns
+        val gridLayoutManager = GridLayoutManager(context, 3)
+        recyclerView.layoutManager = gridLayoutManager
+
+        // Initialize adapter
+        postGridAdapter = PostGridAdapter(requireContext(), postsList)
+        recyclerView.adapter = postGridAdapter
+    }
+
+    private fun loadUserPosts() {
+        val currentUser = auth.currentUser
+        if (currentUser != null) {
+            val userId = currentUser.uid
+
+            // Reference to posts where userId matches the current user
+            val postsRef = database.child("posts").orderByChild("userId").equalTo(userId)
+
+            postsRef.addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    postsList.clear()
+
+                    for (postSnapshot in snapshot.children) {
+                        try {
+                            val post = postSnapshot.getValue(Post::class.java)
+                            post?.let {
+                                postsList.add(it)
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(context, "Error parsing post: ${e.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    }
+
+                    // Update posts count
+                    postsCount.text = postsList.size.toString()
+
+                    // Notify adapter about data change
+                    postGridAdapter.notifyDataSetChanged()
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Toast.makeText(context, "Error loading posts: ${error.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+        }
     }
 
     private fun loadUserData() {
@@ -85,8 +159,6 @@ class ProfileFragment : Fragment() {
 
             // Reference to the current user's data in the database
             val userRef = database.child("Users").child(userId)
-
-
 
             userRef.addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -133,21 +205,6 @@ class ProfileFragment : Fragment() {
                                 followingCount.text = "0"
                                 profileImage.setImageResource(R.drawable.junaid1)
                             }
-
-                            // Get posts count (assuming you have a Posts node with userId as key)
-                            // This would need to be adjusted based on your actual database structure
-                            database.child("Posts").orderByChild("userId").equalTo(userId)
-                                .addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(postsSnapshot: DataSnapshot) {
-                                        val posts = postsSnapshot.childrenCount.toString()
-                                        postsCount.text = posts
-                                    }
-
-                                    override fun onCancelled(error: DatabaseError) {
-                                        postsCount.text = "0"
-                                    }
-                                })
-
                         } catch (e: Exception) {
                             Toast.makeText(context, "Error loading profile: ${e.message}", Toast.LENGTH_SHORT).show()
                         }
