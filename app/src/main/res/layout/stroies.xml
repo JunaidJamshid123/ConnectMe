@@ -2,67 +2,53 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="wrap_content"
-    android:gravity="center"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
     android:orientation="vertical"
-    android:padding="3dp">
+    android:paddingHorizontal="6dp">
 
-    <!-- Story Circle with Gradient Border -->
-    <androidx.cardview.widget.CardView
-        android:id="@+id/cardViewStory"
-        android:layout_width="80dp"
-        android:layout_height="80dp"
-        app:cardCornerRadius="40dp"
-        app:cardElevation="0dp"
-        app:cardBackgroundColor="@android:color/transparent">
+    <!-- Story Circle with Instagram Gradient Ring -->
+    <FrameLayout
+        android:id="@+id/story_container"
+        android:layout_width="72dp"
+        android:layout_height="72dp">
 
-        <androidx.constraintlayout.widget.ConstraintLayout
+        <!-- Gradient Ring Background -->
+        <View
+            android:id="@+id/gradient_ring"
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="match_parent"
+            android:background="@drawable/story_gradient" />
 
-            <!-- Gradient Border -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/gradientBorder"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:padding="2dp"
-                android:src="@drawable/story_gradient"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/CircleImageView" />
+        <!-- White Inner Ring -->
+        <View
+            android:layout_width="68dp"
+            android:layout_height="68dp"
+            android:layout_gravity="center"
+            android:background="@drawable/circle_border" />
 
-            <!-- Profile Image -->
-            <com.google.android.material.imageview.ShapeableImageView
-                android:id="@+id/imgStoryProfile"
-                android:layout_width="74dp"
-                android:layout_height="74dp"
-                android:padding="3dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/junaid1"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/CircleImageView"
-                app:strokeColor="#FFFFFF"
-                app:strokeWidth="3dp" />
+        <!-- Profile Image -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgStoryProfile"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/junaid1" />
 
-        </androidx.constraintlayout.widget.ConstraintLayout>
-    </androidx.cardview.widget.CardView>
+    </FrameLayout>
 
     <!-- Username Text -->
     <TextView
         android:id="@+id/tvUsername"
-        android:layout_width="wrap_content"
+        android:layout_width="72dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="1dp"
+        android:layout_marginTop="4dp"
         android:ellipsize="end"
-        android:maxWidth="80dp"
+        android:gravity="center"
         android:maxLines="1"
-        android:text="Junaid"
-        android:textColor="#000000"
-        android:textSize="12sp" />
+        android:text="username"
+        android:textColor="#262626"
+        android:textSize="11sp" />
 
 </LinearLayout>

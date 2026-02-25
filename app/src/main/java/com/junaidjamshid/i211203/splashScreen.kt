@@ -6,7 +6,11 @@ import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import com.google.firebase.auth.FirebaseAuth
+import com.junaidjamshid.i211203.presentation.auth.LoginActivity
+import com.junaidjamshid.i211203.presentation.main.MainActivityNew
+import dagger.hilt.android.AndroidEntryPoint
 
+@AndroidEntryPoint
 class SplashScreen : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -16,11 +20,11 @@ class SplashScreen : AppCompatActivity() {
         Handler(Looper.getMainLooper()).postDelayed({
             val currentUser = FirebaseAuth.getInstance().currentUser
             if (currentUser != null) {
-                // User is already logged in, navigate to HomePage
-                startActivity(Intent(this, MainActivity::class.java))
+                // User is already logged in, navigate to Main
+                startActivity(Intent(this, MainActivityNew::class.java))
             } else {
-                // User not logged in, navigate to LoginScreen
-                startActivity(Intent(this, LoginScreem::class.java))
+                // User not logged in, navigate to Login
+                startActivity(Intent(this, LoginActivity::class.java))
             }
             finish()
         }, 3000) // 3-second delay

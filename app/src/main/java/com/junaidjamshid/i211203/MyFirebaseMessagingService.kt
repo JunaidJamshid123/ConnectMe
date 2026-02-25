@@ -12,6 +12,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
+import com.junaidjamshid.i211203.presentation.main.MainActivityNew
 
 class MyFirebaseMessagingService : FirebaseMessagingService() {
 
@@ -44,7 +45,7 @@ class MyFirebaseMessagingService : FirebaseMessagingService() {
     }
 
     private fun sendNotification(title: String?, body: String?) {
-        val intent = Intent(this, chats::class.java).apply {
+        val intent = Intent(this, MainActivityNew::class.java).apply {
             flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         }
 

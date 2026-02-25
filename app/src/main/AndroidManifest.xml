@@ -7,18 +7,23 @@
 
     <uses-feature
         android:name="android.hardware.camera"
-        android:required="false" /> <!-- Required permissions -->
+        android:required="false" />
+    
+    <!-- Required permissions -->
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" /> <!-- Optional permissions -->
+    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
+    
+    <!-- Optional permissions -->
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
-    <uses-permission android:name="android.permission.BLUETOOTH" /> <!-- For devices running Android 12 (API level 32) or higher and integrating Agora Video SDK version v4.1.0 or lower, you also need to add the following permissions -->
-    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" /> <!-- For Android 12.0 or higher, the following permissions are also required -->
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.BLUETOOTH_SCAN" />
 
     <application
+        android:name=".ConnectMeApplication"
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
@@ -28,14 +33,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.I211203"
         tools:targetApi="31">
-        <activity
-            android:name=".PostDetailActivity"
-            android:exported="false" />
-        <activity
-            android:name=".StoryDisplayActivity"
-            android:screenOrientation="portrait"
-            android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <!-- Firebase Messaging Service -->
         <service
             android:name=".MyFirebaseMessagingService"
             android:exported="false">
@@ -44,148 +43,84 @@
             </intent-filter>
         </service>
 
-        <activity
-            android:name=".UserProfile"
-            android:exported="false" />
+        <!-- Splash Screen (Launcher) -->
         <activity
             android:name=".SplashScreen"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.I211203">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
+        </activity>
 
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+        <!-- Clean Architecture Presentation Layer Activities -->
+        
+        <!-- Main Activity with Bottom Navigation -->
         <activity
-            android:name=".ContactsPage"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.main.MainActivityNew"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
+        <!-- Auth Activities -->
         <activity
-            android:name=".newPostNext"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.auth.LoginActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <activity
-            android:name=".chats2"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.auth.SignUpActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
+        <!-- Chat Activity -->
         <activity
-            android:name=".NewPostCamera"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.chat.ChatActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Video Call Activity -->
         <activity
-            android:name=".NewPost"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.call.VideoCallActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Profile Activities -->
         <activity
-            android:name=".SearchActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.profile.EditProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <activity
-            android:name=".EditProfile"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.profile.UserProfileActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
+        <!-- Follow Activities -->
         <activity
-            android:name=".VideoCalls"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.follow.FollowersActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <activity
-            android:name=".Calls"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.follow.FollowingActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
+        <!-- Story Activity -->
         <activity
-            android:name=".ProfileActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.story.StoryDisplayActivityNew"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+
+        <!-- Post Detail Activity -->
         <activity
-            android:name=".Following"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".Followers"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".chats"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".DMs"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".HomePage"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".SignUpScreen"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".LoginScreem"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
-        <activity
-            android:name=".MainActivity"
-            android:exported="false">
-            <meta-data
-                android:name="android.app.lib_name"
-                android:value="" />
-        </activity>
+            android:name=".presentation.post.PostDetailActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
 
         <meta-data
             android:name="preloaded_fonts"

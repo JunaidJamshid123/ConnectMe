@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:layout_marginTop="12dp"
+    android:background="@color/white"
     tools:context=".HomeFragment">
 
     <androidx.core.widget.NestedScrollView
@@ -17,107 +17,127 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Improved Header Section -->
+            <!-- Instagram-style Header -->
             <RelativeLayout
                 android:id="@+id/header_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="12dp"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="12dp">
+                android:layout_height="56dp"
+                android:background="@color/white"
+                android:paddingHorizontal="16dp">
 
-                <LinearLayout
-                    android:id="@+id/linearLayout_txt"
+                <!-- Instagram Logo Text -->
+                <TextView
+                    android:id="@+id/instagram_logo"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:orientation="vertical">
+                    android:layout_alignParentStart="true"
+                    android:layout_centerVertical="true"
+                    android:fontFamily="@font/pacifico"
+                    android:text="ConnectMe"
+                    android:textColor="#262626"
+                    android:textSize="26sp"
+                    android:textStyle="bold" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="My Community"
-                        android:textColor="@color/black"
-                        android:textSize="24sp"
-                        android:letterSpacing="0.02"
-                        android:fontFamily="sans-serif-medium"
-                        android:textStyle="bold" />
-
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="A place for all your questions"
-                        android:textColor="#5A5A5A"
-                        android:textSize="16sp"
-                        android:layout_marginTop="2dp"
-                        android:fontFamily="sans-serif" />
-                </LinearLayout>
-
-                <ImageView
-                    android:id="@+id/DMs"
-                    android:layout_width="28dp"
-                    android:layout_height="28dp"
+                <!-- Header Icons -->
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentEnd="true"
                     android:layout_centerVertical="true"
-                    android:layout_marginEnd="8dp"
-                    android:padding="2dp"
-                    android:src="@drawable/send" />
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical">
+
+                    <!-- Notifications/Heart Icon -->
+                    <ImageView
+                        android:id="@+id/notifications_icon"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:src="@drawable/ic_heart_outline"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                    <!-- Messages/DM Icon -->
+                    <ImageView
+                        android:id="@+id/DMs"
+                        android:layout_width="26dp"
+                        android:layout_height="26dp"
+                        android:layout_marginStart="20dp"
+                        android:src="@drawable/ic_messenger"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"/>
+
+                </LinearLayout>
             </RelativeLayout>
+
+            <!-- Thin Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#EFEFEF" />
 
             <!-- Stories Section -->
             <LinearLayout
                 android:layout_width="match_parent"
-                android:layout_height="100dp"
+                android:layout_height="112dp"
                 android:orientation="horizontal"
-                android:paddingStart="12dp"
-                android:layout_marginBottom="2dp"
-                android:paddingEnd="12dp">
+                android:paddingStart="8dp"
+                android:paddingEnd="8dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:background="@color/white">
 
-                <!-- Add Story View for Current User -->
+                <!-- Add Story (Your Story) -->
                 <LinearLayout
                     android:id="@+id/add_story_container"
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:orientation="vertical"
-                    android:gravity="center"
-                    android:layout_marginEnd="10dp">
+                    android:gravity="center_horizontal"
+                    android:paddingHorizontal="6dp">
 
                     <FrameLayout
-                        android:layout_width="68dp"
                         android:id="@+id/addStroy"
-                        android:layout_height="68dp">
+                        android:layout_width="72dp"
+                        android:layout_height="72dp">
 
+                        <!-- Profile Image with border -->
                         <de.hdodenhof.circleimageview.CircleImageView
                             android:id="@+id/current_user_image"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent"
                             android:src="@drawable/junaid1"
-                            app:civ_border_width="1.5dp"
-                            app:civ_border_color="#E5E5E5" />
+                            app:civ_border_width="1dp"
+                            app:civ_border_color="#DEDEDE" />
 
-                        <androidx.cardview.widget.CardView
+                        <!-- Blue Add Button -->
+                        <FrameLayout
                             android:layout_width="22dp"
                             android:layout_height="22dp"
-                            app:cardCornerRadius="11dp"
-                            app:cardBackgroundColor="#664242"
-                            android:layout_gravity="bottom|end">
+                            android:layout_gravity="bottom|end"
+                            android:layout_marginEnd="2dp"
+                            android:layout_marginBottom="2dp"
+                            android:background="@drawable/bg_add_story"
+                            android:elevation="2dp">
 
                             <ImageView
-                                android:layout_width="match_parent"
-                                android:layout_height="match_parent"
-                                android:src="@drawable/add"
-                                app:tint="@color/white"
-                                android:padding="5dp" />
-                        </androidx.cardview.widget.CardView>
+                                android:layout_width="14dp"
+                                android:layout_height="14dp"
+                                android:layout_gravity="center"
+                                android:src="@drawable/ic_plus" />
+                        </FrameLayout>
                     </FrameLayout>
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Your Story"
-                        android:textSize="12sp"
-                        android:textColor="#454545"
-                        android:layout_marginTop="4dp" />
+                        android:text="Your story"
+                        android:textSize="11sp"
+                        android:textColor="#262626"
+                        android:layout_marginTop="4dp"
+                        android:maxLines="1"
+                        android:ellipsize="end" />
                 </LinearLayout>
 
                 <!-- Stories RecyclerView -->
@@ -131,27 +151,21 @@
                     tools:listitem="@layout/stroies" />
             </LinearLayout>
 
-            <!-- Divider -->
+            <!-- Stories/Feed Divider -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:layout_marginTop="3dp"
-                android:layout_marginHorizontal="8dp"
-                android:background="#EBEBEB" />
-
-            <!-- Add additional content sections here -->
+                android:background="#EFEFEF" />
 
             <!-- Posts RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view_posts"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingTop="12dp"
                 android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
                 app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                 tools:listitem="@layout/item_post" />
-
-
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

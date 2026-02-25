@@ -12,4 +12,16 @@
     <color name="follow_color">#6C757D</color>
     <color name="unfollow_color">#6C757D</color>
     <color name="bottom_nav_icon_color">#6C757D</color>
+
+    <!-- Instagram-like colors -->
+    <color name="instagram_blue">#0095F6</color>
+    <color name="instagram_blue_dark">#00376B</color>
+    <color name="instagram_text_gray">#8E8E8E</color>
+    <color name="instagram_border_gray">#DBDBDB</color>
+    <color name="instagram_bg_gray">#FAFAFA</color>
+    <color name="instagram_input_bg">#FAFAFA</color>
+    <color name="instagram_gradient_start">#F58529</color>
+    <color name="instagram_gradient_center">#DD2A7B</color>
+    <color name="instagram_gradient_end">#8134AF</color>
+    <color name="facebook_blue">#1877F2</color>
 </resources>

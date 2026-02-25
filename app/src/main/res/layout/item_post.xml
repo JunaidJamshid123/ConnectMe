@@ -1,207 +1,187 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="8dp"
-    app:cardElevation="1dp"
-    app:cardCornerRadius="8dp">
+    android:orientation="vertical"
+    android:background="@color/white">
 
-    <LinearLayout
+    <!-- Header with profile pic, username, more button -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:paddingHorizontal="12dp"
+        android:gravity="center_vertical">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:src="@drawable/junaid1"
+            android:layout_centerVertical="true"
+            app:civ_border_width="0.5dp"
+            app:civ_border_color="#DEDEDE"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_toEndOf="@id/profile_image"
+            android:layout_marginStart="10dp"
+            android:layout_centerVertical="true">
+
+            <TextView
+                android:id="@+id/username_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="username"
+                android:textColor="#262626"
+                android:textSize="13sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/location_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Location"
+                android:textColor="#262626"
+                android:textSize="11sp"
+                android:visibility="gone" />
+        </LinearLayout>
+
+        <ImageView
+            android:id="@+id/menu_dots"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/ic_more_horiz"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+    </RelativeLayout>
+
+    <!-- Post Image - Matching screen width for square posts -->
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        
+        <ImageView
+            android:id="@+id/post_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:scaleType="centerCrop"
+            android:src="@drawable/junaid2"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintDimensionRatio="1:1" />
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+    <!-- Action buttons (like, comment, share, save) -->
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:paddingHorizontal="12dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_alignParentStart="true">
+
+            <!-- Like/Heart Button -->
+            <ImageView
+                android:id="@+id/heart"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_heart_outline"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <!-- Comment Button -->
+            <ImageView
+                android:id="@+id/comment"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_comment"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+
+            <!-- Share/Send Button -->
+            <ImageView
+                android:id="@+id/send"
+                android:layout_width="26dp"
+                android:layout_height="26dp"
+                android:src="@drawable/ic_share"
+                android:layout_marginStart="16dp"
+                android:clickable="true"
+                android:focusable="true"
+                android:background="?attr/selectableItemBackgroundBorderless"/>
+        </LinearLayout>
+
+        <!-- Save/Bookmark Button -->
+        <ImageView
+            android:id="@+id/save"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:src="@drawable/ic_bookmark"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:clickable="true"
+            android:focusable="true"
+            android:background="?attr/selectableItemBackgroundBorderless"/>
+    </RelativeLayout>
+
+    <!-- Likes count -->
+    <TextView
+        android:id="@+id/likes_count"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="10,547 likes"
+        android:textColor="#262626"
+        android:textStyle="bold"
+        android:textSize="13sp"
+        android:paddingHorizontal="12dp"/>
+
+    <!-- Caption with Username -->
+    <TextView
+        android:id="@+id/post_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:background="@color/white">
+        android:paddingHorizontal="12dp"
+        android:paddingTop="4dp"
+        android:textColor="#262626"
+        android:textSize="13sp"
+        android:lineSpacingExtra="2dp">
+        <![CDATA[<b>username</b> Lorem ipsum dolor sit amet, consectetur]]>
+    </TextView>
 
-        <!-- Header with profile pic, username, location -->
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="12dp">
+    <!-- View all comments link -->
+    <TextView
+        android:id="@+id/view_comments"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="View all 42 comments"
+        android:textColor="#8E8E8E"
+        android:textSize="13sp"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="4dp"/>
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:src="@drawable/junaid1"
-                app:civ_border_width="0dp"
-                app:civ_border_color="#E0E0E0"
-                android:layout_centerVertical="true"/>
+    <!-- Timestamp -->
+    <TextView
+        android:id="@+id/timestamp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="2 hours ago"
+        android:textColor="#8E8E8E"
+        android:textSize="10sp"
+        android:paddingHorizontal="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="12dp"/>
 
-            <LinearLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_toEndOf="@id/profile_image"
-                android:layout_marginStart="10dp"
-                android:layout_centerVertical="true">
-
-                <TextView
-                    android:id="@+id/username_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="youraccount"
-                    android:textColor="@color/black"
-                    android:textSize="14sp"
-                    android:letterSpacing="0.01"
-                    android:textStyle="bold" />
-
-                <TextView
-                    android:id="@+id/location_text"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Location Here"
-                    android:textColor="#666666"
-                    android:textSize="12sp" />
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/menu_dots"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/option_more"
-                android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
-        </RelativeLayout>
-
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="0.5dp"
-            android:background="#EEEEEE"/>
-
-        <!-- Post image with reduced height and gradient overlay -->
-        <FrameLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
-
-            <ImageView
-                android:id="@+id/post_image"
-                android:layout_width="match_parent"
-                android:layout_height="350dp"
-                android:scaleType="centerCrop"
-                android:src="@drawable/junaid2" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="48dp"
-                android:layout_gravity="bottom"
-                android:background="@drawable/gradient_overlay"/>
-        </FrameLayout>
-
-        <!-- Action buttons (like, comment, share, save) -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="12dp"
-            android:paddingBottom="8dp">
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="horizontal">
-
-                <ImageView
-                    android:id="@+id/heart"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/simple_heart"
-                    android:layout_marginEnd="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-
-                <ImageView
-                    android:id="@+id/comment"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/chat_bubble"
-                    android:layout_marginEnd="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-
-                <ImageView
-                    android:id="@+id/send"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/send"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-            </LinearLayout>
-
-            <ImageView
-                android:id="@+id/save"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/save_instagram"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"/>
-        </LinearLayout>
-
-        <!-- Likes count -->
-        <TextView
-            android:id="@+id/likes_count"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="12,853 likes"
-            android:textColor="@color/black"
-            android:textStyle="bold"
-            android:textSize="14sp"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="6dp"/>
-
-        <!-- Caption -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="4dp">
-
-            <TextView
-                android:id="@+id/author_name"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="youraccount"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                android:textSize="14sp"
-                android:layout_marginEnd="4dp"/>
-
-            <TextView
-                android:id="@+id/post_caption"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Enhance your Instagram with our UI Mockup Download for instagram creativity."
-                android:textColor="@color/black"
-                android:textSize="14sp"/>
-        </LinearLayout>
-
-        <!-- Timestamp -->
-        <TextView
-            android:id="@+id/timestamp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="2 HOURS AGO"
-            android:textColor="#9E9E9E"
-            android:textSize="10sp"
-            android:textAllCaps="true"
-            android:paddingStart="14dp"
-            android:paddingEnd="14dp"
-            android:paddingTop="4dp"
-            android:paddingBottom="14dp"/>
-
-
-    </LinearLayout>
-</androidx.cardview.widget.CardView>
+</LinearLayout>
