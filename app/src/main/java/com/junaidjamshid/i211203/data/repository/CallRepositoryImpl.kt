@@ -1,7 +1,7 @@
 package com.junaidjamshid.i211203.data.repository
 
 import com.junaidjamshid.i211203.data.mapper.CallMapper
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseCallDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseCallDataSource
 import com.junaidjamshid.i211203.domain.model.Call
 import com.junaidjamshid.i211203.domain.model.CallType
 import com.junaidjamshid.i211203.domain.repository.CallRepository
@@ -13,11 +13,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of CallRepository.
+ * Implementation of CallRepository using Supabase.
  */
 @Singleton
 class CallRepositoryImpl @Inject constructor(
-    private val callDataSource: FirebaseCallDataSource,
+    private val callDataSource: SupabaseCallDataSource,
     private val callMapper: CallMapper
 ) : CallRepository {
     

@@ -3,8 +3,8 @@ package com.junaidjamshid.i211203.data.repository
 import android.util.Base64
 import com.junaidjamshid.i211203.data.dto.StoryDto
 import com.junaidjamshid.i211203.data.mapper.StoryMapper.toDomain
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseStoryDataSource
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseUserDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseStoryDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.Story
 import com.junaidjamshid.i211203.domain.repository.StoryRepository
 import com.junaidjamshid.i211203.util.Constants
@@ -16,12 +16,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of StoryRepository that uses Firebase.
+ * Implementation of StoryRepository that uses Supabase.
  */
 @Singleton
 class StoryRepositoryImpl @Inject constructor(
-    private val storyDataSource: FirebaseStoryDataSource,
-    private val userDataSource: FirebaseUserDataSource
+    private val storyDataSource: SupabaseStoryDataSource,
+    private val userDataSource: SupabaseUserDataSource
 ) : StoryRepository {
     
     override fun getStories(userId: String): Flow<Resource<List<Story>>> {
@@ -121,7 +121,7 @@ class StoryRepositoryImpl @Inject constructor(
     
     override suspend fun getStoryViewers(storyId: String): Resource<List<String>> {
         return try {
-            val viewers = storyDataSource.getStoryViewers(storyId)
+            val viewers = storyDataSource.getStoryViewersList(storyId)
             Resource.Success(viewers)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to get story viewers")

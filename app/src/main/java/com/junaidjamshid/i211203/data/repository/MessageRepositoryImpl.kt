@@ -2,7 +2,7 @@ package com.junaidjamshid.i211203.data.repository
 
 import com.junaidjamshid.i211203.data.mapper.MessageMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.MessageMapper.toDto
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseMessageDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseMessageDataSource
 import com.junaidjamshid.i211203.domain.model.Conversation
 import com.junaidjamshid.i211203.domain.model.Message
 import com.junaidjamshid.i211203.domain.repository.MessageRepository
@@ -15,11 +15,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of MessageRepository.
+ * Implementation of MessageRepository using Supabase.
  */
 @Singleton
 class MessageRepositoryImpl @Inject constructor(
-    private val messageDataSource: FirebaseMessageDataSource
+    private val messageDataSource: SupabaseMessageDataSource
 ) : MessageRepository {
     
     override fun getConversations(userId: String): Flow<Resource<List<Conversation>>> {

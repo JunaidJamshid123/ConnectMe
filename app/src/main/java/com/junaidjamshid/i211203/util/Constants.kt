@@ -1,7 +1,7 @@
 package com.junaidjamshid.i211203.util
 
 object Constants {
-    // Firebase Database References
+    // Database Table References (using Supabase PostgreSQL)
     const val USERS_REF = "users"
     const val POSTS_REF = "posts"
     const val STORIES_REF = "stories"

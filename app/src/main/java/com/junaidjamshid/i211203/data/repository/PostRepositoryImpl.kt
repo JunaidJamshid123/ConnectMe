@@ -5,8 +5,8 @@ import com.junaidjamshid.i211203.data.dto.CommentDto
 import com.junaidjamshid.i211203.data.dto.PostDto
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDto
-import com.junaidjamshid.i211203.data.remote.firebase.FirebasePostDataSource
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseUserDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabasePostDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.Comment
 import com.junaidjamshid.i211203.domain.model.Post
 import com.junaidjamshid.i211203.domain.repository.PostRepository
@@ -20,12 +20,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of PostRepository that uses Firebase.
+ * Implementation of PostRepository that uses Supabase.
  */
 @Singleton
 class PostRepositoryImpl @Inject constructor(
-    private val postDataSource: FirebasePostDataSource,
-    private val userDataSource: FirebaseUserDataSource
+    private val postDataSource: SupabasePostDataSource,
+    private val userDataSource: SupabaseUserDataSource
 ) : PostRepository {
     
     override fun getFeedPosts(userId: String): Flow<Resource<List<Post>>> {

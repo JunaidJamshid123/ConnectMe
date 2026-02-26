@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="wrap_content"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:gravity="center_horizontal"
     android:orientation="vertical"
     android:paddingHorizontal="6dp">
@@ -10,8 +10,8 @@
     <!-- Story Circle with Instagram Gradient Ring -->
     <FrameLayout
         android:id="@+id/story_container"
-        android:layout_width="72dp"
-        android:layout_height="72dp">
+        android:layout_width="64dp"
+        android:layout_height="64dp">
 
         <!-- Gradient Ring Background -->
         <View
@@ -22,33 +22,33 @@
 
         <!-- White Inner Ring -->
         <View
-            android:layout_width="68dp"
-            android:layout_height="68dp"
+            android:layout_width="60dp"
+            android:layout_height="60dp"
             android:layout_gravity="center"
             android:background="@drawable/circle_border" />
 
         <!-- Profile Image -->
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/imgStoryProfile"
-            android:layout_width="64dp"
-            android:layout_height="64dp"
+            android:layout_width="56dp"
+            android:layout_height="56dp"
             android:layout_gravity="center"
             android:scaleType="centerCrop"
-            android:src="@drawable/junaid1" />
+            android:src="@drawable/default_profile" />
 
     </FrameLayout>
 
     <!-- Username Text -->
     <TextView
         android:id="@+id/tvUsername"
-        android:layout_width="72dp"
+        android:layout_width="64dp"
         android:layout_height="wrap_content"
-        android:layout_marginTop="4dp"
+        android:layout_marginTop="6dp"
         android:ellipsize="end"
         android:gravity="center"
         android:maxLines="1"
         android:text="username"
         android:textColor="#262626"
-        android:textSize="11sp" />
+        android:textSize="12sp" />
 
 </LinearLayout>

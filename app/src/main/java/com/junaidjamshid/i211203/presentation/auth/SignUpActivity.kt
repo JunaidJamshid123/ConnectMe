@@ -9,6 +9,7 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import com.junaidjamshid.i211203.databinding.ActivitySignUpScreenBinding
+import com.junaidjamshid.i211203.presentation.main.MainActivityNew
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -51,6 +52,7 @@ class SignUpActivity : AppCompatActivity() {
                 viewModel.onPhoneNumberChange(phone)
                 viewModel.onEmailChange(email)
                 viewModel.onPasswordChange(password)
+                viewModel.onConfirmPasswordChange(password) // Set confirm password same as password
                 viewModel.onSignUpClick()
             }
         }
@@ -106,10 +108,10 @@ class SignUpActivity : AppCompatActivity() {
         // Show/hide loading
         binding.registerBtn.isEnabled = !state.isLoading
         
-        // Handle success
+        // Handle success - navigate directly to home since user is now authenticated
         if (state.isSignedUp) {
             Toast.makeText(this, "Registration Successful!", Toast.LENGTH_SHORT).show()
-            navigateToLogin()
+            navigateToHome()
         }
         
         // Handle error
@@ -119,9 +121,9 @@ class SignUpActivity : AppCompatActivity() {
         }
     }
     
-    private fun navigateToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java).apply {
-            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK
+    private fun navigateToHome() {
+        startActivity(Intent(this, MainActivityNew::class.java).apply {
+            flags = Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
         })
         finish()
     }

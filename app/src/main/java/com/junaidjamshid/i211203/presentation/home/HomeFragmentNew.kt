@@ -11,6 +11,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
 import android.widget.ImageView
+import android.widget.LinearLayout
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -19,6 +20,7 @@ import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.presentation.contacts.ContactsFragmentNew
 import com.junaidjamshid.i211203.presentation.home.adapter.PostAdapterNew
@@ -41,6 +43,8 @@ class HomeFragmentNew : Fragment() {
     private lateinit var postAdapter: PostAdapterNew
     private lateinit var storiesRecyclerView: RecyclerView
     private lateinit var storyAdapter: StoryAdapterNew
+    private var swipeRefreshLayout: SwipeRefreshLayout? = null
+    private var emptyStateView: LinearLayout? = null
     
     private val TAG = "HomeFragmentNew"
 
@@ -53,6 +57,7 @@ class HomeFragmentNew : Fragment() {
         
         setupViews(view)
         setupRecyclerViews(view)
+        setupSwipeRefresh(view)
         observeState()
         
         return view
@@ -62,7 +67,8 @@ class HomeFragmentNew : Fragment() {
         val addStory = view.findViewById<FrameLayout>(R.id.addStroy)
         val dms = view.findViewById<ImageView>(R.id.DMs)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
-        
+        emptyStateView = view.findViewById(R.id.empty_state)
+
         dms.setOnClickListener {
             // Navigate to contacts/DMs tab
             (activity as? MainActivityNew)?.navigateToTab(R.id.nav_contacts)
@@ -71,6 +77,19 @@ class HomeFragmentNew : Fragment() {
         addStory.setOnClickListener {
             // Navigate to add post tab
             (activity as? MainActivityNew)?.navigateToTab(R.id.nav_add_post)
+        }
+    }
+    
+    private fun setupSwipeRefresh(view: View) {
+        swipeRefreshLayout = view.findViewById(R.id.swipe_refresh)
+        swipeRefreshLayout?.setColorSchemeResources(
+            android.R.color.holo_blue_bright,
+            android.R.color.holo_green_light,
+            android.R.color.holo_orange_light,
+            android.R.color.holo_red_light
+        )
+        swipeRefreshLayout?.setOnRefreshListener {
+            viewModel.onRefresh()
         }
     }
     
@@ -109,6 +128,9 @@ class HomeFragmentNew : Fragment() {
     }
     
     private fun updateUI(state: HomeUiState) {
+        // Stop refreshing indicator
+        swipeRefreshLayout?.isRefreshing = state.isRefreshing
+        
         // Update current user profile image
         state.currentUser?.let { user ->
             user.profilePicture?.let { profilePic ->
@@ -135,10 +157,13 @@ class HomeFragmentNew : Fragment() {
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
         }
         
-        // Show empty state if needed
+        // Show/hide empty state
         if (!state.isLoadingPosts && state.posts.isEmpty()) {
-            // Handle empty state
-            Log.d(TAG, "No posts found")
+            emptyStateView?.visibility = View.VISIBLE
+            recyclerView.visibility = View.GONE
+        } else {
+            emptyStateView?.visibility = View.GONE
+            recyclerView.visibility = View.VISIBLE
         }
     }
     

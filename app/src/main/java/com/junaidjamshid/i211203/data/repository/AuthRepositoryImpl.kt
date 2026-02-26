@@ -1,8 +1,8 @@
 package com.junaidjamshid.i211203.data.repository
 
 import com.junaidjamshid.i211203.data.mapper.UserMapper.toDomain
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseAuthDataSource
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseUserDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseAuthDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.User
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
 import com.junaidjamshid.i211203.util.Resource
@@ -10,12 +10,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of AuthRepository that uses Firebase.
+ * Implementation of AuthRepository that uses Supabase.
  */
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
-    private val authDataSource: FirebaseAuthDataSource,
-    private val userDataSource: FirebaseUserDataSource
+    private val authDataSource: SupabaseAuthDataSource,
+    private val userDataSource: SupabaseUserDataSource
 ) : AuthRepository {
     
     override suspend fun login(email: String, password: String): Resource<User> {

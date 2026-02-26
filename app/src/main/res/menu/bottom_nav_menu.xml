@@ -3,27 +3,27 @@
 
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/home"
+        android:icon="@drawable/home_new"
         android:title="Home" />
 
     <item
         android:id="@+id/nav_search"
-        android:icon="@drawable/searchh"
+        android:icon="@drawable/search_new"
         android:title="Search" />
 
     <item
         android:id="@+id/nav_add_post"
-        android:icon="@drawable/add_icon2"
+        android:icon="@drawable/add_new"
         android:title="Post" />
 
     <item
         android:id="@+id/nav_contacts"
-        android:icon="@drawable/menuu"
-        android:title="Contacts" />
+        android:icon="@drawable/reels"
+        android:title="Reels" />
 
     <item
         android:id="@+id/nav_profile"
-        android:icon="@drawable/avatar"
+        android:icon="@drawable/profile_new"
         android:title="Profile" />
 
 </menu>

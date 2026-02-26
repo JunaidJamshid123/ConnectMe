@@ -2,7 +2,7 @@ package com.junaidjamshid.i211203.data.repository
 
 import com.junaidjamshid.i211203.data.mapper.UserMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.UserMapper.toUpdateMap
-import com.junaidjamshid.i211203.data.remote.firebase.FirebaseUserDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.User
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.util.Resource
@@ -14,11 +14,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 /**
- * Implementation of UserRepository that uses Firebase.
+ * Implementation of UserRepository that uses Supabase.
  */
 @Singleton
 class UserRepositoryImpl @Inject constructor(
-    private val userDataSource: FirebaseUserDataSource
+    private val userDataSource: SupabaseUserDataSource
 ) : UserRepository {
     
     override suspend fun getUserById(userId: String): Resource<User> {
