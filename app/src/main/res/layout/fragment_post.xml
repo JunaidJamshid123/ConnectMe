@@ -1,119 +1,183 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
     tools:context=".PostFragment">
 
+    <!-- Header -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_marginTop="15dp"
-        android:id="@+id/RL1"
-        android:layout_height="wrap_content">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:text="New Post"
-            android:textStyle="bold"
-            android:textSize="20dp"
-            android:layout_centerInParent="true"
-            android:textColor="@color/black"
-            android:layout_height="wrap_content">
-        </TextView>
+        android:layout_height="44dp"
+        android:background="@color/white"
+        android:paddingHorizontal="16dp">
 
         <ImageView
             android:id="@+id/back_button"
-            android:layout_width="30dp"
-            android:src="@drawable/close"
-            android:layout_marginStart="20dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_alignParentStart="true"
-            android:layout_height="30dp">
-        </ImageView>
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:src="@drawable/close" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="New Post"
+            android:textColor="#262626"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/share"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:text="Share"
+            android:textColor="#0095F6"
+            android:textSize="14sp"
+            android:textStyle="bold" />
     </RelativeLayout>
 
-    <LinearLayout
+    <!-- Divider -->
+    <View
         android:layout_width="match_parent"
-        android:orientation="vertical"
-        android:layout_below="@id/RL1"
-        android:layout_marginTop="20dp"
-        android:layout_marginStart="15dp"
-        android:layout_marginEnd="15dp"
-        android:layout_above="@id/share"
-        android:layout_height="match_parent">
+        android:layout_height="0.3dp"
+        android:background="#DBDBDB" />
 
-        <HorizontalScrollView
+    <!-- Loading indicator -->
+    <FrameLayout
+        android:id="@+id/loading_overlay"
+        android:layout_width="match_parent"
+        android:layout_height="3dp"
+        android:visibility="gone">
+
+        <ProgressBar
+            android:id="@+id/progress_bar"
+            style="?android:attr/progressBarStyleHorizontal"
             android:layout_width="match_parent"
-            android:layout_margin="10dp"
-            android:layout_height="350dp"
-            android:fillViewport="true"
-            android:scrollbars="none">
+            android:layout_height="3dp"
+            android:indeterminate="true"
+            android:indeterminateTint="#0095F6" />
+    </FrameLayout>
 
-            <LinearLayout
-                android:id="@+id/image_container"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:orientation="horizontal">
+    <!-- Content area -->
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-                <!-- Default image placeholder -->
-                <FrameLayout
-                    android:id="@+id/image_placeholder"
-                    android:layout_width="350dp"
-                    android:layout_height="match_parent"
-                    android:background="#EFEFEF">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
 
+            <!-- Image Preview - Full width, square aspect ratio -->
+            <FrameLayout
+                android:id="@+id/image_placeholder"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                android:focusable="true">
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <!-- Placeholder background -->
+                    <View
+                        android:id="@+id/placeholder_bg"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:background="#FAFAFA"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Selected image -->
                     <ImageView
                         android:id="@+id/post_image"
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
                         android:scaleType="centerCrop"
-                        android:visibility="gone" />
+                        android:visibility="gone"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
 
-                    <ImageButton
-                        android:id="@+id/select_image_button"
-                        android:layout_width="70dp"
-                        android:layout_height="70dp"
-                        android:layout_gravity="center"
-                        android:background="@android:color/transparent"
-                        app:tint="#664242" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- Tap to add overlay (shown when no image selected) -->
+                <LinearLayout
+                    android:id="@+id/select_image_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:gravity="center"
+                    android:orientation="vertical"
+                    android:padding="32dp">
+
+                    <ImageView
+                        android:layout_width="48dp"
+                        android:layout_height="48dp"
+                        android:src="@drawable/ic_gallery"
+                        app:tint="#C7C7C7" />
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Tap to select image"
-                        android:layout_gravity="center"
-                        android:layout_marginTop="50dp"
-                        android:textColor="#664242" />
-                </FrameLayout>
+                        android:layout_marginTop="12dp"
+                        android:text="Tap to select a photo"
+                        android:textColor="#8E8E8E"
+                        android:textSize="14sp" />
 
-            </LinearLayout>
-        </HorizontalScrollView>
+                </LinearLayout>
+            </FrameLayout>
 
-        <EditText
-            android:id="@+id/caption_input"
-            android:layout_width="match_parent"
-            android:padding="25dp"
-            android:layout_marginTop="20dp"
-            android:backgroundTint="#B2664242"
-            android:hint="Enter Caption Here..."
-            android:textColorHint="@color/white"
-            android:background="@drawable/edit_text_background"
-            android:layout_height="wrap_content">
-        </EditText>
-    </LinearLayout>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="#DBDBDB" />
 
-    <Button
-        android:layout_width="match_parent"
-        android:text="Share"
-        android:id="@+id/share"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="20dp"
-        android:textStyle="bold"
-        android:layout_marginEnd="15dp"
-        android:layout_marginStart="15dp"
-        android:backgroundTint="#664242"
-        android:padding="15dp"
-        android:layout_height="wrap_content">
-    </Button>
+            <!-- Caption Input -->
+            <EditText
+                android:id="@+id/caption_input"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@null"
+                android:gravity="top|start"
+                android:hint="Write a caption..."
+                android:inputType="textMultiLine"
+                android:lineSpacingExtra="4dp"
+                android:minHeight="100dp"
+                android:padding="16dp"
+                android:textColor="#262626"
+                android:textColorHint="#C7C7C7"
+                android:textSize="14sp" />
 
-</RelativeLayout>
+            <!-- Divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="#DBDBDB" />
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

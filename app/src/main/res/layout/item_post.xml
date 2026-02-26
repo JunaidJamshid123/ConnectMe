@@ -7,28 +7,27 @@
     android:background="@color/white">
 
     <!-- Header with profile pic, username, more button -->
-    <RelativeLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="54dp"
-        android:paddingHorizontal="12dp"
-        android:gravity="center_vertical">
+        android:paddingHorizontal="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
 
         <de.hdodenhof.circleimageview.CircleImageView
             android:id="@+id/profile_image"
             android:layout_width="32dp"
             android:layout_height="32dp"
-            android:src="@drawable/junaid1"
-            android:layout_centerVertical="true"
+            android:src="@drawable/default_profile"
             app:civ_border_width="0.5dp"
-            app:civ_border_color="#DEDEDE"/>
+            app:civ_border_color="#EFEFEF"/>
 
         <LinearLayout
-            android:layout_width="wrap_content"
+            android:layout_width="0dp"
             android:layout_height="wrap_content"
+            android:layout_weight="1"
             android:orientation="vertical"
-            android:layout_toEndOf="@id/profile_image"
-            android:layout_marginStart="10dp"
-            android:layout_centerVertical="true">
+            android:layout_marginStart="10dp">
 
             <TextView
                 android:id="@+id/username_text"
@@ -54,24 +53,22 @@
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:src="@drawable/ic_more_horiz"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
             android:clickable="true"
             android:focusable="true"
             android:background="?attr/selectableItemBackgroundBorderless"/>
-    </RelativeLayout>
+    </LinearLayout>
 
-    <!-- Post Image - Matching screen width for square posts -->
+    <!-- Post Image - Full width square -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
-        
+
         <ImageView
             android:id="@+id/post_image"
             android:layout_width="0dp"
             android:layout_height="0dp"
             android:scaleType="centerCrop"
-            android:src="@drawable/junaid2"
+            android:background="#FAFAFA"
             app:layout_constraintTop_toTopOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -82,7 +79,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="46dp"
-        android:paddingHorizontal="12dp">
+        android:paddingHorizontal="14dp">
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -94,8 +91,8 @@
             <!-- Like/Heart Button -->
             <ImageView
                 android:id="@+id/heart"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_heart_outline"
                 android:clickable="true"
                 android:focusable="true"
@@ -104,10 +101,10 @@
             <!-- Comment Button -->
             <ImageView
                 android:id="@+id/comment"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_comment"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="14dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -115,10 +112,10 @@
             <!-- Share/Send Button -->
             <ImageView
                 android:id="@+id/send"
-                android:layout_width="26dp"
-                android:layout_height="26dp"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
                 android:src="@drawable/ic_share"
-                android:layout_marginStart="16dp"
+                android:layout_marginStart="14dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"/>
@@ -127,8 +124,8 @@
         <!-- Save/Bookmark Button -->
         <ImageView
             android:id="@+id/save"
-            android:layout_width="26dp"
-            android:layout_height="26dp"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:src="@drawable/ic_bookmark"
             android:layout_alignParentEnd="true"
             android:layout_centerVertical="true"
@@ -142,46 +139,46 @@
         android:id="@+id/likes_count"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="10,547 likes"
+        android:text="0 likes"
         android:textColor="#262626"
         android:textStyle="bold"
         android:textSize="13sp"
-        android:paddingHorizontal="12dp"/>
+        android:paddingHorizontal="14dp"/>
 
     <!-- Caption with Username -->
     <TextView
         android:id="@+id/post_caption"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="4dp"
+        android:paddingHorizontal="14dp"
+        android:paddingTop="3dp"
         android:textColor="#262626"
         android:textSize="13sp"
-        android:lineSpacingExtra="2dp">
-        <![CDATA[<b>username</b> Lorem ipsum dolor sit amet, consectetur]]>
-    </TextView>
+        android:lineSpacingExtra="2dp" />
 
     <!-- View all comments link -->
     <TextView
         android:id="@+id/view_comments"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="View all 42 comments"
+        android:text="View all comments"
         android:textColor="#8E8E8E"
         android:textSize="13sp"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="4dp"/>
+        android:paddingHorizontal="14dp"
+        android:paddingTop="3dp"/>
 
     <!-- Timestamp -->
     <TextView
         android:id="@+id/timestamp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="2 hours ago"
-        android:textColor="#8E8E8E"
+        android:text="2 HOURS AGO"
+        android:textColor="#C7C7C7"
         android:textSize="10sp"
-        android:paddingHorizontal="12dp"
+        android:paddingHorizontal="14dp"
         android:paddingTop="4dp"
-        android:paddingBottom="12dp"/>
+        android:paddingBottom="16dp"
+        android:textAllCaps="true"
+        android:letterSpacing="0.02"/>
 
 </LinearLayout>

@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
@@ -107,6 +108,8 @@ class SignUpActivity : AppCompatActivity() {
     private fun handleUiState(state: SignUpUiState) {
         // Show/hide loading
         binding.registerBtn.isEnabled = !state.isLoading
+        binding.signupProgressBar.isVisible = state.isLoading
+        binding.registerBtn.text = if (state.isLoading) "" else "Sign up"
         
         // Handle success - navigate directly to home since user is now authenticated
         if (state.isSignedUp) {

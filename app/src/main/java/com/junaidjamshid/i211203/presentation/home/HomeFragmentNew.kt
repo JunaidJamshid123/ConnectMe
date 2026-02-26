@@ -9,6 +9,7 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
@@ -21,6 +22,7 @@ import androidx.lifecycle.repeatOnLifecycle
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.facebook.shimmer.ShimmerFrameLayout
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.presentation.contacts.ContactsFragmentNew
 import com.junaidjamshid.i211203.presentation.home.adapter.PostAdapterNew
@@ -45,6 +47,10 @@ class HomeFragmentNew : Fragment() {
     private lateinit var storyAdapter: StoryAdapterNew
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
     private var emptyStateView: LinearLayout? = null
+    private var storiesContainer: LinearLayout? = null
+    private var postsContainer: FrameLayout? = null
+    private var shimmerStories: ShimmerFrameLayout? = null
+    private var shimmerPosts: ShimmerFrameLayout? = null
     
     private val TAG = "HomeFragmentNew"
 
@@ -68,6 +74,23 @@ class HomeFragmentNew : Fragment() {
         val dms = view.findViewById<ImageView>(R.id.DMs)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
         emptyStateView = view.findViewById(R.id.empty_state)
+        storiesContainer = view.findViewById(R.id.stories_container)
+        postsContainer = view.findViewById(R.id.posts_container)
+        shimmerStories = view.findViewById(R.id.shimmer_stories)
+        shimmerPosts = view.findViewById(R.id.shimmer_posts)
+
+        // Make shimmer post image placeholders square (width = screen width)
+        shimmerPosts?.viewTreeObserver?.addOnGlobalLayoutListener(object : ViewTreeObserver.OnGlobalLayoutListener {
+            override fun onGlobalLayout() {
+                shimmerPosts?.viewTreeObserver?.removeOnGlobalLayoutListener(this)
+                val screenWidth = shimmerPosts?.width ?: return
+                shimmerPosts?.findViewsWithTag("square_placeholder")?.forEach { placeholder ->
+                    placeholder.layoutParams = placeholder.layoutParams.apply {
+                        height = screenWidth
+                    }
+                }
+            }
+        })
 
         dms.setOnClickListener {
             // Navigate to contacts/DMs tab
@@ -130,6 +153,28 @@ class HomeFragmentNew : Fragment() {
     private fun updateUI(state: HomeUiState) {
         // Stop refreshing indicator
         swipeRefreshLayout?.isRefreshing = state.isRefreshing
+
+        // Shimmer for stories
+        if (state.isLoadingStories && !state.isRefreshing) {
+            shimmerStories?.visibility = View.VISIBLE
+            shimmerStories?.startShimmer()
+            storiesContainer?.visibility = View.GONE
+        } else {
+            shimmerStories?.stopShimmer()
+            shimmerStories?.visibility = View.GONE
+            storiesContainer?.visibility = View.VISIBLE
+        }
+
+        // Shimmer for posts
+        if (state.isLoadingPosts && !state.isRefreshing) {
+            shimmerPosts?.visibility = View.VISIBLE
+            shimmerPosts?.startShimmer()
+            postsContainer?.visibility = View.GONE
+        } else {
+            shimmerPosts?.stopShimmer()
+            shimmerPosts?.visibility = View.GONE
+            postsContainer?.visibility = View.VISIBLE
+        }
         
         // Update current user profile image
         state.currentUser?.let { user ->
@@ -157,7 +202,7 @@ class HomeFragmentNew : Fragment() {
             Toast.makeText(context, error, Toast.LENGTH_SHORT).show()
         }
         
-        // Show/hide empty state
+        // Show/hide empty state (only when not loading)
         if (!state.isLoadingPosts && state.posts.isEmpty()) {
             emptyStateView?.visibility = View.VISIBLE
             recyclerView.visibility = View.GONE
@@ -215,4 +260,15 @@ class HomeFragmentNew : Fragment() {
         @JvmStatic
         fun newInstance() = HomeFragmentNew()
     }
+}
+
+/** Recursively find all child views with the given tag. */
+private fun ViewGroup.findViewsWithTag(tag: String): List<View> {
+    val result = mutableListOf<View>()
+    for (i in 0 until childCount) {
+        val child = getChildAt(i)
+        if (child.tag == tag) result.add(child)
+        if (child is ViewGroup) result.addAll(child.findViewsWithTag(tag))
+    }
+    return result
 }

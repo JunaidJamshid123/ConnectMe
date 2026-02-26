@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/white">
+
+    <!-- Header skeleton: profile circle + username lines -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="54dp"
+        android:paddingHorizontal="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <!-- Profile circle placeholder -->
+        <View
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:orientation="vertical"
+            android:layout_marginStart="10dp">
+
+            <!-- Username placeholder -->
+            <View
+                android:layout_width="100dp"
+                android:layout_height="10dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <!-- Location placeholder -->
+            <View
+                android:layout_width="60dp"
+                android:layout_height="8dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <!-- Menu dots placeholder -->
+        <View
+            android:layout_width="18dp"
+            android:layout_height="4dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Post image placeholder - full width square -->
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:background="#EFEFEF"
+            android:tag="square_placeholder" />
+    </FrameLayout>
+
+    <!-- Action buttons placeholder -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="46dp"
+        android:paddingHorizontal="14dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="14dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_marginStart="14dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+
+        <View
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <View
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Likes placeholder -->
+    <View
+        android:layout_width="80dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="14dp"
+        android:background="@drawable/shimmer_rounded_rect" />
+
+    <!-- Caption placeholder line 1 -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="10dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginEnd="40dp"
+        android:layout_marginTop="8dp"
+        android:background="@drawable/shimmer_rounded_rect" />
+
+    <!-- Caption placeholder line 2 -->
+    <View
+        android:layout_width="180dp"
+        android:layout_height="10dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="6dp"
+        android:background="@drawable/shimmer_rounded_rect" />
+
+    <!-- Timestamp placeholder -->
+    <View
+        android:layout_width="60dp"
+        android:layout_height="8dp"
+        android:layout_marginStart="14dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginBottom="16dp"
+        android:background="@drawable/shimmer_rounded_rect" />
+
+</LinearLayout>

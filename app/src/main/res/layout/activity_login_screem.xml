@@ -72,18 +72,31 @@
             android:textStyle="bold" />
 
         <!-- Login Button - Instagram Blue -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/LoginBtn"
+        <FrameLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
-            android:layout_marginTop="24dp"
-            android:text="Log In"
-            android:textAllCaps="false"
-            android:textColor="@color/white"
-            android:textSize="14sp"
-            android:textStyle="bold"
-            app:backgroundTint="@color/instagram_blue"
-            app:cornerRadius="8dp" />
+            android:layout_marginTop="24dp">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/LoginBtn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Log In"
+                android:textAllCaps="false"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/instagram_blue"
+                app:cornerRadius="8dp" />
+
+            <ProgressBar
+                android:id="@+id/loginProgressBar"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_gravity="center"
+                android:indeterminateTint="@color/white"
+                android:visibility="gone" />
+        </FrameLayout>
 
         <!-- OR Divider -->
         <LinearLayout

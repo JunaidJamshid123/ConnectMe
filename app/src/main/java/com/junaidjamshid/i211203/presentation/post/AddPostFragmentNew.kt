@@ -10,18 +10,21 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.repeatOnLifecycle
+import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.databinding.FragmentPostBinding
+import com.junaidjamshid.i211203.presentation.main.MainActivityNew
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.io.ByteArrayOutputStream
 
 /**
- * Clean Architecture Add Post Fragment.
+ * Clean Architecture Add Post Fragment - Instagram style.
  */
 @AndroidEntryPoint
 class AddPostFragmentNew : Fragment() {
@@ -67,14 +70,14 @@ class AddPostFragmentNew : Fragment() {
     
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
         setupClickListeners()
         observeUiState()
     }
     
     private fun setupClickListeners() {
         binding.backButton.setOnClickListener {
-            requireActivity().onBackPressed()
+            // Navigate back to home tab
+            (activity as? MainActivityNew)?.navigateToTab(R.id.nav_home)
         }
         
         binding.selectImageButton.setOnClickListener {
@@ -101,15 +104,18 @@ class AddPostFragmentNew : Fragment() {
     }
     
     private fun handleUiState(state: AddPostUiState) {
-        // Handle loading
+        // Show/hide loading
+        binding.loadingOverlay.isVisible = state.isLoading
         binding.share.isEnabled = !state.isLoading
+        binding.share.alpha = if (state.isLoading) 0.5f else 1.0f
         
         // Handle post created
         if (state.postCreated) {
             Toast.makeText(requireContext(), "Post shared successfully!", Toast.LENGTH_SHORT).show()
             viewModel.resetPostCreated()
-            // Navigate back or reset form
             resetForm()
+            // Navigate to home and refresh feed
+            (activity as? MainActivityNew)?.navigateToHomeAndRefresh()
         }
         
         // Handle error

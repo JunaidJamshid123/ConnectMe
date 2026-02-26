@@ -81,6 +81,8 @@ class LoginActivity : AppCompatActivity() {
     private fun handleUiState(state: LoginUiState) {
         // Show/hide loading
         binding.LoginBtn.isEnabled = !state.isLoading
+        binding.loginProgressBar.isVisible = state.isLoading
+        binding.LoginBtn.text = if (state.isLoading) "" else "Log In"
         
         // Handle success
         if (state.isLoggedIn) {

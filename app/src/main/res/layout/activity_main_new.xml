@@ -18,18 +18,18 @@
     <!-- Divider -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.5dp"
+        android:layout_height="0.3dp"
         android:background="#DBDBDB" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottom_navigation"
         android:layout_width="match_parent"
-        android:layout_height="56dp"
+        android:layout_height="50dp"
         android:background="@color/white"
-        app:elevation="8dp"
-        app:itemIconSize="28dp"
-        app:itemIconTint="@null"
+        app:elevation="0dp"
+        app:itemIconSize="26dp"
+        app:itemIconTint="@drawable/bottom_nav_selector"
         app:itemRippleColor="@android:color/transparent"
         app:labelVisibilityMode="unlabeled"
         app:menu="@menu/bottom_nav_menu" />
