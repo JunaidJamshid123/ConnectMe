@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junaidjamshid.i211203.domain.model.User
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
+import com.junaidjamshid.i211203.domain.repository.PostRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,12 +16,13 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 /**
- * ViewModel for Search functionality.
+ * ViewModel for Search/Explore functionality.
  */
 @HiltViewModel
 class SearchViewModel @Inject constructor(
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val postRepository: PostRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(SearchUiState())
@@ -32,6 +34,7 @@ class SearchViewModel @Inject constructor(
     init {
         loadAllUsers()
         loadRecentSearches()
+        loadExplorePosts()
     }
     
     private fun loadAllUsers() {
@@ -61,6 +64,44 @@ class SearchViewModel @Inject constructor(
                 }
             }
         }
+    }
+    
+    /**
+     * Load explore/discover posts for the grid.
+     * Uses feed posts which contain posts from all users.
+     */
+    private fun loadExplorePosts() {
+        val userId = currentUserId ?: return
+        viewModelScope.launch {
+            _uiState.update { it.copy(isLoadingExplore = true) }
+            
+            postRepository.getFeedPosts(userId).collect { result ->
+                when (result) {
+                    is Resource.Success -> {
+                        val posts = result.data?.shuffled() ?: emptyList()
+                        _uiState.update { state ->
+                            state.copy(
+                                isLoadingExplore = false,
+                                explorePosts = posts,
+                                error = null
+                            )
+                        }
+                    }
+                    is Resource.Error -> {
+                        _uiState.update {
+                            it.copy(isLoadingExplore = false, error = result.message)
+                        }
+                    }
+                    is Resource.Loading -> {
+                        _uiState.update { it.copy(isLoadingExplore = true) }
+                    }
+                }
+            }
+        }
+    }
+    
+    fun refreshExplorePosts() {
+        loadExplorePosts()
     }
     
     private fun loadRecentSearches() {

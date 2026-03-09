@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white">
+
+    <ImageView
+        android:id="@+id/iv_explore_image"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        android:background="#EFEFEF"
+        android:contentDescription="Explore post" />
+
+    <!-- Collections/carousel icon overlay (top-right) -->
+    <ImageView
+        android:id="@+id/iv_type_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_gravity="top|end"
+        android:layout_margin="8dp"
+        android:visibility="gone"
+        android:contentDescription="Post type" />
+
+</FrameLayout>

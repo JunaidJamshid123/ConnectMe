@@ -31,7 +31,9 @@ class PostRepositoryImpl @Inject constructor(
     override fun getFeedPosts(userId: String): Flow<Resource<List<Post>>> {
         return postDataSource.getFeedPosts()
             .map { posts ->
-                Resource.Success(posts.map { it.toDomain(userId) }) as Resource<List<Post>>
+                // Enrich posts with latest user profile images from the users table
+                val enrichedPosts = enrichPostsWithUserData(posts)
+                Resource.Success(enrichedPosts.map { it.toDomain(userId) }) as Resource<List<Post>>
             }
             .catch { e ->
                 emit(Resource.Error(e.message ?: "Failed to load posts"))
@@ -68,13 +70,42 @@ class PostRepositoryImpl @Inject constructor(
     override fun getUserPosts(userId: String): Flow<Resource<List<Post>>> {
         return postDataSource.getUserPostsFlow(userId)
             .map { posts ->
-                Resource.Success(posts.map { it.toDomain(userId) }) as Resource<List<Post>>
+                val enrichedPosts = enrichPostsWithUserData(posts)
+                Resource.Success(enrichedPosts.map { it.toDomain(userId) }) as Resource<List<Post>>
             }
             .catch { e ->
                 emit(Resource.Error(e.message ?: "Failed to get user posts"))
             }
     }
-    
+
+    /**
+     * Enrich posts with the latest user profile images from the users table.
+     * Avoids showing stale or missing profile pictures that were baked in at post creation time.
+     */
+    private suspend fun enrichPostsWithUserData(posts: List<PostDto>): List<PostDto> {
+        // Gather unique user IDs and batch-fetch their current profiles
+        val userIds = posts.map { it.userId }.distinct()
+        val userProfiles = mutableMapOf<String, String>() // userId -> profilePicture
+
+        for (uid in userIds) {
+            try {
+                val user = userDataSource.getUserById(uid)
+                user?.let {
+                    userProfiles[uid] = it.profilePicture ?: ""
+                }
+            } catch (_: Exception) { /* keep stale value if lookup fails */ }
+        }
+
+        return posts.map { post ->
+            val freshProfileImage = userProfiles[post.userId]
+            if (freshProfileImage != null && freshProfileImage.isNotEmpty()) {
+                post.copy(userProfileImage = freshProfileImage)
+            } else {
+                post
+            }
+        }
+    }
+
     override suspend fun createPost(caption: String, imageBytes: ByteArray): Resource<Post> {
         return try {
             val currentUserId = userDataSource.getCurrentUserId()
@@ -107,6 +138,44 @@ class PostRepositoryImpl @Inject constructor(
             )
             val createdPost = postDataSource.createPost(postDto)
             Resource.Success(createdPost.toDomain(userId))
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to create post")
+        }
+    }
+    
+    override suspend fun createPost(
+        caption: String,
+        imageBytesList: List<ByteArray>,
+        location: String,
+        musicName: String,
+        musicArtist: String
+    ): Resource<Post> {
+        return try {
+            val currentUserId = userDataSource.getCurrentUserId()
+            if (currentUserId != null) {
+                val user = userDataSource.getUserById(currentUserId)
+                val imageBase64List = imageBytesList.map { bytes ->
+                    Base64.encodeToString(bytes, Base64.DEFAULT)
+                }
+                val primaryImage = imageBase64List.firstOrNull() ?: ""
+                val postDto = PostDto(
+                    postId = "",
+                    userId = currentUserId,
+                    username = user?.username ?: "",
+                    userProfileImage = user?.profilePicture ?: "",
+                    postImageUrl = primaryImage,
+                    imageUrls = imageBase64List,
+                    caption = caption,
+                    location = location,
+                    musicName = musicName,
+                    musicArtist = musicArtist,
+                    timestamp = System.currentTimeMillis()
+                )
+                val createdPost = postDataSource.createPost(postDto)
+                Resource.Success(createdPost.toDomain(currentUserId))
+            } else {
+                Resource.Error("User not logged in")
+            }
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to create post")
         }

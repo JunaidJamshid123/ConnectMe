@@ -26,6 +26,14 @@ interface PostRepository {
         imageBase64: String
     ): Resource<Post>
     
+    suspend fun createPost(
+        caption: String,
+        imageBytesList: List<ByteArray>,
+        location: String,
+        musicName: String,
+        musicArtist: String
+    ): Resource<Post>
+    
     suspend fun deletePost(postId: String): Resource<Unit>
     
     suspend fun likePost(postId: String): Resource<Unit>

@@ -4,153 +4,160 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#FFFFFF"
     android:orientation="vertical"
-    android:background="#FAFAFA"
-    tools:context=".ContactsFragment">
+    tools:context=".presentation.contacts.ContactsFragmentNew">
 
-    <!-- Top Bar with Status -->
+    <!-- ====== TOP BAR ====== -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
-        android:paddingHorizontal="16dp"
-        android:elevation="2dp"
-        android:background="#FFFFFF">
+        android:layout_height="56dp"
+        android:background="#FFFFFF"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
 
+        <!-- Back chevron -->
         <ImageView
             android:id="@+id/back"
             android:layout_width="28dp"
             android:layout_height="28dp"
-            android:src="@drawable/back"
-            android:padding="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Back"
+            android:padding="2dp"
+            android:src="@drawable/ic_chevron_left" />
 
-        <TextView
-            android:id="@+id/user_name"
+        <!-- Username + dropdown arrow -->
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="username"
-            android:textSize="18sp"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#212121"
+            android:layout_centerVertical="true"
+            android:layout_marginStart="4dp"
             android:layout_toEndOf="@id/back"
-            android:layout_marginStart="12dp"
-            android:layout_centerVertical="true"/>
-
-        <ImageView
-            android:id="@+id/edit"
-            android:layout_width="28dp"
-            android:layout_height="28dp"
-            android:src="@drawable/edit"
-            android:padding="2dp"
-            android:background="?attr/selectableItemBackgroundBorderless"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <!-- Subtle divider -->
-    <View
-        android:layout_width="match_parent"
-        android:layout_height="1dp"
-        android:background="#E0E0E0"/>
-
-    <!-- Main Content -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical"
-        android:paddingHorizontal="16dp"
-        android:paddingTop="16dp">
-
-        <!-- Contacts Header -->
-        <TextView
-            android:layout_width="match_parent"
-            android:text="Contacts"
-            android:textStyle="bold"
-            android:fontFamily="sans-serif-medium"
-            android:textColor="#424242"
-            android:textSize="24sp"
-            android:layout_height="wrap_content"/>
-
-        <!-- Search Bar with Card Effect -->
-        <androidx.cardview.widget.CardView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            app:cardCornerRadius="8dp"
-            app:cardElevation="1dp">
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:gravity="center_vertical"
-                android:padding="2dp">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:src="@drawable/ic_search"
-                    android:layout_marginStart="12dp"
-                    android:alpha="0.5"/>
-
-                <EditText
-                    android:id="@+id/search_contacts"
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:inputType="text"
-                    android:hint="Search contacts"
-                    android:background="@null"
-                    android:padding="12dp"
-                    android:textSize="16sp"
-                    android:fontFamily="sans-serif"
-                    android:textColorHint="#757575"/>
-            </LinearLayout>
-        </androidx.cardview.widget.CardView>
-
-        <!-- Section Label with Counter -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:layout_marginTop="20dp"
-            android:layout_marginBottom="8dp">
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/user_name"
                 android:layout_width="wrap_content"
-                android:text="In Contacts"
-                android:textStyle="bold"
-                android:textColor="#424242"
+                android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
-                android:textSize="16sp"
-                android:layout_height="wrap_content"/>
+                android:text="username"
+                android:textColor="#000000"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/contacts_count"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="0"
-                android:textColor="#757575"
-                android:textSize="16sp"
-                android:layout_marginStart="8dp"/>
+            <!-- Small dropdown indicator -->
+            <ImageView
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:layout_marginStart="2dp"
+                android:alpha="0.7"
+                android:src="@drawable/ic_dropdown_arrow" />
+
         </LinearLayout>
 
-        <!-- Divider -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:background="#E0E0E0"/>
+        <!-- Compose / New message icon -->
+        <ImageView
+            android:id="@+id/edit"
+            android:layout_width="26dp"
+            android:layout_height="26dp"
+            android:layout_alignParentEnd="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Compose"
+            android:src="@drawable/ic_compose_24" />
 
-        <!-- RecyclerView with improved styling -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/contacts_recycler_view"
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
+    </RelativeLayout>
+
+    <!-- ====== NOTES / STORIES ROW ====== -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/notesRecyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clipToPadding="false"
+        android:orientation="horizontal"
+        android:paddingStart="12dp"
+        android:paddingEnd="12dp"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
+
+    <!-- Thin divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#E0E0E0" />
+
+    <!-- ====== TAB BAR: Messages | Channels | Requests ====== -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="start"
+        android:orientation="horizontal"
+        android:paddingHorizontal="14dp"
+        android:paddingVertical="10dp">
+
+        <TextView
+            android:id="@+id/tabMessages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_tab_selected"
+            android:fontFamily="sans-serif-medium"
+            android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
-            android:scrollbars="none"/>
+            android:text="Messages"
+            android:textColor="#FFFFFF"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tabChannels"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_tab_unselected"
+            android:fontFamily="sans-serif-medium"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Channels"
+            android:textColor="#262626"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tabRequests"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="6dp"
+            android:background="@drawable/bg_tab_unselected"
+            android:fontFamily="sans-serif-medium"
+            android:paddingHorizontal="16dp"
+            android:paddingVertical="8dp"
+            android:text="Requests"
+            android:textColor="#262626"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
     </LinearLayout>
+
+    <!-- Thin divider -->
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:background="#EFEFEF" />
+
+    <!-- ====== CHAT LIST ====== -->
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/contacts_recycler_view"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:clipToPadding="false"
+        android:overScrollMode="never"
+        android:paddingTop="4dp"
+        android:paddingBottom="8dp"
+        android:scrollbars="none" />
+
 </LinearLayout>

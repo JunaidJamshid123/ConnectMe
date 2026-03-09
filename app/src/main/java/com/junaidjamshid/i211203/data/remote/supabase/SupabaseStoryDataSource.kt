@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203.data.remote.supabase
 
+import android.util.Log
 import com.junaidjamshid.i211203.data.dto.StoryDto
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
@@ -32,11 +33,20 @@ data class SupabaseStory(
 )
 
 /**
- * Supabase representation of Story Viewer.
+ * Supabase representation of Story Viewer (for reading).
  */
 @Serializable
-data class StoryViewer(
-    val id: Long? = null,
+data class StoryViewerRead(
+    val story_id: String = "",
+    val viewer_id: String = "",
+    val viewed_at: Long = 0
+)
+
+/**
+ * Insert-only model for story_viewers — excludes 'id' so BIGSERIAL auto-generates.
+ */
+@Serializable
+data class StoryViewerInsert(
     val story_id: String,
     val viewer_id: String,
     val viewed_at: Long = System.currentTimeMillis()
@@ -61,9 +71,18 @@ class SupabaseStoryDataSource @Inject constructor(
     private val supabaseClient: SupabaseClient
 ) {
     
-    private fun getStoryViewers(storyId: String): Map<String, Boolean> {
-        // Synchronous version for internal use
-        return emptyMap()
+    private suspend fun getStoryViewers(storyId: String): Map<String, Boolean> {
+        return try {
+            val viewers = supabaseClient.postgrest[SupabaseConfig.STORY_VIEWERS_TABLE]
+                .select(columns = Columns.list("viewer_id")) {
+                    filter { eq("story_id", storyId) }
+                }
+                .decodeList<Map<String, String>>()
+            viewers.mapNotNull { it["viewer_id"] }.associateWith { true }
+        } catch (e: Exception) {
+            Log.e("StoryDataSource", "getStoryViewers failed: ${e.message}")
+            emptyMap()
+        }
     }
     
     suspend fun getStoryViewersList(storyId: String): List<String> {
@@ -87,6 +106,7 @@ class SupabaseStoryDataSource @Inject constructor(
                 order("timestamp", Order.DESCENDING)
             }
             .decodeList<SupabaseStory>()
+        Log.d("StoryDataSource", "getActiveStories: found ${stories.size} active stories")
         
         return stories.map { story ->
             val viewers = getStoryViewers(story.story_id)
@@ -195,10 +215,10 @@ class SupabaseStoryDataSource @Inject constructor(
                     eq("viewer_id", viewerId)
                 }
             }
-            .decodeList<StoryViewer>()
+            .decodeList<StoryViewerRead>()
         
         if (existing.isEmpty()) {
-            val viewer = StoryViewer(
+            val viewer = StoryViewerInsert(
                 story_id = storyId,
                 viewer_id = viewerId
             )

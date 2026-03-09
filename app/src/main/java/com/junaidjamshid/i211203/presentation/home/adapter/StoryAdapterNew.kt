@@ -15,7 +15,8 @@ import com.junaidjamshid.i211203.domain.model.Story
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
- * Clean Architecture Story Adapter using ListAdapter with DiffUtil.
+ * Instagram-style Story Adapter for home feed.
+ * Groups stories by user and shows gradient ring for unviewed, grey ring for viewed.
  */
 class StoryAdapterNew(
     private val onStoryClick: (Story) -> Unit
@@ -39,34 +40,41 @@ class StoryAdapterNew(
         fun bind(story: Story) {
             usernameText.text = story.username
             
-            // Load story image
+            // Load profile image
             val imageToLoad = story.userProfileImage.ifEmpty { story.storyImageUrl }
             if (imageToLoad.isNotEmpty()) {
                 try {
                     val decodedBytes = Base64.decode(imageToLoad, Base64.DEFAULT)
                     val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                    storyImage.setImageBitmap(bitmap)
+                    if (bitmap != null) {
+                        storyImage.setImageBitmap(bitmap)
+                    } else {
+                        storyImage.setImageResource(R.drawable.default_profile)
+                    }
                 } catch (e: Exception) {
-                    storyImage.setImageResource(R.drawable.junaid1)
+                    storyImage.setImageResource(R.drawable.default_profile)
                 }
             } else {
-                storyImage.setImageResource(R.drawable.junaid1)
+                storyImage.setImageResource(R.drawable.default_profile)
             }
             
-            // Show/hide gradient ring for unviewed stories
-            gradientRing.visibility = if (!story.isViewedByCurrentUser) View.VISIBLE else View.INVISIBLE
+            // Ring color: gradient for unviewed, grey for viewed
+            if (story.isViewedByCurrentUser) {
+                gradientRing.setBackgroundResource(R.drawable.story_ring_viewed)
+            } else {
+                gradientRing.setBackgroundResource(R.drawable.story_gradient)
+            }
+            gradientRing.visibility = View.VISIBLE
             
             itemView.setOnClickListener { onStoryClick(story) }
         }
     }
 
     class StoryDiffCallback : DiffUtil.ItemCallback<Story>() {
-        override fun areItemsTheSame(oldItem: Story, newItem: Story): Boolean {
-            return oldItem.storyId == newItem.storyId
-        }
+        override fun areItemsTheSame(oldItem: Story, newItem: Story) =
+            oldItem.storyId == newItem.storyId
 
-        override fun areContentsTheSame(oldItem: Story, newItem: Story): Boolean {
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(oldItem: Story, newItem: Story) =
+            oldItem == newItem
     }
 }

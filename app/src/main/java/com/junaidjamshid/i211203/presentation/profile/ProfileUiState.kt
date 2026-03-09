@@ -15,6 +15,7 @@ data class ProfileUiState(
     val followingCount: Int = 0,
     val isFollowing: Boolean = false,
     val isCurrentUser: Boolean = false,
+    val hasActiveStories: Boolean = false,
     val error: String? = null,
     val logoutSuccess: Boolean = false,
     val profileUpdateSuccess: Boolean = false

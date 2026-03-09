@@ -100,6 +100,12 @@
             android:exported="false"
             android:theme="@style/Theme.I211203" />
 
+        <!-- Discover People Activity -->
+        <activity
+            android:name=".presentation.discover.DiscoverPeopleActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <!-- Story Activity -->
         <activity
             android:name=".presentation.story.StoryDisplayActivityNew"
@@ -107,10 +113,24 @@
             android:screenOrientation="portrait"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
 
+        <!-- Add Story Activity -->
+        <activity
+            android:name=".presentation.story.AddStoryActivity"
+            android:exported="false"
+            android:screenOrientation="portrait"
+            android:theme="@style/Theme.I211203" />
+
         <!-- Post Detail Activity -->
         <activity
             android:name=".presentation.post.PostDetailActivity"
             android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
+        <!-- Comments Activity -->
+        <activity
+            android:name=".presentation.post.CommentsActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize"
             android:theme="@style/Theme.I211203" />
 
         <meta-data

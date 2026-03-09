@@ -1,185 +1,568 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".ProfileFragment">
 
-    <LinearLayout
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_profile"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
+        android:visibility="visible"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.95"
+        app:shimmer_highlight_alpha="0.55"
+        app:shimmer_duration="1200">
 
-        <RelativeLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:padding="@dimen/spacing_medium">
+        <include layout="@layout/shimmer_profile_placeholder" />
 
-            <TextView
-                android:id="@+id/tv_profile"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="My Profile"
-                android:textSize="@dimen/text_xlarge"
-                android:textStyle="bold"
-                android:textColor="@color/black"
-                android:layout_centerVertical="true" />
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
-            <ImageView
-                android:id="@+id/edit_profile"
-                android:layout_width="@dimen/icon_size"
-                android:layout_height="@dimen/icon_size"
-                android:layout_alignParentEnd="true"
-                android:src="@drawable/edit"
-                android:padding="@dimen/spacing_xxsmall"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:layout_centerVertical="true" />
-
-            <ImageView
-                android:id="@+id/logout"
-                android:layout_width="@dimen/icon_size"
-                android:layout_height="@dimen/icon_size"
-                android:layout_marginRight="15dp"
-                android:layout_toLeftOf="@+id/edit_profile"
-                android:src="@drawable/logout"
-                android:padding="@dimen/spacing_xxsmall"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:layout_centerVertical="true" />
-        </RelativeLayout>
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/profile_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never"
+        android:visibility="gone">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="@dimen/spacing_medium">
+            android:orientation="vertical">
 
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="@dimen/profile_image_size"
-                android:layout_height="@dimen/profile_image_size"
-                android:layout_marginBottom="@dimen/spacing_small"
-                android:src="@drawable/avatar"
-                app:civ_border_color="#58484F"
-                app:civ_border_width="2dp" />
+            <!-- ========== TOP ACTION BAR (Instagram Style) ========== -->
+            <LinearLayout
+                android:id="@+id/toolbar_container"
+                android:layout_width="match_parent"
+                android:layout_height="44dp"
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp">
 
-            <TextView
-                android:layout_width="wrap_content"
+                <!-- Lock icon (optional, Instagram shows this for private accounts) -->
+                <ImageView
+                    android:id="@+id/lock_icon"
+                    android:layout_width="14dp"
+                    android:layout_height="14dp"
+                    android:layout_marginEnd="4dp"
+                    android:src="@drawable/ic_lock"
+                    android:visibility="gone"
+                    app:tint="#262626"
+                    android:contentDescription="Private account" />
+
+                <!-- Username + Dropdown -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:id="@+id/username_text"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="username"
+                        android:textColor="#262626"
+                        android:textSize="22sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/dropdown_arrow"
+                        android:layout_width="14dp"
+                        android:layout_height="14dp"
+                        android:layout_marginStart="4dp"
+                        android:src="@drawable/ic_dropdown_arrow"
+                        app:tint="#262626"
+                        android:contentDescription="Switch accounts" />
+                </LinearLayout>
+
+                <!-- Right Icons: Threads/Add + Hamburger menu -->
+                <ImageView
+                    android:id="@+id/btn_add_content"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_add_content"
+                    app:tint="#262626"
+                    android:contentDescription="Create" />
+
+                <ImageView
+                    android:id="@+id/btn_menu"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:src="@drawable/ic_hamburger_menu"
+                    app:tint="#262626"
+                    android:contentDescription="Menu" />
+            </LinearLayout>
+
+            <!-- ========== PROFILE HEADER SECTION ========== -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:id="@+id/username_text"
-                android:text="username"
-                android:textSize="@dimen/text_xlarge"
-                android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp"
+                android:paddingEnd="28dp"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp">
 
-            <TextView
-                android:layout_width="wrap_content"
-                android:id="@+id/bio_text"
+                <!-- Profile Picture with Story Ring -->
+                <FrameLayout
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_marginEnd="28dp">
+
+                    <!-- Story Gradient Ring -->
+                    <View
+                        android:id="@+id/story_ring"
+                        android:layout_width="86dp"
+                        android:layout_height="86dp"
+                        android:background="@drawable/profile_story_ring" />
+
+                    <!-- White Ring Spacer -->
+                    <View
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/circle_border" />
+
+                    <!-- Profile Image -->
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="76dp"
+                        android:layout_height="76dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/profile_new" />
+                </FrameLayout>
+
+                <!-- Stats: Posts, Followers, Following -->
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
+
+                    <!-- Posts count -->
+                    <LinearLayout
+                        android:id="@+id/posts_section"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:orientation="vertical">
+
+                        <TextView
+                            android:id="@+id/posts_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="0"
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="posts"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <!-- Followers count -->
+                    <LinearLayout
+                        android:id="@+id/followers"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="4dp">
+
+                        <TextView
+                            android:id="@+id/followers_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="0"
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="followers"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+
+                    <!-- Following count -->
+                    <LinearLayout
+                        android:id="@+id/following"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:background="?attr/selectableItemBackground"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="4dp">
+
+                        <TextView
+                            android:id="@+id/following_count"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
+                            android:text="0"
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="1dp"
+                            android:text="following"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
+                    </LinearLayout>
+                </LinearLayout>
+            </LinearLayout>
+
+            <!-- ========== NAME & BIO SECTION ========== -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="two bananas for a pound, three bananas for a euro"
-                android:textSize="@dimen/text_small"
-                android:textColor="@color/black"
-                android:layout_marginTop="@dimen/spacing_xsmall"
-                android:gravity="center" />
+                android:orientation="vertical"
+                android:paddingStart="16dp"
+                android:paddingEnd="16dp"
+                android:paddingTop="0dp">
+
+                <!-- Full Name -->
+                <TextView
+                    android:id="@+id/full_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Full Name"
+                    android:textColor="#262626"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- Category / Professional label -->
+                <TextView
+                    android:id="@+id/category_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text=""
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <!-- Bio -->
+                <TextView
+                    android:id="@+id/bio_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:lineSpacingExtra="2dp"
+                    android:text="No bio yet"
+                    android:textColor="#262626"
+                    android:textSize="14sp" />
+
+                <!-- Link / Website -->
+                <TextView
+                    android:id="@+id/link_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text=""
+                    android:textColor="#00376B"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- ========== ACTION BUTTONS (Edit Profile, Share, Add Person) ========== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp">
+
+                <!-- Edit Profile Button -->
+                <TextView
+                    android:id="@+id/edit_profile"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_instagram_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="Edit profile"
+                    android:textAllCaps="false"
+                    android:textColor="#262626"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Share Profile Button -->
+                <TextView
+                    android:id="@+id/share_profile"
+                    android:layout_width="0dp"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="4dp"
+                    android:layout_weight="1"
+                    android:background="@drawable/bg_instagram_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="Share profile"
+                    android:textAllCaps="false"
+                    android:textColor="#262626"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Discover People Icon Button -->
+                <FrameLayout
+                    android:id="@+id/btn_discover_people"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/bg_instagram_button_small">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Discover people"
+                        android:src="@drawable/ic_person_add"
+                        app:tint="#262626" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- ========== STORY HIGHLIGHTS SECTION ========== -->
+            <LinearLayout
+                android:id="@+id/highlights_section"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingTop="14dp"
+                android:paddingBottom="6dp">
+
+                <!-- Highlights Title Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp"
+                    android:paddingStart="16dp"
+                    android:paddingEnd="16dp">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-medium"
+                        android:text="Story highlights"
+                        android:textColor="#262626"
+                        android:textSize="14sp"
+                        android:textStyle="bold" />
+
+                    <ImageView
+                        android:id="@+id/btn_expand_highlights"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:contentDescription="Expand"
+                        android:rotation="-90"
+                        android:src="@drawable/ic_dropdown_arrow"
+                        app:tint="#262626" />
+                </LinearLayout>
+
+                <!-- Highlights subtitle -->
+                <TextView
+                    android:id="@+id/highlights_subtitle"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="10dp"
+                    android:paddingEnd="16dp"
+                    android:paddingStart="16dp"
+                    android:text="Keep your favorite stories on your profile"
+                    android:textColor="#8E8E8E"
+                    android:textSize="13sp" />
+
+                <!-- Highlights Horizontal RecyclerView -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/highlights_recycler_view"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    android:overScrollMode="never"
+                    android:paddingEnd="12dp"
+                    android:paddingStart="10dp" />
+            </LinearLayout>
+
+            <!-- ========== TAB BAR (Grid / Tagged) ========== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
+
+                <!-- Grid Tab -->
+                <FrameLayout
+                    android:id="@+id/tab_grid"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_grid_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Grid view"
+                        android:src="@drawable/ic_grid_on"
+                        app:tint="#262626" />
+
+                    <!-- Active indicator -->
+                    <View
+                        android:id="@+id/tab_grid_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="#262626" />
+                </FrameLayout>
+
+                <!-- Tagged Tab -->
+                <FrameLayout
+                    android:id="@+id/tab_tagged"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_tagged_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Tagged photos"
+                        android:src="@drawable/ic_person_tag"
+                        app:tint="#8E8E8E" />
+
+                    <!-- Inactive indicator -->
+                    <View
+                        android:id="@+id/tab_tagged_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="@android:color/transparent" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Thin separator line -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#DBDBDB" />
+
+            <!-- ========== POSTS GRID ========== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
+
+            <!-- Empty state for no posts -->
+            <LinearLayout
+                android:id="@+id/empty_posts_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="60dp"
+                android:visibility="gone">
+
+                <!-- Camera circle border -->
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp">
+
+                    <View
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:background="@drawable/bg_highlight_circle_thin" />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera_outline"
+                        app:tint="#262626" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="Share Photos"
+                    android:textColor="#262626"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="When you share photos, they will\nappear on your profile."
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Share your first photo"
+                    android:textColor="#0095F6"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
         </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:weightSum="3"
-            android:padding="@dimen/spacing_medium">
+    <!-- Logout button is now in the hamburger menu -->
+    <!-- Hidden views for backward compatibility -->
+    <View
+        android:id="@+id/logout"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:visibility="gone" />
 
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:id="@+id/posts_count"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="@dimen/text_large"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="posts"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/followers"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:id="@+id/followers_count"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="@dimen/text_large"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="followers"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:id="@+id/following"
-                android:orientation="vertical"
-                android:gravity="center">
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:id="@+id/following_count"
-                    android:layout_height="wrap_content"
-                    android:text="0"
-                    android:textSize="@dimen/text_large"
-                    android:textStyle="bold"
-                    android:textColor="@color/black" />
-
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="following"
-                    android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
-            </LinearLayout>
-        </LinearLayout>
-
-        <!-- RecyclerView moved here, directly below posts/followers/following section -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:id="@+id/recycler_view"
-            android:layout_marginTop="@dimen/spacing_small"
-            android:layout_marginBottom="@dimen/spacing_small"
-            android:layout_marginLeft="@dimen/spacing_small"
-            android:layout_marginRight="@dimen/spacing_small"
-            android:clipToPadding="false"
-            android:paddingBottom="@dimen/spacing_small"
-            android:paddingLeft="@dimen/spacing_small"
-            android:paddingRight="@dimen/spacing_small"
-            android:layout_height="match_parent">
-        </androidx.recyclerview.widget.RecyclerView>
-
-    </LinearLayout>
-</FrameLayout>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

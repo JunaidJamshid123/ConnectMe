@@ -1,69 +1,202 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:layout_marginBottom="4dp"
-    android:layout_marginHorizontal="2dp"
-    app:cardElevation="0dp"
-    app:cardCornerRadius="0dp"
-    app:cardBackgroundColor="#FFFFFF">
+    android:background="#FFFFFF">
 
+    <!-- Swipe background layer -->
+    <LinearLayout
+        android:id="@+id/swipeBackground"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="end|center_vertical"
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <!-- Pin action -->
+        <LinearLayout
+            android:id="@+id/actionPin"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="#E8E8E8"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_pin_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Pin"
+                android:textColor="#555555"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <!-- Mute action -->
+        <LinearLayout
+            android:id="@+id/actionMute"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="#E8E8E8"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_mute_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Mute"
+                android:textColor="#555555"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+        <!-- Delete action -->
+        <LinearLayout
+            android:id="@+id/actionDelete"
+            android:layout_width="72dp"
+            android:layout_height="match_parent"
+            android:background="#FF3B30"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_delete_24" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Delete"
+                android:textColor="#FFFFFF"
+                android:textSize="11sp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <!-- Foreground content -->
     <RelativeLayout
+        android:id="@+id/foregroundLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="12dp"
-        android:background="?attr/selectableItemBackground">
+        android:background="#FFFFFF"
+        android:paddingStart="16dp"
+        android:paddingEnd="16dp"
+        android:paddingTop="10dp"
+        android:paddingBottom="10dp">
 
-        <de.hdodenhof.circleimageview.CircleImageView
-            android:id="@+id/contact_image"
+        <!-- Avatar with online indicator -->
+        <FrameLayout
+            android:id="@+id/avatarContainer"
             android:layout_width="56dp"
             android:layout_height="56dp"
-            android:src="@drawable/default_profile"
-            app:civ_border_width="0dp"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true">
 
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/contact_image"
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:layout_gravity="center"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_profile"
+                app:civ_border_width="0dp" />
+
+            <!-- Online green dot -->
+            <View
+                android:id="@+id/onlineIndicator"
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="bottom|end"
+                android:layout_marginEnd="0dp"
+                android:layout_marginBottom="0dp"
+                android:background="@drawable/bg_online_indicator"
+                android:visibility="gone" />
+
+        </FrameLayout>
+
+        <!-- Name + Last message + Time -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:layout_toEndOf="@id/contact_image"
-            android:layout_toStartOf="@id/contact_message"
-            android:layout_marginStart="14dp"
-            android:layout_centerVertical="true">
+            android:layout_centerVertical="true"
+            android:layout_marginStart="12dp"
+            android:layout_toEndOf="@id/avatarContainer"
+            android:layout_toStartOf="@id/cameraIcon"
+            android:orientation="vertical">
 
+            <!-- Name row -->
             <TextView
                 android:id="@+id/contact_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif"
+                android:maxLines="1"
                 android:text="username"
-                android:textSize="15sp"
-                android:fontFamily="sans-serif"
-                android:textStyle="bold"
                 android:textColor="#262626"
-                android:ellipsize="end"
-                android:maxLines="1"/>
+                android:textSize="15sp"
+                android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/contact_last_message"
-                android:layout_width="wrap_content"
+            <!-- Last message + time -->
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Active • 2h ago"
-                android:textSize="14sp"
-                android:fontFamily="sans-serif"
-                android:textColor="#8E8E8E"
                 android:layout_marginTop="2dp"
-                android:ellipsize="end"
-                android:maxLines="1"/>
+                android:gravity="center_vertical"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/contact_last_message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:ellipsize="end"
+                    android:fontFamily="sans-serif"
+                    android:maxLines="1"
+                    android:text="Last message..."
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/contact_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="4dp"
+                    android:fontFamily="sans-serif"
+                    android:text=" · 3h"
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
         </LinearLayout>
 
+        <!-- Camera icon on the far right -->
         <ImageView
-            android:id="@+id/contact_message"
+            android:id="@+id/cameraIcon"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:src="@drawable/message"
-            android:background="?attr/selectableItemBackgroundBorderless"
             android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"/>
+            android:layout_centerVertical="true"
+            android:layout_marginStart="8dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Camera"
+            android:src="@drawable/ic_camera_outline_24" />
+
     </RelativeLayout>
-</androidx.cardview.widget.CardView>
+
+</FrameLayout>

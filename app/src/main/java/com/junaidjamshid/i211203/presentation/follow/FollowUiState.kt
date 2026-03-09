@@ -8,8 +8,18 @@ import com.junaidjamshid.i211203.domain.model.User
 data class FollowUiState(
     val isLoading: Boolean = false,
     val users: List<FollowUser> = emptyList(),
+    val followersCount: Int = 0,
+    val followingCount: Int = 0,
+    val currentTab: FollowTab = FollowTab.FOLLOWERS,
     val error: String? = null
 )
+
+/**
+ * Tab selection for followers/following screen.
+ */
+enum class FollowTab {
+    FOLLOWERS, FOLLOWING
+}
 
 /**
  * Represents a user in followers/following list with follow status.

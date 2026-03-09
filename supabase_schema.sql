@@ -56,12 +56,57 @@ CREATE TABLE IF NOT EXISTS posts (
     user_profile_image TEXT DEFAULT '',
     post_image_url TEXT NOT NULL,
     caption TEXT DEFAULT '',
+    location TEXT DEFAULT '',
+    music_name TEXT DEFAULT '',
+    music_artist TEXT DEFAULT '',
     timestamp BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT
 );
 
 CREATE INDEX IF NOT EXISTS idx_posts_post_id ON posts(post_id);
 CREATE INDEX IF NOT EXISTS idx_posts_user_id ON posts(user_id);
 CREATE INDEX IF NOT EXISTS idx_posts_timestamp ON posts(timestamp DESC);
+
+-- =====================================================
+-- MIGRATION: Add new columns to existing posts table
+-- (Safe to run multiple times — uses IF NOT EXISTS pattern)
+-- =====================================================
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'location') THEN
+        ALTER TABLE posts ADD COLUMN location TEXT DEFAULT '';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'music_name') THEN
+        ALTER TABLE posts ADD COLUMN music_name TEXT DEFAULT '';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'music_artist') THEN
+        ALTER TABLE posts ADD COLUMN music_artist TEXT DEFAULT '';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'image_urls') THEN
+        ALTER TABLE posts ADD COLUMN image_urls TEXT DEFAULT '[]';
+    END IF;
+END $$;
+
+-- =====================================================
+-- POST IMAGES TABLE (for carousel / multiple images)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS post_images (
+    id BIGSERIAL PRIMARY KEY,
+    post_id UUID NOT NULL REFERENCES posts(post_id) ON DELETE CASCADE,
+    image_url TEXT NOT NULL,
+    position INT NOT NULL DEFAULT 0,
+    alt_text TEXT DEFAULT ''
+);
+
+CREATE INDEX IF NOT EXISTS idx_post_images_post_id ON post_images(post_id);
+
+-- RLS for post_images
+ALTER TABLE post_images ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Post images are viewable by everyone" ON post_images;
+CREATE POLICY "Post images are viewable by everyone" ON post_images FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can add images to their posts" ON post_images;
+CREATE POLICY "Users can add images to their posts" ON post_images FOR INSERT WITH CHECK (true);
+DROP POLICY IF EXISTS "Users can delete their post images" ON post_images;
+CREATE POLICY "Users can delete their post images" ON post_images FOR DELETE USING (true);
 
 -- =====================================================
 -- LIKES TABLE (Post likes)
@@ -246,81 +291,117 @@ ALTER TABLE active_calls ENABLE ROW LEVEL SECURITY;
 ALTER TABLE recent_searches ENABLE ROW LEVEL SECURITY;
 
 -- Users policies
+DROP POLICY IF EXISTS "Users are viewable by everyone" ON users;
 CREATE POLICY "Users are viewable by everyone" ON users FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can update their own profile" ON users;
 CREATE POLICY "Users can update their own profile" ON users FOR UPDATE USING (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can insert their own profile" ON users;
 CREATE POLICY "Users can insert their own profile" ON users FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
 
 -- Posts policies
+DROP POLICY IF EXISTS "Posts are viewable by everyone" ON posts;
 CREATE POLICY "Posts are viewable by everyone" ON posts FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can create their own posts" ON posts;
 CREATE POLICY "Users can create their own posts" ON posts FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can delete their own posts" ON posts;
 CREATE POLICY "Users can delete their own posts" ON posts FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- Likes policies
+DROP POLICY IF EXISTS "Likes are viewable by everyone" ON likes;
 CREATE POLICY "Likes are viewable by everyone" ON likes FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can like posts" ON likes;
 CREATE POLICY "Users can like posts" ON likes FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can unlike posts" ON likes;
 CREATE POLICY "Users can unlike posts" ON likes FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- Comments policies
+DROP POLICY IF EXISTS "Comments are viewable by everyone" ON comments;
 CREATE POLICY "Comments are viewable by everyone" ON comments FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can create comments" ON comments;
 CREATE POLICY "Users can create comments" ON comments FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can delete their own comments" ON comments;
 CREATE POLICY "Users can delete their own comments" ON comments FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- Stories policies
+DROP POLICY IF EXISTS "Stories are viewable by everyone" ON stories;
 CREATE POLICY "Stories are viewable by everyone" ON stories FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can create their own stories" ON stories;
 CREATE POLICY "Users can create their own stories" ON stories FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can delete their own stories" ON stories;
 CREATE POLICY "Users can delete their own stories" ON stories FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- Story viewers policies
+DROP POLICY IF EXISTS "Story viewers are viewable by story owner" ON story_viewers;
 CREATE POLICY "Story viewers are viewable by story owner" ON story_viewers FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can mark stories as viewed" ON story_viewers;
 CREATE POLICY "Users can mark stories as viewed" ON story_viewers FOR INSERT WITH CHECK (auth.uid()::text = viewer_id::text);
 
 -- Followers policies
+DROP POLICY IF EXISTS "Followers are viewable by everyone" ON followers;
 CREATE POLICY "Followers are viewable by everyone" ON followers FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can follow others" ON followers;
 CREATE POLICY "Users can follow others" ON followers FOR INSERT WITH CHECK (auth.uid()::text = follower_id::text);
+DROP POLICY IF EXISTS "Users can unfollow others" ON followers;
 CREATE POLICY "Users can unfollow others" ON followers FOR DELETE USING (auth.uid()::text = follower_id::text);
 
 -- Messages policies
+DROP POLICY IF EXISTS "Users can view their own messages" ON messages;
 CREATE POLICY "Users can view their own messages" ON messages FOR SELECT USING (
     auth.uid()::text = sender_id::text OR auth.uid()::text = receiver_id::text
 );
+DROP POLICY IF EXISTS "Users can send messages" ON messages;
 CREATE POLICY "Users can send messages" ON messages FOR INSERT WITH CHECK (auth.uid()::text = sender_id::text);
+DROP POLICY IF EXISTS "Users can update their own messages" ON messages;
 CREATE POLICY "Users can update their own messages" ON messages FOR UPDATE USING (auth.uid()::text = sender_id::text);
 
 -- Conversations policies
+DROP POLICY IF EXISTS "Users can view their own conversations" ON conversations;
 CREATE POLICY "Users can view their own conversations" ON conversations FOR SELECT USING (
     auth.uid()::text = participant_1::text OR auth.uid()::text = participant_2::text
 );
+DROP POLICY IF EXISTS "Users can create conversations" ON conversations;
 CREATE POLICY "Users can create conversations" ON conversations FOR INSERT WITH CHECK (
     auth.uid()::text = participant_1::text OR auth.uid()::text = participant_2::text
 );
+DROP POLICY IF EXISTS "Users can update their conversations" ON conversations;
 CREATE POLICY "Users can update their conversations" ON conversations FOR UPDATE USING (
     auth.uid()::text = participant_1::text OR auth.uid()::text = participant_2::text
 );
 
 -- Calls policies
+DROP POLICY IF EXISTS "Users can view their own calls" ON calls;
 CREATE POLICY "Users can view their own calls" ON calls FOR SELECT USING (
     auth.uid()::text = caller_id::text OR auth.uid()::text = receiver_id::text
 );
+DROP POLICY IF EXISTS "Users can create calls" ON calls;
 CREATE POLICY "Users can create calls" ON calls FOR INSERT WITH CHECK (auth.uid()::text = caller_id::text);
+DROP POLICY IF EXISTS "Users can update their calls" ON calls;
 CREATE POLICY "Users can update their calls" ON calls FOR UPDATE USING (
     auth.uid()::text = caller_id::text OR auth.uid()::text = receiver_id::text
 );
 
 -- Active calls policies
+DROP POLICY IF EXISTS "Users can view active calls" ON active_calls;
 CREATE POLICY "Users can view active calls" ON active_calls FOR SELECT USING (
     auth.uid()::text = caller_id::text OR auth.uid()::text = receiver_id::text
 );
+DROP POLICY IF EXISTS "Users can create active calls" ON active_calls;
 CREATE POLICY "Users can create active calls" ON active_calls FOR INSERT WITH CHECK (auth.uid()::text = caller_id::text);
+DROP POLICY IF EXISTS "Users can update active calls" ON active_calls;
 CREATE POLICY "Users can update active calls" ON active_calls FOR UPDATE USING (
     auth.uid()::text = caller_id::text OR auth.uid()::text = receiver_id::text
 );
+DROP POLICY IF EXISTS "Users can delete active calls" ON active_calls;
 CREATE POLICY "Users can delete active calls" ON active_calls FOR DELETE USING (
     auth.uid()::text = caller_id::text OR auth.uid()::text = receiver_id::text
 );
 
 -- Recent searches policies
+DROP POLICY IF EXISTS "Users can view their own searches" ON recent_searches;
 CREATE POLICY "Users can view their own searches" ON recent_searches FOR SELECT USING (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can save searches" ON recent_searches;
 CREATE POLICY "Users can save searches" ON recent_searches FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can delete searches" ON recent_searches;
 CREATE POLICY "Users can delete searches" ON recent_searches FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- =====================================================

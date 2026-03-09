@@ -13,6 +13,7 @@ import android.view.ViewTreeObserver
 import android.widget.FrameLayout
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
@@ -24,12 +25,16 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.junaidjamshid.i211203.R
-import com.junaidjamshid.i211203.presentation.contacts.ContactsFragmentNew
-import com.junaidjamshid.i211203.presentation.home.adapter.PostAdapterNew
+import com.junaidjamshid.i211203.presentation.discover.DiscoverPeopleActivity
+import com.junaidjamshid.i211203.presentation.home.adapter.HomeFeedAdapter
+import com.junaidjamshid.i211203.presentation.home.adapter.HomeFeedItem
 import com.junaidjamshid.i211203.presentation.home.adapter.StoryAdapterNew
 import com.junaidjamshid.i211203.presentation.main.MainActivityNew
+import com.junaidjamshid.i211203.presentation.post.CommentsActivity
 import com.junaidjamshid.i211203.presentation.post.PostDetailActivity
 import com.junaidjamshid.i211203.presentation.profile.UserProfileActivity
+import com.junaidjamshid.i211203.presentation.story.AddStoryActivity
+import com.junaidjamshid.i211203.presentation.story.StoryDisplayActivityNew
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -42,7 +47,7 @@ class HomeFragmentNew : Fragment() {
     private val viewModel: HomeViewModel by viewModels()
     
     private lateinit var recyclerView: RecyclerView
-    private lateinit var postAdapter: PostAdapterNew
+    private lateinit var feedAdapter: HomeFeedAdapter
     private lateinit var storiesRecyclerView: RecyclerView
     private lateinit var storyAdapter: StoryAdapterNew
     private var swipeRefreshLayout: SwipeRefreshLayout? = null
@@ -98,8 +103,8 @@ class HomeFragmentNew : Fragment() {
         }
         
         addStory.setOnClickListener {
-            // Navigate to add post tab
-            (activity as? MainActivityNew)?.navigateToTab(R.id.nav_add_post)
+            // Launch dedicated Add Story screen
+            startActivity(Intent(requireContext(), AddStoryActivity::class.java))
         }
     }
     
@@ -117,25 +122,32 @@ class HomeFragmentNew : Fragment() {
     }
     
     private fun setupRecyclerViews(view: View) {
-        // Posts RecyclerView
+        // Posts RecyclerView (now multi-type with suggestions)
         recyclerView = view.findViewById(R.id.recycler_view_posts)
         recyclerView.layoutManager = LinearLayoutManager(context)
-        postAdapter = PostAdapterNew(
+        feedAdapter = HomeFeedAdapter(
             onLikeClick = { postId -> viewModel.onLikePost(postId) },
             onCommentClick = { postId -> onCommentClicked(postId) },
             onShareClick = { postId -> onShareClicked(postId) },
             onSaveClick = { postId -> onSaveClicked(postId) },
             onProfileClick = { userId -> onProfileClicked(userId) },
-            onMenuClick = { post -> onMenuClicked(post) }
+            onMenuClick = { post -> onMenuClicked(post) },
+            onFollowClick = { userId -> viewModel.onFollowUser(userId) },
+            onSeeAllSuggestionsClick = {
+                startActivity(DiscoverPeopleActivity.newIntent(requireContext()))
+            }
         )
-        recyclerView.adapter = postAdapter
+        feedAdapter.currentUserId = viewModel.currentUserId ?: ""
+        recyclerView.adapter = feedAdapter
         
         // Stories RecyclerView
         storiesRecyclerView = view.findViewById(R.id.recycler_view_stories)
         storiesRecyclerView.layoutManager = LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false)
         storyAdapter = StoryAdapterNew { story ->
-            // Handle story click
-            Log.d(TAG, "Story clicked: ${story.storyId}")
+            // Launch story viewer for the story's user
+            startActivity(
+                StoryDisplayActivityNew.newIntent(requireContext(), story.userId, story.storyId)
+            )
         }
         storiesRecyclerView.adapter = storyAdapter
     }
@@ -186,9 +198,35 @@ class HomeFragmentNew : Fragment() {
                 }
             }
         }
-        
-        // Update posts
-        postAdapter.submitList(state.posts)
+
+        // Update "Your Story" section based on whether user has active story
+        view?.let { v ->
+            val storyRing = v.findViewById<View>(R.id.story_ring)
+            val addStoryPlus = v.findViewById<FrameLayout>(R.id.add_story_plus)
+            val yourStoryText = v.findViewById<TextView>(R.id.your_story_text)
+            
+            if (state.currentUserHasStory) {
+                // User has active story - show gradient ring, hide plus button
+                storyRing?.visibility = View.VISIBLE
+                addStoryPlus?.visibility = View.GONE
+                yourStoryText?.text = "Your story"
+                yourStoryText?.setTextColor(0xFF262626.toInt())
+            } else {
+                // No active story - hide ring, show plus button
+                storyRing?.visibility = View.GONE
+                addStoryPlus?.visibility = View.VISIBLE
+                yourStoryText?.text = "Your story"
+                yourStoryText?.setTextColor(0xFF8E8E8E.toInt())
+            }
+        }
+
+        // Update following state on feed adapter
+        feedAdapter.followingUserIds = state.followingUserIds
+        feedAdapter.currentUserId = viewModel.currentUserId ?: ""
+
+        // Build mixed feed: posts + inline suggestions row
+        val feedItems = buildFeedItems(state)
+        feedAdapter.submitList(feedItems)
         
         // Update stories
         storyAdapter.submitList(state.stories)
@@ -212,6 +250,39 @@ class HomeFragmentNew : Fragment() {
         }
     }
     
+    /**
+     * Build the mixed feed list: posts + suggestion row inserted after every ~5 posts.
+     * Only shows suggestions for users not already followed.
+     */
+    private fun buildFeedItems(state: HomeUiState): List<HomeFeedItem> {
+        val items = mutableListOf<HomeFeedItem>()
+        val posts = state.posts
+        // Filter suggestions: exclude already-followed users
+        val unfollowedSuggestions = state.suggestedUsers.filter {
+            it.userId !in state.followingUserIds
+        }
+
+        val insertAfter = 3 // Insert suggestion row after 3rd post (0-indexed)
+        var suggestionsInserted = false
+
+        for ((index, post) in posts.withIndex()) {
+            items.add(HomeFeedItem.PostItem(post))
+
+            // Insert suggestions after the 3rd post (or at end if fewer posts)
+            if (index == insertAfter && !suggestionsInserted && unfollowedSuggestions.isNotEmpty()) {
+                items.add(HomeFeedItem.SuggestionsItem(unfollowedSuggestions.take(10)))
+                suggestionsInserted = true
+            }
+        }
+
+        // If we have fewer posts than insertAfter, still add suggestions at end
+        if (!suggestionsInserted && unfollowedSuggestions.isNotEmpty() && posts.isNotEmpty()) {
+            items.add(HomeFeedItem.SuggestionsItem(unfollowedSuggestions.take(10)))
+        }
+
+        return items
+    }
+
     private fun decodeBase64Image(base64String: String): Bitmap? {
         return try {
             val decodedBytes = Base64.decode(base64String, Base64.DEFAULT)
@@ -223,7 +294,7 @@ class HomeFragmentNew : Fragment() {
     }
     
     private fun onCommentClicked(postId: String) {
-        startActivity(PostDetailActivity.newIntent(requireContext(), postId))
+        startActivity(CommentsActivity.newIntent(requireContext(), postId))
     }
     
     private fun onShareClicked(postId: String) {

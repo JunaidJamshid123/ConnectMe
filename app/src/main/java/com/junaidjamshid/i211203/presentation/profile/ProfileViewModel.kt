@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
 import com.junaidjamshid.i211203.domain.repository.PostRepository
+import com.junaidjamshid.i211203.domain.repository.StoryRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -21,7 +22,8 @@ import javax.inject.Inject
 class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val storyRepository: StoryRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -49,40 +51,51 @@ class ProfileViewModel @Inject constructor(
     private fun loadProfile(userId: String, isCurrentUser: Boolean) {
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true, isCurrentUser = isCurrentUser) }
-            
-            // Load user data
-            userRepository.getUserProfile(userId).collect { result ->
-                when (result) {
-                    is Resource.Loading -> {
-                        _uiState.update { it.copy(isLoading = true) }
-                    }
-                    is Resource.Success -> {
-                        result.data?.let { user ->
-                            _uiState.update { state ->
-                                state.copy(
-                                    isLoading = false,
-                                    user = user,
-                                    followersCount = user.followersCount,
-                                    followingCount = user.followingCount,
-                                    error = null
-                                )
+
+            // Launch user data collection in its own coroutine (realtime flow never completes)
+            launch {
+                userRepository.getUserProfile(userId).collect { result ->
+                    when (result) {
+                        is Resource.Loading -> {
+                            _uiState.update { it.copy(isLoading = true) }
+                        }
+                        is Resource.Success -> {
+                            result.data?.let { user ->
+                                _uiState.update { state ->
+                                    state.copy(
+                                        isLoading = false,
+                                        user = user,
+                                        followersCount = user.followersCount,
+                                        followingCount = user.followingCount,
+                                        error = null
+                                    )
+                                }
                             }
                         }
-                    }
-                    is Resource.Error -> {
-                        _uiState.update { 
-                            it.copy(isLoading = false, error = result.message) 
+                        is Resource.Error -> {
+                            _uiState.update {
+                                it.copy(isLoading = false, error = result.message)
+                            }
                         }
                     }
                 }
             }
-            
-            // Load user posts
-            loadUserPosts(userId)
-            
+
+            // Load user posts (separate coroutine so it doesn't wait for user profile flow)
+            launch {
+                loadUserPosts(userId)
+            }
+
+            // Check for active stories
+            launch {
+                checkActiveStories(userId)
+            }
+
             // Check follow status if viewing another user
             if (!isCurrentUser) {
-                checkFollowStatus(userId)
+                launch {
+                    checkFollowStatus(userId)
+                }
             }
         }
     }
@@ -107,6 +120,21 @@ class ProfileViewModel @Inject constructor(
         }
     }
     
+    private fun checkActiveStories(userId: String) {
+        viewModelScope.launch {
+            val result = storyRepository.getUserStories(userId)
+            when (result) {
+                is Resource.Success -> {
+                    val hasStories = !result.data.isNullOrEmpty()
+                    _uiState.update { it.copy(hasActiveStories = hasStories) }
+                }
+                else -> {
+                    _uiState.update { it.copy(hasActiveStories = false) }
+                }
+            }
+        }
+    }
+
     private fun checkFollowStatus(userId: String) {
         viewModelScope.launch {
             val currentId = currentUserId ?: return@launch
@@ -122,34 +150,39 @@ class ProfileViewModel @Inject constructor(
     }
     
     /**
-     * Toggle follow status for a user
+     * Toggle follow status for a user with reactive (optimistic) update
      */
     fun toggleFollow(userId: String) {
+        val isCurrentlyFollowing = _uiState.value.isFollowing
+        val currentFollowersCount = _uiState.value.followersCount
+        
+        // Optimistic update - immediately update UI
+        _uiState.update { state ->
+            state.copy(
+                isFollowing = !isCurrentlyFollowing,
+                followersCount = if (isCurrentlyFollowing) 
+                    (state.followersCount - 1).coerceAtLeast(0)
+                else 
+                    state.followersCount + 1
+            )
+        }
+        
         viewModelScope.launch {
-            val isCurrentlyFollowing = _uiState.value.isFollowing
-            
             val result = if (isCurrentlyFollowing) {
                 userRepository.unfollowUser(userId)
             } else {
                 userRepository.followUser(userId)
             }
             
-            when (result) {
-                is Resource.Success -> {
-                    _uiState.update { state ->
-                        state.copy(
-                            isFollowing = !isCurrentlyFollowing,
-                            followersCount = if (isCurrentlyFollowing) 
-                                state.followersCount - 1 
-                            else 
-                                state.followersCount + 1
-                        )
-                    }
+            // If operation failed, revert the optimistic update
+            if (result is Resource.Error) {
+                _uiState.update { state ->
+                    state.copy(
+                        isFollowing = isCurrentlyFollowing,
+                        followersCount = currentFollowersCount,
+                        error = result.message
+                    )
                 }
-                is Resource.Error -> {
-                    _uiState.update { it.copy(error = result.message) }
-                }
-                else -> { /* Loading state */ }
             }
         }
     }

@@ -17,12 +17,16 @@ object PostMapper {
             username = username,
             userProfileImage = userProfileImage,
             postImageUrl = postImageUrl,
+            imageUrls = imageUrls,
             caption = caption,
+            location = location,
+            musicName = musicName,
+            musicArtist = musicArtist,
             timestamp = timestamp,
             likesCount = likes.size,
             commentsCount = comments.size,
             isLikedByCurrentUser = likes.containsKey(currentUserId),
-            isSavedByCurrentUser = false // Will be calculated separately
+            isSavedByCurrentUser = false
         )
     }
     

@@ -5,6 +5,7 @@ import android.util.Base64
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
@@ -12,12 +13,10 @@ import androidx.recyclerview.widget.RecyclerView
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.presentation.contacts.ContactItem
 import de.hdodenhof.circleimageview.CircleImageView
-import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.concurrent.TimeUnit
 
 /**
- * Adapter for contacts list.
+ * Adapter for the Instagram-style DM chat list.
  */
 class ContactsAdapterNew(
     private val onContactClick: (ContactItem) -> Unit
@@ -37,10 +36,42 @@ class ContactsAdapterNew(
         private val profileImage: CircleImageView = itemView.findViewById(R.id.contact_image)
         private val usernameText: TextView = itemView.findViewById(R.id.contact_name)
         private val lastMessageText: TextView = itemView.findViewById(R.id.contact_last_message)
+        private val timeText: TextView = itemView.findViewById(R.id.contact_time)
+        private val onlineIndicator: View = itemView.findViewById(R.id.onlineIndicator)
+        private val cameraIcon: ImageView = itemView.findViewById(R.id.cameraIcon)
+        private val foregroundLayout: View = itemView.findViewById(R.id.foregroundLayout)
         
         fun bind(contact: ContactItem) {
             usernameText.text = contact.user.username
-            lastMessageText.text = contact.lastMessage
+
+            // Last message text
+            if (contact.lastMessage.isNotEmpty()) {
+                lastMessageText.text = contact.lastMessage
+            } else {
+                lastMessageText.text = ""
+            }
+
+            // Time display
+            if (contact.lastMessageTime > 0) {
+                timeText.text = " · ${formatRelativeTime(contact.lastMessageTime)}"
+                timeText.visibility = View.VISIBLE
+            } else {
+                timeText.visibility = View.GONE
+            }
+
+            // Online indicator
+            onlineIndicator.visibility = if (contact.isOnline) View.VISIBLE else View.GONE
+
+            // Unread state: bold name + darker message color
+            if (contact.unreadCount > 0) {
+                usernameText.setTextColor(0xFF262626.toInt())
+                lastMessageText.setTextColor(0xFF262626.toInt())
+                timeText.setTextColor(0xFF262626.toInt())
+            } else {
+                usernameText.setTextColor(0xFF262626.toInt())
+                lastMessageText.setTextColor(0xFF8E8E8E.toInt())
+                timeText.setTextColor(0xFF8E8E8E.toInt())
+            }
             
             // Load profile image
             if (!contact.user.profilePicture.isNullOrEmpty()) {
@@ -55,13 +86,29 @@ class ContactsAdapterNew(
                 profileImage.setImageResource(R.drawable.default_profile)
             }
             
-            itemView.setOnClickListener { onContactClick(contact) }
+            foregroundLayout.setOnClickListener { onContactClick(contact) }
         }
-        
-        private fun formatTime(timestamp: Long): String {
-            if (timestamp == 0L) return ""
-            val sdf = SimpleDateFormat("HH:mm", Locale.getDefault())
-            return sdf.format(Date(timestamp))
+
+        /**
+         * Format timestamp to Instagram-style relative time (e.g., "now", "3h", "2d", "1w")
+         */
+        private fun formatRelativeTime(timestamp: Long): String {
+            val now = System.currentTimeMillis()
+            val diff = now - timestamp
+
+            val minutes = TimeUnit.MILLISECONDS.toMinutes(diff)
+            val hours = TimeUnit.MILLISECONDS.toHours(diff)
+            val days = TimeUnit.MILLISECONDS.toDays(diff)
+            val weeks = days / 7
+
+            return when {
+                minutes < 1 -> "now"
+                minutes < 60 -> "${minutes}m"
+                hours < 24 -> "${hours}h"
+                days < 7 -> "${days}d"
+                weeks < 52 -> "${weeks}w"
+                else -> "${days / 365}y"
+            }
         }
     }
     

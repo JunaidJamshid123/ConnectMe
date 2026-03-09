@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="gray">#808080</color>
     <color name="dark_gray">#404040</color>
+    <color name="gray_border">#DBDBDB</color>
     <color name="follow_color">#6C757D</color>
     <color name="unfollow_color">#6C757D</color>
     <color name="bottom_nav_icon_color">#6C757D</color>

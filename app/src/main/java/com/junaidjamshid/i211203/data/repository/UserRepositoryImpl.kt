@@ -210,7 +210,27 @@ class UserRepositoryImpl @Inject constructor(
     }
     
     override fun getUserProfile(userId: String): Flow<Resource<User>> {
-        return getUserByIdFlow(userId)
+        return flow {
+            emit(Resource.Loading())
+            try {
+                val userDto = userDataSource.getUserById(userId)
+                if (userDto != null) {
+                    // Fetch actual follower/following counts from followers table
+                    val followerIds = userDataSource.getFollowers(userId)
+                    val followingIds = userDataSource.getFollowing(userId)
+                    
+                    val user = userDto.toDomain().copy(
+                        followersCount = followerIds.size,
+                        followingCount = followingIds.size
+                    )
+                    emit(Resource.Success(user))
+                } else {
+                    emit(Resource.Error("User not found"))
+                }
+            } catch (e: Exception) {
+                emit(Resource.Error(e.message ?: "Failed to get user profile"))
+            }
+        }
     }
     
     override fun getAllUsers(): Flow<Resource<List<User>>> {

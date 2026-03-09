@@ -4,181 +4,426 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical"
     android:background="@color/white"
+    android:fitsSystemWindows="true"
+    android:orientation="vertical"
     tools:context=".EditProfile">
 
-    <!-- Header -->
+    <!-- ====== TOP BAR ====== -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingVertical="16dp"
-        android:paddingHorizontal="16dp"
-        android:elevation="2dp">
+        android:layout_height="48dp"
+        android:background="@color/white"
+        android:gravity="center_vertical"
+        android:paddingHorizontal="16dp">
+
+        <!-- Cancel / Close -->
+        <TextView
+            android:id="@+id/btn_cancel"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:fontFamily="sans-serif"
+            android:text="Cancel"
+            android:textColor="#262626"
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Edit Profile"
-            android:textSize="22sp"
-            android:textColor="@color/black"
+            android:layout_centerInParent="true"
+            android:fontFamily="sans-serif-medium"
+            android:text="Edit profile"
+            android:textColor="#262626"
+            android:textSize="16sp"
             android:textStyle="bold" />
 
+        <!-- Done / Save (blue checkmark style) -->
         <TextView
             android:id="@+id/btn_done"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
             android:layout_alignParentEnd="true"
-            android:textColor="#3897F0"
-            android:text="Done" />
+            android:layout_centerVertical="true"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:fontFamily="sans-serif-medium"
+            android:text="Done"
+            android:textColor="#0095F6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
     </RelativeLayout>
 
-    <!-- Divider -->
+    <!-- Thin divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#E0E0E0" />
+        android:background="#DBDBDB" />
 
-    <!-- Profile Image Section -->
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:gravity="center_horizontal"
-        android:padding="24dp">
+        android:layout_height="match_parent"
+        android:fillViewport="true"
+        android:overScrollMode="never">
 
-        <!-- Profile picture with plus icon -->
-        <FrameLayout
-            android:layout_width="120dp"
-            android:id="@+id/profile_image_container"
-            android:layout_height="120dp">
-
-            <de.hdodenhof.circleimageview.CircleImageView
-                android:id="@+id/profile_image"
-                android:layout_width="120dp"
-                android:layout_height="120dp"
-                android:src="@drawable/junaid1"
-                app:civ_border_width="1dp"
-                app:civ_border_color="#E0E0E0" />
-
-            <FrameLayout
-                android:layout_width="36dp"
-                android:layout_height="36dp"
-                android:layout_gravity="bottom|end"
-                android:background="@drawable/circle_brown">
-
-                <ImageView
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/add"
-                    app:tint="#FFFFFF" />
-            </FrameLayout>
-        </FrameLayout>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Junaid Jamshid"
-            android:textSize="22sp"
-            android:textStyle="bold"
-            android:textColor="@color/black"
-            android:layout_marginTop="12dp" />
-    </LinearLayout>
-
-    <!-- Form Fields -->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="vertical"
-        android:paddingHorizontal="24dp">
-
-        <!-- Name Field -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Name"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black" />
-
-        <EditText
-            android:id="@+id/et_name"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:hint="Junaid Jamshid"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edit_text_background"
-            android:padding="14dp"
-            android:layout_marginBottom="16dp" />
+            android:orientation="vertical">
 
-        <!-- Username Field -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Username"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black" />
+            <!-- ====== PROFILE PICTURE SECTION ====== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:paddingBottom="16dp"
+                android:paddingTop="20dp">
 
-        <EditText
-            android:id="@+id/et_username"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="Junaid"
-            android:textSize="16sp"
-            android:inputType="text"
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edit_text_background"
-            android:padding="14dp"
-            android:layout_marginBottom="16dp" />
+                <!-- Profile picture -->
+                <FrameLayout
+                    android:id="@+id/profile_image_container"
+                    android:layout_width="96dp"
+                    android:layout_height="96dp">
 
-        <!-- Phone Field -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Phone"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black" />
+                    <de.hdodenhof.circleimageview.CircleImageView
+                        android:id="@+id/profile_image"
+                        android:layout_width="96dp"
+                        android:layout_height="96dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/default_profile"
+                        app:civ_border_color="#DBDBDB"
+                        app:civ_border_width="0.5dp" />
 
-        <EditText
-            android:id="@+id/et_phone"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="+923001234567"
-            android:textSize="16sp"
-            android:inputType="phone"
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edit_text_background"
-            android:padding="14dp"
-            android:layout_marginBottom="16dp" />
+                </FrameLayout>
 
-        <!-- Bio Field -->
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Bio"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@color/black" />
+                <!-- Change photo link -->
+                <TextView
+                    android:id="@+id/btn_change_photo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Edit picture or avatar"
+                    android:textColor="#0095F6"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-        <EditText
-            android:id="@+id/et_bio"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:hint="I am a software engineer"
-            android:textSize="16sp"
-            android:textColor="@color/black"
-            android:layout_marginTop="8dp"
-            android:background="@drawable/edit_text_background"
-            android:padding="14dp"
-            android:minLines="2"
-            android:gravity="top|start" />
-    </LinearLayout>
+            </LinearLayout>
+
+            <!-- Thin divider -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#DBDBDB" />
+
+            <!-- ====== FORM FIELDS (Instagram-style inline) ====== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="8dp">
+
+                <!-- Name field -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Name"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/et_name"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="sans-serif"
+                        android:hint="Name"
+                        android:inputType="textPersonName"
+                        android:minHeight="36dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:textColor="#262626"
+                        android:textColorHint="#C7C7C7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Username field -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Username"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/et_username"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="sans-serif"
+                        android:hint="Username"
+                        android:inputType="text"
+                        android:minHeight="36dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:textColor="#262626"
+                        android:textColorHint="#C7C7C7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Pronouns field (Instagram style) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Pronouns"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/et_pronouns"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="sans-serif"
+                        android:hint="Pronouns"
+                        android:inputType="text"
+                        android:minHeight="36dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:textColor="#262626"
+                        android:textColorHint="#C7C7C7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Bio field -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Bio"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/et_bio"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="sans-serif"
+                        android:gravity="top|start"
+                        android:hint="Bio"
+                        android:inputType="textMultiLine"
+                        android:minHeight="36dp"
+                        android:minLines="1"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:textColor="#262626"
+                        android:textColorHint="#C7C7C7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Links section -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Links"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/btn_add_links"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:minHeight="36dp"
+                        android:gravity="center_vertical"
+                        android:paddingTop="4dp"
+                        android:paddingBottom="8dp"
+                        android:text="Add links"
+                        android:textColor="#0095F6"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Gender -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Gender"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <TextView
+                        android:id="@+id/tv_gender"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:gravity="center_vertical"
+                        android:minHeight="36dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:text="Prefer not to say"
+                        android:textColor="#262626"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+                <!-- Phone field -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingVertical="8dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="sans-serif"
+                        android:text="Phone"
+                        android:textColor="#8E8E8E"
+                        android:textSize="12sp" />
+
+                    <EditText
+                        android:id="@+id/et_phone"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@null"
+                        android:fontFamily="sans-serif"
+                        android:hint="Phone"
+                        android:inputType="phone"
+                        android:minHeight="36dp"
+                        android:paddingBottom="8dp"
+                        android:paddingTop="4dp"
+                        android:textColor="#262626"
+                        android:textColorHint="#C7C7C7"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="0.5dp"
+                        android:background="#DBDBDB" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+            <!-- ====== BOTTOM SECTION ====== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp"
+                android:paddingTop="20dp"
+                android:paddingBottom="32dp">
+
+                <TextView
+                    android:id="@+id/btn_professional_account"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:fontFamily="sans-serif"
+                    android:paddingVertical="6dp"
+                    android:text="Switch to professional account"
+                    android:textColor="#0095F6"
+                    android:textSize="14sp" />
+
+                <TextView
+                    android:id="@+id/btn_personal_info"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:fontFamily="sans-serif"
+                    android:paddingVertical="6dp"
+                    android:text="Personal information settings"
+                    android:textColor="#0095F6"
+                    android:textSize="14sp" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </ScrollView>
+
 </LinearLayout>

@@ -8,10 +8,10 @@
     android:orientation="vertical"
     tools:context=".PostFragment">
 
-    <!-- Header -->
+    <!-- ====== HEADER ====== -->
     <RelativeLayout
         android:layout_width="match_parent"
-        android:layout_height="44dp"
+        android:layout_height="48dp"
         android:background="@color/white"
         android:paddingHorizontal="16dp">
 
@@ -30,7 +30,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
-            android:text="New Post"
+            android:fontFamily="sans-serif-medium"
+            android:text="New post"
             android:textColor="#262626"
             android:textSize="16sp"
             android:textStyle="bold" />
@@ -44,19 +45,19 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:clickable="true"
             android:focusable="true"
+            android:fontFamily="sans-serif-medium"
             android:text="Share"
             android:textColor="#0095F6"
             android:textSize="14sp"
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <!-- Divider -->
     <View
         android:layout_width="match_parent"
         android:layout_height="0.3dp"
         android:background="#DBDBDB" />
 
-    <!-- Loading indicator -->
+    <!-- ====== LOADING PROGRESS BAR ====== -->
     <FrameLayout
         android:id="@+id/loading_overlay"
         android:layout_width="match_parent"
@@ -72,7 +73,7 @@
             android:indeterminateTint="#0095F6" />
     </FrameLayout>
 
-    <!-- Content area -->
+    <!-- ====== SCROLLABLE CONTENT ====== -->
     <androidx.core.widget.NestedScrollView
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -85,7 +86,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Image Preview - Full width, square aspect ratio -->
+            <!-- ====== IMAGE PREVIEW AREA ====== -->
             <FrameLayout
                 android:id="@+id/image_placeholder"
                 android:layout_width="match_parent"
@@ -97,7 +98,6 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content">
 
-                    <!-- Placeholder background -->
                     <View
                         android:id="@+id/placeholder_bg"
                         android:layout_width="0dp"
@@ -108,7 +108,18 @@
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
 
-                    <!-- Selected image -->
+                    <!-- ViewPager2 for image carousel preview -->
+                    <androidx.viewpager2.widget.ViewPager2
+                        android:id="@+id/image_pager"
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:visibility="gone"
+                        app:layout_constraintDimensionRatio="1:1"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- Single image preview (backward compat) -->
                     <ImageView
                         android:id="@+id/post_image"
                         android:layout_width="0dp"
@@ -122,7 +133,7 @@
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 
-                <!-- Tap to add overlay (shown when no image selected) -->
+                <!-- Tap to add overlay -->
                 <LinearLayout
                     android:id="@+id/select_image_button"
                     android:layout_width="wrap_content"
@@ -133,8 +144,8 @@
                     android:padding="32dp">
 
                     <ImageView
-                        android:layout_width="48dp"
-                        android:layout_height="48dp"
+                        android:layout_width="56dp"
+                        android:layout_height="56dp"
                         android:src="@drawable/ic_gallery"
                         app:tint="#C7C7C7" />
 
@@ -142,20 +153,41 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="12dp"
-                        android:text="Tap to select a photo"
+                        android:text="Tap to select photos"
                         android:textColor="#8E8E8E"
                         android:textSize="14sp" />
-
                 </LinearLayout>
+
+                <!-- Carousel page indicator dots -->
+                <LinearLayout
+                    android:id="@+id/dots_indicator"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom|center_horizontal"
+                    android:layout_marginBottom="12dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:visibility="gone" />
             </FrameLayout>
 
-            <!-- Divider -->
+            <!-- ====== SELECTED IMAGES THUMBNAIL STRIP ====== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_selected_images"
+                android:layout_width="match_parent"
+                android:layout_height="72dp"
+                android:background="#FAFAFA"
+                android:clipToPadding="false"
+                android:orientation="horizontal"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:visibility="gone" />
+
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
                 android:background="#DBDBDB" />
 
-            <!-- Caption Input -->
+            <!-- ====== CAPTION INPUT ====== -->
             <EditText
                 android:id="@+id/caption_input"
                 android:layout_width="match_parent"
@@ -165,17 +197,214 @@
                 android:hint="Write a caption..."
                 android:inputType="textMultiLine"
                 android:lineSpacingExtra="4dp"
-                android:minHeight="100dp"
+                android:minHeight="80dp"
                 android:padding="16dp"
                 android:textColor="#262626"
                 android:textColorHint="#C7C7C7"
                 android:textSize="14sp" />
 
-            <!-- Divider -->
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.3dp"
                 android:background="#DBDBDB" />
+
+            <!-- ====== TAG PEOPLE ====== -->
+            <LinearLayout
+                android:id="@+id/row_tag_people"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_tag_people"
+                    app:tint="#262626" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="Tag people"
+                    android:textColor="#262626"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C7C7C7" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:layout_marginStart="52dp"
+                android:background="#EFEFEF" />
+
+            <!-- ====== ADD LOCATION ====== -->
+            <LinearLayout
+                android:id="@+id/row_add_location"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_location"
+                    app:tint="#262626" />
+
+                <TextView
+                    android:id="@+id/tv_location"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="Add location"
+                    android:textColor="#262626"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C7C7C7" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:layout_marginStart="52dp"
+                android:background="#EFEFEF" />
+
+            <!-- ====== ADD MUSIC ====== -->
+            <LinearLayout
+                android:id="@+id/row_add_music"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_music_note"
+                    app:tint="#262626" />
+
+                <TextView
+                    android:id="@+id/tv_music"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="Add music"
+                    android:textColor="#262626"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C7C7C7" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:layout_marginStart="52dp"
+                android:background="#EFEFEF" />
+
+            <!-- ====== ACCESSIBILITY (Alt text) ====== -->
+            <LinearLayout
+                android:id="@+id/row_alt_text"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <ImageView
+                    android:layout_width="22dp"
+                    android:layout_height="22dp"
+                    android:src="@drawable/ic_accessibility"
+                    app:tint="#262626" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="14dp"
+                    android:layout_weight="1"
+                    android:text="Accessibility"
+                    android:textColor="#262626"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C7C7C7" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="#DBDBDB" />
+
+            <!-- ====== ADVANCED SETTINGS ====== -->
+            <LinearLayout
+                android:id="@+id/row_advanced"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:background="?attr/selectableItemBackground"
+                android:clickable="true"
+                android:focusable="true"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingHorizontal="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Advanced settings"
+                    android:textColor="#262626"
+                    android:textSize="15sp" />
+
+                <ImageView
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:src="@drawable/ic_chevron_right"
+                    app:tint="#C7C7C7" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="#DBDBDB" />
+
+            <!-- Bottom spacer -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="60dp" />
 
         </LinearLayout>
     </androidx.core.widget.NestedScrollView>

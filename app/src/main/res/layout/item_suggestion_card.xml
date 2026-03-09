@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Individual suggestion card — Instagram style with profile pic, name, subtitle, follow/dismiss -->
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="154dp"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="4dp"
+    app:cardBackgroundColor="@color/white"
+    app:cardCornerRadius="4dp"
+    app:cardElevation="0dp"
+    app:strokeColor="#DBDBDB"
+    app:strokeWidth="0.5dp">
+
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Dismiss X button (top-right corner) -->
+        <ImageView
+            android:id="@+id/btn_dismiss"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="top|end"
+            android:layout_marginTop="6dp"
+            android:layout_marginEnd="6dp"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:contentDescription="Dismiss"
+            android:padding="4dp"
+            android:src="@drawable/ic_close"
+            app:tint="#C7C7C7" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:paddingTop="20dp"
+            android:paddingBottom="16dp">
+
+            <!-- Profile picture -->
+            <de.hdodenhof.circleimageview.CircleImageView
+                android:id="@+id/suggestion_profile_image"
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/default_profile"
+                app:civ_border_color="#DBDBDB"
+                app:civ_border_width="0.5dp" />
+
+            <!-- Username -->
+            <TextView
+                android:id="@+id/suggestion_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:ellipsize="end"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingHorizontal="10dp"
+                android:text="username"
+                android:textColor="#262626"
+                android:textSize="13sp" />
+
+            <!-- Full name / subtitle -->
+            <TextView
+                android:id="@+id/suggestion_full_name"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:ellipsize="end"
+                android:gravity="center"
+                android:maxLines="1"
+                android:paddingHorizontal="10dp"
+                android:text="Suggested for you"
+                android:textColor="#8E8E8E"
+                android:textSize="12sp" />
+
+            <!-- Follow button -->
+            <TextView
+                android:id="@+id/btn_follow"
+                android:layout_width="match_parent"
+                android:layout_height="32dp"
+                android:layout_marginHorizontal="12dp"
+                android:layout_marginTop="12dp"
+                android:background="@drawable/bg_follow_button"
+                android:fontFamily="sans-serif-medium"
+                android:gravity="center"
+                android:text="Follow"
+                android:textColor="@color/white"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+        </LinearLayout>
+    </FrameLayout>
+
+</com.google.android.material.card.MaterialCardView>

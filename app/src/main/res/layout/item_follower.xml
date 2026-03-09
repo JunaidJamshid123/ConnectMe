@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <!-- Profile Image (Instagram uses 54dp for followers list) -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profile_image"
+        android:layout_width="54dp"
+        android:layout_height="54dp"
+        android:src="@drawable/default_profile"
+        app:civ_border_width="0.5dp"
+        app:civ_border_color="#DBDBDB" />
+
+    <!-- User Info -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#000000"
+            android:textSize="14sp"
+            android:fontFamily="sans-serif-medium" />
+
+        <TextView
+            android:id="@+id/full_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:textColor="#8E8E8E"
+            android:textSize="14sp" />
+    </LinearLayout>
+
+    <!-- Follow/Following/Remove Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_action"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="34dp"
+        android:minWidth="100dp"
+        android:text="Follow"
+        android:textSize="14sp"
+        android:textColor="#FFFFFF"
+        android:textAllCaps="false"
+        android:fontFamily="sans-serif-medium"
+        android:paddingHorizontal="20dp"
+        android:insetTop="0dp"
+        android:insetBottom="0dp"
+        app:backgroundTint="#0095F6"
+        app:cornerRadius="8dp"
+        app:rippleColor="#330095F6"
+        app:strokeWidth="0dp" />
+
+    <!-- Remove button (for own followers) -->
+    <ImageView
+        android:id="@+id/btn_remove"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="8dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/remove"
+        android:src="@drawable/ic_more_vert"
+        app:tint="#262626"
+        android:visibility="gone" />
+
+</LinearLayout>

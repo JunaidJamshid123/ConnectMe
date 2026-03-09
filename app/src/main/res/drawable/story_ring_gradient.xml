@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Instagram-style gradient ring for active story -->
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="ring"
+    android:innerRadius="29dp"
+    android:thickness="2dp"
+    android:useLevel="false">
+    <gradient
+        android:type="sweep"
+        android:startColor="#FEDA75"
+        android:centerColor="#FA7E1E"
+        android:endColor="#D62976" />
+</shape>

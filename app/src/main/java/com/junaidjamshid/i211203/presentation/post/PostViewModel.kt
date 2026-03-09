@@ -107,6 +107,40 @@ class PostViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Create an enhanced post with multiple images, location, and music.
+     */
+    fun createEnhancedPost() {
+        val state = _addPostUiState.value
+        if (state.selectedImageBytesList.isEmpty()) return
+
+        viewModelScope.launch {
+            _addPostUiState.update { it.copy(isLoading = true) }
+
+            val result = postRepository.createPost(
+                caption = state.caption,
+                imageBytesList = state.selectedImageBytesList,
+                location = state.location,
+                musicName = state.musicName,
+                musicArtist = state.musicArtist
+            )
+
+            when (result) {
+                is Resource.Success -> {
+                    _addPostUiState.update { s ->
+                        s.copy(isLoading = false, postCreated = true, error = null)
+                    }
+                }
+                is Resource.Error -> {
+                    _addPostUiState.update {
+                        it.copy(isLoading = false, error = result.message)
+                    }
+                }
+                else -> { /* Loading state */ }
+            }
+        }
+    }
     
     /**
      * Like a post
@@ -178,6 +212,78 @@ class PostViewModel @Inject constructor(
     fun setCaption(caption: String) {
         _addPostUiState.update { it.copy(caption = caption) }
     }
+
+    /**
+     * Add images to the post (multi-image support)
+     */
+    fun addImages(imageBytesList: List<ByteArray>) {
+        _addPostUiState.update { state ->
+            val combined = state.selectedImageBytesList + imageBytesList
+            // Instagram allows max 10 images per post
+            val limited = combined.take(10)
+            state.copy(
+                selectedImageBytesList = limited,
+                hasImages = limited.isNotEmpty()
+            )
+        }
+    }
+
+    /**
+     * Remove an image at a specific index
+     */
+    fun removeImage(index: Int) {
+        _addPostUiState.update { state ->
+            val updated = state.selectedImageBytesList.toMutableList()
+            if (index in updated.indices) {
+                updated.removeAt(index)
+            }
+            val newPreviewIndex = if (state.currentPreviewIndex >= updated.size) {
+                (updated.size - 1).coerceAtLeast(0)
+            } else {
+                state.currentPreviewIndex
+            }
+            state.copy(
+                selectedImageBytesList = updated,
+                currentPreviewIndex = newPreviewIndex,
+                hasImages = updated.isNotEmpty()
+            )
+        }
+    }
+
+    /**
+     * Set the current preview index for carousel
+     */
+    fun setPreviewIndex(index: Int) {
+        _addPostUiState.update { it.copy(currentPreviewIndex = index) }
+    }
+
+    /**
+     * Set location for the post
+     */
+    fun setLocation(location: String) {
+        _addPostUiState.update { it.copy(location = location) }
+    }
+
+    /**
+     * Set music info for the post
+     */
+    fun setMusic(name: String, artist: String) {
+        _addPostUiState.update { it.copy(musicName = name, musicArtist = artist) }
+    }
+
+    /**
+     * Clear music selection
+     */
+    fun clearMusic() {
+        _addPostUiState.update { it.copy(musicName = "", musicArtist = "") }
+    }
+
+    /**
+     * Clear location
+     */
+    fun clearLocation() {
+        _addPostUiState.update { it.copy(location = "") }
+    }
     
     fun clearError() {
         _uiState.update { it.copy(error = null) }
@@ -186,5 +292,12 @@ class PostViewModel @Inject constructor(
     
     fun resetPostCreated() {
         _addPostUiState.update { it.copy(postCreated = false) }
+    }
+
+    /**
+     * Full reset of the add post form
+     */
+    fun resetAddPostForm() {
+        _addPostUiState.value = AddPostUiState()
     }
 }

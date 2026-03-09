@@ -2,6 +2,7 @@ package com.junaidjamshid.i211203.data.remote.supabase
 
 import com.junaidjamshid.i211203.data.dto.CommentDto
 import com.junaidjamshid.i211203.data.dto.PostDto
+import android.util.Log
 import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Columns
@@ -14,9 +15,33 @@ import io.github.jan.supabase.realtime.realtime
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
 import kotlinx.serialization.Serializable
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.encodeToString
 import java.util.UUID
 import javax.inject.Inject
 import javax.inject.Singleton
+
+/**
+ * Supabase representation of Post Image (for reading/decoding).
+ */
+@Serializable
+data class SupabasePostImage(
+    val post_id: String = "",
+    val image_url: String = "",
+    val position: Int = 0,
+    val alt_text: String = ""
+)
+
+/**
+ * Insert-only model for post_images — excludes 'id' so BIGSERIAL auto-generates.
+ */
+@Serializable
+data class SupabasePostImageInsert(
+    val post_id: String,
+    val image_url: String,
+    val position: Int,
+    val alt_text: String = ""
+)
 
 /**
  * Supabase representation of Post.
@@ -28,7 +53,11 @@ data class SupabasePost(
     val username: String = "",
     val user_profile_image: String = "",
     val post_image_url: String = "",
+    val image_urls: String = "[]",
     val caption: String = "",
+    val location: String = "",
+    val music_name: String = "",
+    val music_artist: String = "",
     val timestamp: Long = 0
 )
 
@@ -68,17 +97,37 @@ data class CommentLike(
     val created_at: Long = System.currentTimeMillis()
 )
 
-fun SupabasePost.toDto(likes: Map<String, Boolean> = emptyMap(), comments: List<CommentDto> = emptyList()): PostDto = PostDto(
-    postId = post_id,
-    userId = user_id,
-    username = username,
-    userProfileImage = user_profile_image,
-    postImageUrl = post_image_url,
-    caption = caption,
-    timestamp = timestamp,
-    likes = likes.toMutableMap(),
-    comments = comments.toMutableList()
-)
+private val json = Json { ignoreUnknownKeys = true }
+
+fun SupabasePost.toDto(
+    likes: Map<String, Boolean> = emptyMap(),
+    comments: List<CommentDto> = emptyList(),
+    imageUrls: List<String> = emptyList()
+): PostDto {
+    // Prefer images from post_images table; fallback to inline image_urls JSON column
+    val resolvedImages = imageUrls.ifEmpty {
+        try {
+            json.decodeFromString<List<String>>(image_urls)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+    return PostDto(
+        postId = post_id,
+        userId = user_id,
+        username = username,
+        userProfileImage = user_profile_image,
+        postImageUrl = post_image_url,
+        imageUrls = resolvedImages,
+        caption = caption,
+        location = location,
+        musicName = music_name,
+        musicArtist = music_artist,
+        timestamp = timestamp,
+        likes = likes.toMutableMap(),
+        comments = comments.toMutableList()
+    )
+}
 
 fun SupabaseComment.toDto(likes: Map<String, Boolean> = emptyMap()): CommentDto = CommentDto(
     commentId = comment_id,
@@ -122,6 +171,22 @@ class SupabasePostDataSource @Inject constructor(
         return comments.map { it.toDto() }
     }
     
+    private suspend fun getPostImages(postId: String): List<String> {
+        return try {
+            val images = supabaseClient.postgrest["post_images"]
+                .select {
+                    filter { eq("post_id", postId) }
+                    order("position", Order.ASCENDING)
+                }
+                .decodeList<SupabasePostImage>()
+            Log.d("PostDataSource", "getPostImages($postId): found ${images.size} images")
+            images.map { it.image_url }
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "getPostImages($postId) FAILED: ${e.message}", e)
+            emptyList()
+        }
+    }
+    
     suspend fun getFeedPostsList(): List<PostDto> {
         val posts = supabaseClient.postgrest[SupabaseConfig.POSTS_TABLE]
             .select {
@@ -132,7 +197,8 @@ class SupabasePostDataSource @Inject constructor(
         return posts.map { post ->
             val likes = getPostLikes(post.post_id)
             val comments = getPostComments(post.post_id)
-            post.toDto(likes, comments)
+            val images = getPostImages(post.post_id)
+            post.toDto(likes, comments, images)
         }
     }
     
@@ -162,7 +228,8 @@ class SupabasePostDataSource @Inject constructor(
         
         val likes = getPostLikes(postId)
         val comments = getPostComments(postId)
-        return post.toDto(likes, comments)
+        val images = getPostImages(postId)
+        return post.toDto(likes, comments, images)
     }
     
     fun getPostByIdFlow(postId: String): Flow<PostDto?> = flow {
@@ -194,7 +261,8 @@ class SupabasePostDataSource @Inject constructor(
         return posts.map { post ->
             val likes = getPostLikes(post.post_id)
             val comments = getPostComments(post.post_id)
-            post.toDto(likes, comments)
+            val images = getPostImages(post.post_id)
+            post.toDto(likes, comments, images)
         }
     }
     
@@ -216,18 +284,46 @@ class SupabasePostDataSource @Inject constructor(
     
     suspend fun createPost(postDto: PostDto): PostDto {
         val postId = UUID.randomUUID().toString()
+        
+        // Encode image URLs list as JSON string for inline storage
+        val imageUrlsJson = if (postDto.imageUrls.isNotEmpty()) {
+            json.encodeToString(postDto.imageUrls)
+        } else "[]"
+        
         val supabasePost = SupabasePost(
             post_id = postId,
             user_id = postDto.userId,
             username = postDto.username,
             user_profile_image = postDto.userProfileImage,
             post_image_url = postDto.postImageUrl,
+            image_urls = imageUrlsJson,
             caption = postDto.caption,
+            location = postDto.location,
+            music_name = postDto.musicName,
+            music_artist = postDto.musicArtist,
             timestamp = System.currentTimeMillis()
         )
         
         supabaseClient.postgrest[SupabaseConfig.POSTS_TABLE]
             .insert(supabasePost)
+        Log.d("PostDataSource", "createPost: post $postId inserted with ${postDto.imageUrls.size} images inline")
+        
+        // Also insert into post_images table (belt-and-suspenders)
+        if (postDto.imageUrls.isNotEmpty()) {
+            val postImages = postDto.imageUrls.mapIndexed { index, imageUrl ->
+                SupabasePostImageInsert(
+                    post_id = postId,
+                    image_url = imageUrl,
+                    position = index
+                )
+            }
+            try {
+                supabaseClient.postgrest["post_images"].insert(postImages)
+                Log.d("PostDataSource", "createPost: inserted ${postImages.size} carousel images into post_images for $postId")
+            } catch (e: Exception) {
+                Log.e("PostDataSource", "createPost: post_images insert failed (OK, using inline): ${e.message}")
+            }
+        }
         
         return postDto.copy(postId = postId, timestamp = supabasePost.timestamp)
     }

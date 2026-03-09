@@ -31,19 +31,24 @@ class PostGridAdapterNew(
     
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val postImage: ImageView = itemView.findViewById(R.id.post_image)
-        
+
         fun bind(post: Post) {
-            // Load post image
-            if (post.postImageUrl.isNotEmpty()) {
+            // Use allImages (handles both imageUrls and postImageUrl fallback)
+            val firstImage = post.allImages.firstOrNull() ?: post.postImageUrl
+            if (firstImage.isNotEmpty()) {
                 try {
-                    val decodedBytes = Base64.decode(post.postImageUrl, Base64.DEFAULT)
+                    val decodedBytes = Base64.decode(firstImage, Base64.DEFAULT)
                     val bitmap = BitmapFactory.decodeByteArray(decodedBytes, 0, decodedBytes.size)
-                    postImage.setImageBitmap(bitmap)
+                    if (bitmap != null) {
+                        postImage.setImageBitmap(bitmap)
+                    } else {
+                        postImage.setBackgroundColor(0xFFEFEFEF.toInt())
+                    }
                 } catch (e: Exception) {
-                    // Handle error
+                    postImage.setBackgroundColor(0xFFEFEFEF.toInt())
                 }
             }
-            
+
             itemView.setOnClickListener { onPostClick(post) }
         }
     }

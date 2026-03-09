@@ -28,16 +28,67 @@ class FollowViewModel @Inject constructor(
     private val currentUserId: String?
         get() = authRepository.getCurrentUserId()
     
+    private var targetUserId: String? = null
+    
+    /**
+     * Initialize with user ID and load both counts + followers list
+     */
+    fun initialize(userId: String?, initialTab: FollowTab = FollowTab.FOLLOWERS) {
+        targetUserId = userId ?: currentUserId
+        targetUserId?.let { id ->
+            loadCounts(id)
+            _uiState.update { it.copy(currentTab = initialTab) }
+            when (initialTab) {
+                FollowTab.FOLLOWERS -> loadFollowers(id)
+                FollowTab.FOLLOWING -> loadFollowing(id)
+            }
+        }
+    }
+    
+    /**
+     * Load follower and following counts
+     */
+    private fun loadCounts(userId: String) {
+        viewModelScope.launch {
+            userRepository.getFollowers(userId).collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(followersCount = result.data?.size ?: 0) }
+                }
+            }
+        }
+        viewModelScope.launch {
+            userRepository.getFollowing(userId).collect { result ->
+                if (result is Resource.Success) {
+                    _uiState.update { it.copy(followingCount = result.data?.size ?: 0) }
+                }
+            }
+        }
+    }
+    
+    /**
+     * Switch to a tab
+     */
+    fun switchTab(tab: FollowTab) {
+        if (_uiState.value.currentTab == tab) return
+        _uiState.update { it.copy(currentTab = tab) }
+        targetUserId?.let { id ->
+            when (tab) {
+                FollowTab.FOLLOWERS -> loadFollowers(id)
+                FollowTab.FOLLOWING -> loadFollowing(id)
+            }
+        }
+    }
+    
     /**
      * Load followers for a user
      */
     fun loadFollowers(userId: String? = null) {
-        val targetUserId = userId ?: currentUserId ?: return
+        val targetId = userId ?: targetUserId ?: currentUserId ?: return
         
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
-            userRepository.getFollowers(targetUserId).collect { result ->
+            userRepository.getFollowers(targetId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         val users = result.data ?: emptyList()
@@ -53,6 +104,7 @@ class FollowViewModel @Inject constructor(
                             state.copy(
                                 isLoading = false,
                                 users = followUsers,
+                                followersCount = users.size,
                                 error = null
                             )
                         }
@@ -74,12 +126,12 @@ class FollowViewModel @Inject constructor(
      * Load following for a user
      */
     fun loadFollowing(userId: String? = null) {
-        val targetUserId = userId ?: currentUserId ?: return
+        val targetId = userId ?: targetUserId ?: currentUserId ?: return
         
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
             
-            userRepository.getFollowing(targetUserId).collect { result ->
+            userRepository.getFollowing(targetId).collect { result ->
                 when (result) {
                     is Resource.Success -> {
                         val users = result.data ?: emptyList()
@@ -95,6 +147,7 @@ class FollowViewModel @Inject constructor(
                             state.copy(
                                 isLoading = false,
                                 users = followUsers,
+                                followingCount = users.size,
                                 error = null
                             )
                         }
@@ -113,55 +166,81 @@ class FollowViewModel @Inject constructor(
     }
     
     /**
-     * Toggle follow status for a user
+     * Toggle follow status for a user with optimistic update
      */
     fun toggleFollow(userId: String) {
+        val userIndex = _uiState.value.users.indexOfFirst { it.user.userId == userId }
+        if (userIndex == -1) return
+        
+        val followUser = _uiState.value.users[userIndex]
+        val isCurrentlyFollowing = followUser.isFollowing
+        
+        // Optimistic update
+        _uiState.update { state ->
+            val updatedUsers = state.users.toMutableList()
+            updatedUsers[userIndex] = followUser.copy(isFollowing = !isCurrentlyFollowing)
+            state.copy(
+                users = updatedUsers,
+                followingCount = if (isCurrentlyFollowing) 
+                    (state.followingCount - 1).coerceAtLeast(0)
+                else 
+                    state.followingCount + 1
+            )
+        }
+        
         viewModelScope.launch {
-            val userIndex = _uiState.value.users.indexOfFirst { it.user.userId == userId }
-            if (userIndex == -1) return@launch
-            
-            val followUser = _uiState.value.users[userIndex]
-            val isCurrentlyFollowing = followUser.isFollowing
-            
             val result = if (isCurrentlyFollowing) {
                 userRepository.unfollowUser(userId)
             } else {
                 userRepository.followUser(userId)
             }
             
-            when (result) {
-                is Resource.Success -> {
-                    _uiState.update { state ->
-                        val updatedUsers = state.users.toMutableList()
-                        updatedUsers[userIndex] = followUser.copy(isFollowing = !isCurrentlyFollowing)
-                        state.copy(users = updatedUsers)
+            // Revert on error
+            if (result is Resource.Error) {
+                _uiState.update { state ->
+                    val updatedUsers = state.users.toMutableList()
+                    if (userIndex < updatedUsers.size) {
+                        updatedUsers[userIndex] = followUser
                     }
+                    state.copy(
+                        users = updatedUsers,
+                        followingCount = if (isCurrentlyFollowing)
+                            state.followingCount + 1
+                        else
+                            (state.followingCount - 1).coerceAtLeast(0),
+                        error = result.message
+                    )
                 }
-                is Resource.Error -> {
-                    _uiState.update { it.copy(error = result.message) }
-                }
-                else -> { /* Loading state */ }
             }
         }
     }
     
     /**
-     * Remove a follower
+     * Remove a follower with optimistic update
      */
     fun removeFollower(userId: String) {
+        val removedUser = _uiState.value.users.find { it.user.userId == userId }
+        
+        // Optimistic update
+        _uiState.update { state ->
+            state.copy(
+                users = state.users.filter { it.user.userId != userId },
+                followersCount = (state.followersCount - 1).coerceAtLeast(0)
+            )
+        }
+        
         viewModelScope.launch {
             val result = userRepository.removeFollower(userId)
             
-            when (result) {
-                is Resource.Success -> {
-                    _uiState.update { state ->
-                        state.copy(users = state.users.filter { it.user.userId != userId })
-                    }
+            // Revert on error
+            if (result is Resource.Error && removedUser != null) {
+                _uiState.update { state ->
+                    state.copy(
+                        users = state.users + removedUser,
+                        followersCount = state.followersCount + 1,
+                        error = result.message
+                    )
                 }
-                is Resource.Error -> {
-                    _uiState.update { it.copy(error = result.message) }
-                }
-                else -> { /* Loading state */ }
             }
         }
     }

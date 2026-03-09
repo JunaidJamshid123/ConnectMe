@@ -2,6 +2,7 @@ package com.junaidjamshid.i211203.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.domain.usecase.auth.GetCurrentUserUseCase
 import com.junaidjamshid.i211203.domain.usecase.post.GetFeedPostsUseCase
 import com.junaidjamshid.i211203.domain.usecase.post.LikePostUseCase
@@ -25,19 +26,22 @@ class HomeViewModel @Inject constructor(
     private val getFeedPostsUseCase: GetFeedPostsUseCase,
     private val getStoriesUseCase: GetStoriesUseCase,
     private val likePostUseCase: LikePostUseCase,
-    private val unlikePostUseCase: UnlikePostUseCase
+    private val unlikePostUseCase: UnlikePostUseCase,
+    private val userRepository: UserRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
     
-    private val currentUserId: String?
+    val currentUserId: String?
         get() = getCurrentUserUseCase.getCurrentUserId()
     
     init {
         loadCurrentUser()
         loadPosts()
         loadStories()
+        loadFollowing()
+        loadSuggestions()
     }
     
     private fun loadCurrentUser() {
@@ -46,12 +50,8 @@ class HomeViewModel @Inject constructor(
                 is Resource.Success -> {
                     _uiState.update { it.copy(currentUser = result.data) }
                 }
-                is Resource.Error -> {
-                    // Handle error if needed
-                }
-                is Resource.Loading -> {
-                    // Handle loading if needed
-                }
+                is Resource.Error -> { }
+                is Resource.Loading -> { }
             }
         }
     }
@@ -98,9 +98,13 @@ class HomeViewModel @Inject constructor(
                 getStoriesUseCase(userId).collect { result ->
                     when (result) {
                         is Resource.Success -> {
+                            val stories = result.data ?: emptyList()
+                            // Check if current user has any active story
+                            val currentUserHasStory = stories.any { it.userId == userId }
                             _uiState.update { 
                                 it.copy(
-                                    stories = result.data ?: emptyList(),
+                                    stories = stories,
+                                    currentUserHasStory = currentUserHasStory,
                                     isLoadingStories = false
                                 ) 
                             }
@@ -121,21 +125,140 @@ class HomeViewModel @Inject constructor(
             }
         }
     }
+
+    /**
+     * Load the list of user IDs the current user is following.
+     */
+    private fun loadFollowing() {
+        currentUserId?.let { userId ->
+            viewModelScope.launch {
+                userRepository.getFollowing(userId).collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            val followingIds = result.data?.map { it.userId }?.toSet() ?: emptySet()
+                            _uiState.update { it.copy(followingUserIds = followingIds) }
+                        }
+                        is Resource.Error -> { }
+                        is Resource.Loading -> { }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Load suggested users (all users minus current user, shuffled).
+     */
+    private fun loadSuggestions() {
+        currentUserId?.let { userId ->
+            viewModelScope.launch {
+                userRepository.getAllUsers().collect { result ->
+                    when (result) {
+                        is Resource.Success -> {
+                            val suggestions = (result.data ?: emptyList())
+                                .filter { it.userId != userId }
+                                .shuffled()
+                                .take(15) // Limit inline suggestions
+                            _uiState.update { it.copy(suggestedUsers = suggestions) }
+                        }
+                        is Resource.Error -> { }
+                        is Resource.Loading -> { }
+                    }
+                }
+            }
+        }
+    }
     
     fun onRefresh() {
         _uiState.update { it.copy(isRefreshing = true) }
         loadPosts()
         loadStories()
+        loadFollowing()
+        loadSuggestions()
     }
     
+    /**
+     * Like/unlike a post with reactive (optimistic) UI update.
+     */
     fun onLikePost(postId: String) {
         currentUserId?.let { userId ->
+            val post = _uiState.value.posts.find { it.postId == postId } ?: return@let
+            val isCurrentlyLiked = post.isLikedByCurrentUser
+            val newLikesCount = if (isCurrentlyLiked) post.likesCount - 1 else post.likesCount + 1
+
+            // Optimistic update - immediately update UI
+            _uiState.update { state ->
+                state.copy(
+                    posts = state.posts.map { p ->
+                        if (p.postId == postId) {
+                            p.copy(
+                                isLikedByCurrentUser = !isCurrentlyLiked,
+                                likesCount = newLikesCount.coerceAtLeast(0)
+                            )
+                        } else p
+                    }
+                )
+            }
+
+            // Perform actual operation in background
             viewModelScope.launch {
-                val post = _uiState.value.posts.find { it.postId == postId }
-                if (post?.isLikedByCurrentUser == true) {
+                val result = if (isCurrentlyLiked) {
                     unlikePostUseCase(postId, userId)
                 } else {
                     likePostUseCase(postId, userId)
+                }
+                
+                // If operation failed, revert the optimistic update
+                if (result is Resource.Error) {
+                    _uiState.update { state ->
+                        state.copy(
+                            posts = state.posts.map { p ->
+                                if (p.postId == postId) {
+                                    p.copy(
+                                        isLikedByCurrentUser = isCurrentlyLiked,
+                                        likesCount = post.likesCount
+                                    )
+                                } else p
+                            }
+                        )
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Follow/unfollow a user with reactive (optimistic) UI update.
+     */
+    fun onFollowUser(targetUserId: String) {
+        val userId = currentUserId ?: return
+        val isCurrentlyFollowing = _uiState.value.followingUserIds.contains(targetUserId)
+        
+        // Optimistic update - immediately update UI
+        _uiState.update {
+            if (isCurrentlyFollowing) {
+                it.copy(followingUserIds = it.followingUserIds - targetUserId)
+            } else {
+                it.copy(followingUserIds = it.followingUserIds + targetUserId)
+            }
+        }
+        
+        // Perform actual operation in background
+        viewModelScope.launch {
+            val result = if (isCurrentlyFollowing) {
+                userRepository.unfollowUser(userId, targetUserId)
+            } else {
+                userRepository.followUser(userId, targetUserId)
+            }
+            
+            // If operation failed, revert the optimistic update
+            if (result is Resource.Error) {
+                _uiState.update {
+                    if (isCurrentlyFollowing) {
+                        it.copy(followingUserIds = it.followingUserIds + targetUserId)
+                    } else {
+                        it.copy(followingUserIds = it.followingUserIds - targetUserId)
+                    }
                 }
             }
         }

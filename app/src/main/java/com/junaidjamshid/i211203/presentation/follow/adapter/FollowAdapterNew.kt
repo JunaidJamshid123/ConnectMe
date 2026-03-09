@@ -2,31 +2,35 @@ package com.junaidjamshid.i211203.presentation.follow.adapter
 
 import android.graphics.BitmapFactory
 import android.util.Base64
+import android.util.TypedValue
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
+import com.google.android.material.button.MaterialButton
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.presentation.follow.FollowUser
 import de.hdodenhof.circleimageview.CircleImageView
 
 /**
- * Adapter for followers/following list.
+ * Instagram-style adapter for followers/following list.
  */
 class FollowAdapterNew(
     private val onUserClick: (FollowUser) -> Unit,
     private val onFollowClick: (FollowUser) -> Unit,
     private val onRemoveClick: ((FollowUser) -> Unit)?,
-    private val showRemoveButton: Boolean = false
+    private val showRemoveButton: Boolean = false,
+    private val isCurrentUserProfile: Boolean = true
 ) : ListAdapter<FollowUser, FollowAdapterNew.FollowViewHolder>(FollowUserDiffCallback()) {
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowViewHolder {
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.search_item, parent, false)
+            .inflate(R.layout.item_follower, parent, false)
         return FollowViewHolder(view)
     }
     
@@ -35,13 +39,21 @@ class FollowAdapterNew(
     }
     
     inner class FollowViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
-        private val profileImage: CircleImageView = itemView.findViewById(R.id.iv_user_image)
-        private val usernameText: TextView = itemView.findViewById(R.id.tv_username)
-        private val fullNameText: TextView = itemView.findViewById(R.id.tv_full_name)
-        private val removeButton: ImageView = itemView.findViewById(R.id.iv_remove)
+        private val profileImage: CircleImageView = itemView.findViewById(R.id.profile_image)
+        private val usernameText: TextView = itemView.findViewById(R.id.username)
+        private val fullNameText: TextView = itemView.findViewById(R.id.full_name)
+        private val actionButton: MaterialButton = itemView.findViewById(R.id.btn_action)
+        private val removeButton: ImageView = itemView.findViewById(R.id.btn_remove)
+        
+        private fun dpToPx(dp: Float): Int {
+            return TypedValue.applyDimension(
+                TypedValue.COMPLEX_UNIT_DIP, dp, itemView.context.resources.displayMetrics
+            ).toInt()
+        }
         
         fun bind(followUser: FollowUser) {
             val user = followUser.user
+            val context = itemView.context
             
             usernameText.text = user.username
             fullNameText.text = user.fullName
@@ -59,11 +71,38 @@ class FollowAdapterNew(
                 profileImage.setImageResource(R.drawable.default_profile)
             }
             
-            // Follow button - removed since not in layout
-            // Follow/remove handled by click listeners
+            // Configure action button based on follow state
+            when {
+                followUser.isFollowing -> {
+                    // Already following - show "Following" button (gray background like Instagram)
+                    actionButton.text = context.getString(R.string.following)
+                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.black))
+                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFEFEFEF.toInt())
+                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFFDBDBDB.toInt())
+                    actionButton.strokeWidth = dpToPx(1f)
+                }
+                followUser.isFollowedBy && !followUser.isFollowing -> {
+                    // They follow you but you don't follow them - show "Follow Back" (blue)
+                    actionButton.text = context.getString(R.string.follow_back)
+                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                    actionButton.strokeWidth = 0
+                }
+                else -> {
+                    // Not following - show "Follow" button (blue)
+                    actionButton.text = context.getString(R.string.follow)
+                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                    actionButton.strokeWidth = 0
+                }
+            }
             
-            // Remove button (for followers only)
-            if (showRemoveButton && onRemoveClick != null) {
+            actionButton.setOnClickListener { onFollowClick(followUser) }
+            
+            // Show remove button only for own profile's followers list
+            if (showRemoveButton && isCurrentUserProfile && onRemoveClick != null) {
                 removeButton.visibility = View.VISIBLE
                 removeButton.setOnClickListener { onRemoveClick.invoke(followUser) }
             } else {

@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="80dp"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="4dp"
+    android:paddingTop="4dp"
+    android:paddingBottom="4dp">
+
+    <!-- Note bubble above avatar -->
+    <TextView
+        android:id="@+id/tvNoteBubble"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_note_bubble"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="2"
+        android:maxWidth="72dp"
+        android:minWidth="52dp"
+        android:paddingHorizontal="8dp"
+        android:paddingVertical="5dp"
+        android:text=""
+        android:textColor="#262626"
+        android:textSize="10sp"
+        android:visibility="gone" />
+
+    <!-- Small triangle pointer below bubble -->
+    <View
+        android:id="@+id/notePointer"
+        android:layout_width="8dp"
+        android:layout_height="6dp"
+        android:layout_marginTop="-1dp"
+        android:visibility="gone" />
+
+    <!-- Avatar container -->
+    <FrameLayout
+        android:layout_width="68dp"
+        android:layout_height="68dp"
+        android:layout_marginTop="2dp">
+
+        <!-- Profile Image -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/imgNoteProfile"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_gravity="center"
+            android:scaleType="centerCrop"
+            android:src="@drawable/default_profile" />
+
+        <!-- Online indicator -->
+        <View
+            android:id="@+id/onlineIndicator"
+            android:layout_width="14dp"
+            android:layout_height="14dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="4dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/bg_online_indicator"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/tvNoteUsername"
+        android:layout_width="72dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="4dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:text="Your note"
+        android:textColor="#262626"
+        android:textSize="11sp" />
+
+</LinearLayout>

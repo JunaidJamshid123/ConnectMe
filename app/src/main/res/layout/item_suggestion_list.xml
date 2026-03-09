@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Individual suggestion row for the full Suggestions page (list style) -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="8dp">
+
+    <!-- Profile picture -->
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/suggestion_profile_image"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:scaleType="centerCrop"
+        android:src="@drawable/default_profile"
+        app:civ_border_color="#DBDBDB"
+        app:civ_border_width="0.5dp" />
+
+    <!-- Username + subtitle -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/suggestion_username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:fontFamily="sans-serif-medium"
+            android:maxLines="1"
+            android:text="username"
+            android:textColor="#262626"
+            android:textSize="14sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/suggestion_full_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Full Name"
+            android:textColor="#8E8E8E"
+            android:textSize="13sp" />
+
+        <TextView
+            android:id="@+id/suggestion_reason"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="1dp"
+            android:ellipsize="end"
+            android:maxLines="1"
+            android:text="Suggested for you"
+            android:textColor="#8E8E8E"
+            android:textSize="12sp" />
+    </LinearLayout>
+
+    <!-- Follow button -->
+    <TextView
+        android:id="@+id/btn_follow"
+        android:layout_width="100dp"
+        android:layout_height="32dp"
+        android:background="@drawable/bg_follow_button"
+        android:fontFamily="sans-serif-medium"
+        android:gravity="center"
+        android:text="Follow"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        android:textStyle="bold" />
+
+    <!-- Dismiss -->
+    <ImageView
+        android:id="@+id/btn_dismiss"
+        android:layout_width="24dp"
+        android:layout_height="24dp"
+        android:layout_marginStart="12dp"
+        android:background="?attr/selectableItemBackgroundBorderless"
+        android:contentDescription="Dismiss"
+        android:src="@android:drawable/ic_menu_close_clear_cancel"
+        app:tint="#C7C7C7" />
+
+</LinearLayout>

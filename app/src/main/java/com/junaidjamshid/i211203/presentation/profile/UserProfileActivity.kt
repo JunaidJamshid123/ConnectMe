@@ -14,6 +14,8 @@ import androidx.lifecycle.repeatOnLifecycle
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.databinding.ActivityUserProfileBinding
 import com.junaidjamshid.i211203.presentation.chat.ChatActivity
+import com.junaidjamshid.i211203.presentation.follow.FollowersActivity
+import com.junaidjamshid.i211203.presentation.follow.FollowingActivity
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
@@ -70,6 +72,38 @@ class UserProfileActivity : AppCompatActivity() {
             intent.putExtra("USER_ID", userId)
             startActivity(intent)
         }
+        
+        // Followers click - navigate to followers page
+        binding.userFollowersCount.setOnClickListener {
+            navigateToFollowers()
+        }
+        binding.userFollowersCount.parent?.let { parent ->
+            (parent as? View)?.setOnClickListener { navigateToFollowers() }
+        }
+        
+        // Following click - navigate to following page
+        binding.userFollowingCount.setOnClickListener {
+            navigateToFollowing()
+        }
+        binding.userFollowingCount.parent?.let { parent ->
+            (parent as? View)?.setOnClickListener { navigateToFollowing() }
+        }
+    }
+    
+    private fun navigateToFollowers() {
+        val intent = Intent(this, FollowersActivity::class.java).apply {
+            putExtra("USER_ID", userId)
+            putExtra("USERNAME", viewModel.uiState.value.user?.username ?: "")
+        }
+        startActivity(intent)
+    }
+    
+    private fun navigateToFollowing() {
+        val intent = Intent(this, FollowingActivity::class.java).apply {
+            putExtra("USER_ID", userId)
+            putExtra("USERNAME", viewModel.uiState.value.user?.username ?: "")
+        }
+        startActivity(intent)
     }
     
     private fun observeUiState() {
