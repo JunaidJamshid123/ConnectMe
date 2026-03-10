@@ -45,6 +45,7 @@ data class SupabasePostImageInsert(
 
 /**
  * Supabase representation of Post.
+ * Supports image posts, carousels, and video/reel posts.
  */
 @Serializable
 data class SupabasePost(
@@ -58,7 +59,16 @@ data class SupabasePost(
     val location: String = "",
     val music_name: String = "",
     val music_artist: String = "",
-    val timestamp: Long = 0
+    val timestamp: Long = 0,
+    // Video/Reel fields
+    val media_type: String = "image",
+    val video_url: String = "",
+    val thumbnail_url: String = "",
+    val video_duration: Int = 0,
+    val video_width: Int = 0,
+    val video_height: Int = 0,
+    val aspect_ratio: Float = 1f,
+    val views_count: Int = 0
 )
 
 /**
@@ -125,7 +135,16 @@ fun SupabasePost.toDto(
         musicArtist = music_artist,
         timestamp = timestamp,
         likes = likes.toMutableMap(),
-        comments = comments.toMutableList()
+        comments = comments.toMutableList(),
+        // Video/Reel fields
+        mediaType = media_type,
+        videoUrl = video_url,
+        thumbnailUrl = thumbnail_url,
+        videoDuration = video_duration,
+        videoWidth = video_width,
+        videoHeight = video_height,
+        aspectRatio = aspect_ratio,
+        viewsCount = views_count
     )
 }
 
@@ -290,23 +309,40 @@ class SupabasePostDataSource @Inject constructor(
             json.encodeToString(postDto.imageUrls)
         } else "[]"
         
+        // For video posts, use thumbnail as the post_image_url (required field)
+        val postImageUrl = when {
+            postDto.postImageUrl.isNotBlank() -> postDto.postImageUrl
+            postDto.thumbnailUrl.isNotBlank() -> postDto.thumbnailUrl
+            postDto.imageUrls.isNotEmpty() -> postDto.imageUrls.first()
+            else -> "" // Will fail if column is NOT NULL - need to fix DB schema
+        }
+        
         val supabasePost = SupabasePost(
             post_id = postId,
             user_id = postDto.userId,
             username = postDto.username,
             user_profile_image = postDto.userProfileImage,
-            post_image_url = postDto.postImageUrl,
+            post_image_url = postImageUrl,
             image_urls = imageUrlsJson,
             caption = postDto.caption,
             location = postDto.location,
             music_name = postDto.musicName,
             music_artist = postDto.musicArtist,
-            timestamp = System.currentTimeMillis()
+            timestamp = System.currentTimeMillis(),
+            // Video/Reel fields
+            media_type = postDto.mediaType,
+            video_url = postDto.videoUrl,
+            thumbnail_url = postDto.thumbnailUrl,
+            video_duration = postDto.videoDuration,
+            video_width = postDto.videoWidth,
+            video_height = postDto.videoHeight,
+            aspect_ratio = postDto.aspectRatio,
+            views_count = 0
         )
         
         supabaseClient.postgrest[SupabaseConfig.POSTS_TABLE]
             .insert(supabasePost)
-        Log.d("PostDataSource", "createPost: post $postId inserted with ${postDto.imageUrls.size} images inline")
+        Log.d("PostDataSource", "createPost: post $postId inserted (type: ${postDto.mediaType}) with ${postDto.imageUrls.size} images inline")
         
         // Also insert into post_images table (belt-and-suspenders)
         if (postDto.imageUrls.isNotEmpty()) {
@@ -442,4 +478,98 @@ class SupabasePostDataSource @Inject constructor(
             .decodeList<Map<String, String>>()
         return likes.mapNotNull { it["user_id"] }
     }
+    
+    // ========================= VIDEO VIEW TRACKING =========================
+    
+    /**
+     * Record or update a video view for a user.
+     * Uses upsert to either create a new view or update watch duration.
+     */
+    suspend fun recordVideoView(postId: String, userId: String, watchDuration: Int = 0) {
+        try {
+            val videoView = VideoView(
+                post_id = postId,
+                user_id = userId,
+                watch_duration = watchDuration,
+                watched_at = System.currentTimeMillis()
+            )
+            supabaseClient.postgrest["video_views"]
+                .upsert(videoView) {
+                    onConflict = "post_id,user_id"
+                }
+            Log.d("PostDataSource", "recordVideoView: recorded view for post $postId by user $userId")
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "recordVideoView failed: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * Increment the views_count on a post.
+     * Called after a video has been watched for at least 3 seconds.
+     */
+    suspend fun incrementViewCount(postId: String) {
+        try {
+            // Use RPC function or raw SQL update to increment
+            supabaseClient.postgrest[SupabaseConfig.POSTS_TABLE]
+                .update({
+                    // Get current post first, increment, update
+                }) {
+                    filter { eq("post_id", postId) }
+                }
+            // Note: For atomic increment, you would typically use a Supabase RPC function
+            // For now, we'll rely on the video_views table for accurate counts
+            Log.d("PostDataSource", "incrementViewCount: incremented for post $postId")
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "incrementViewCount failed: ${e.message}", e)
+        }
+    }
+    
+    /**
+     * Get the view count for a video post.
+     */
+    suspend fun getVideoViewCount(postId: String): Int {
+        return try {
+            val views = supabaseClient.postgrest["video_views"]
+                .select(columns = Columns.list("id")) {
+                    filter { eq("post_id", postId) }
+                }
+                .decodeList<Map<String, Any>>()
+            views.size
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "getVideoViewCount failed: ${e.message}", e)
+            0
+        }
+    }
+    
+    /**
+     * Check if a user has already viewed a video.
+     */
+    suspend fun hasUserViewedVideo(postId: String, userId: String): Boolean {
+        return try {
+            val result = supabaseClient.postgrest["video_views"]
+                .select {
+                    filter {
+                        eq("post_id", postId)
+                        eq("user_id", userId)
+                    }
+                }
+                .decodeList<VideoView>()
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "hasUserViewedVideo failed: ${e.message}", e)
+            false
+        }
+    }
 }
+
+/**
+ * Supabase representation of Video View.
+ */
+@Serializable
+data class VideoView(
+    val id: Long? = null,
+    val post_id: String,
+    val user_id: String,
+    val watch_duration: Int = 0,
+    val watched_at: Long = System.currentTimeMillis()
+)

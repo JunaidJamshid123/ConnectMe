@@ -8,6 +8,7 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.util.Base64
+import android.util.Log
 import android.view.GestureDetector
 import android.view.LayoutInflater
 import android.view.MotionEvent
@@ -16,17 +17,29 @@ import android.view.ViewGroup
 import android.view.animation.AnimationUtils
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
 import androidx.core.view.GestureDetectorCompat
+import androidx.media3.common.Player
+import androidx.media3.ui.PlayerView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.airbnb.lottie.LottieAnimationView
+import com.bumptech.glide.Glide
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.domain.model.Post
 import com.junaidjamshid.i211203.domain.model.User
+import com.junaidjamshid.i211203.presentation.home.video.ExoPlayerPool
 import com.junaidjamshid.i211203.presentation.post.adapter.ImageCarouselAdapter
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 
 /**
  * Sealed class representing the different items in the home feed.
@@ -39,6 +52,7 @@ sealed class HomeFeedItem {
 /**
  * Multi-type adapter for the home feed that handles both posts and suggestion rows.
  * Suggestions appear inline between posts similar to Instagram.
+ * Supports image posts, carousels, and video/reel posts with auto-play.
  */
 class HomeFeedAdapter(
     private val onLikeClick: (String) -> Unit,
@@ -48,7 +62,9 @@ class HomeFeedAdapter(
     private val onProfileClick: (String) -> Unit,
     private val onMenuClick: (Post) -> Unit,
     private val onFollowClick: (String) -> Unit,
-    private val onSeeAllSuggestionsClick: () -> Unit
+    private val onSeeAllSuggestionsClick: () -> Unit,
+    private val onMuteToggle: (() -> Unit)? = null,
+    private val onVideoClick: ((String) -> Unit)? = null
 ) : ListAdapter<HomeFeedItem, RecyclerView.ViewHolder>(FeedDiffCallback()) {
 
     companion object {
@@ -65,6 +81,12 @@ class HomeFeedAdapter(
 
     /** Current user ID to hide follow button on own posts */
     var currentUserId: String = ""
+
+    /** ExoPlayer pool for video playback */
+    var playerPool: ExoPlayerPool? = null
+
+    /** Coroutine scope for progress updates */
+    private val coroutineScope = CoroutineScope(Dispatchers.Main)
 
     override fun getItemViewType(position: Int): Int {
         return when (getItem(position)) {
@@ -110,7 +132,7 @@ class HomeFeedAdapter(
         private val subtitleText: TextView = itemView.findViewById(R.id.subtitle_text)
         private val postImage: ImageView = itemView.findViewById(R.id.post_image)
         private val postImageContainer: View = itemView.findViewById(R.id.post_image_container)
-        private val doubleTapHeart: ImageView = itemView.findViewById(R.id.double_tap_heart)
+        private val doubleTapHeart: LottieAnimationView = itemView.findViewById(R.id.double_tap_heart)
         private val postCarousel: ViewPager2 = itemView.findViewById(R.id.post_carousel)
         private val carouselCounter: TextView = itemView.findViewById(R.id.carousel_counter)
         private val carouselDots: LinearLayout = itemView.findViewById(R.id.carousel_dots)
@@ -125,12 +147,24 @@ class HomeFeedAdapter(
         private val timestamp: TextView = itemView.findViewById(R.id.timestamp)
         private val menuButton: ImageView = itemView.findViewById(R.id.menu_dots)
 
+        // Video player components
+        private val videoPlayer: PlayerView = itemView.findViewById(R.id.video_player)
+        private val videoThumbnail: ImageView = itemView.findViewById(R.id.video_thumbnail)
+        private val videoProgress: ProgressBar = itemView.findViewById(R.id.video_progress)
+        private val muteIcon: ImageView = itemView.findViewById(R.id.mute_icon)
+        private val videoDuration: TextView = itemView.findViewById(R.id.video_duration)
+        private val videoViewsContainer: View = itemView.findViewById(R.id.video_views_container)
+        private val videoViewsCount: TextView = itemView.findViewById(R.id.video_views_count)
+        private val playPauseButton: ImageView = itemView.findViewById(R.id.play_pause_button)
+
         private var carouselAdapter: ImageCarouselAdapter? = null
         private var pageChangeCallback: ViewPager2.OnPageChangeCallback? = null
         private val subtitleHandler = Handler(Looper.getMainLooper())
         private var subtitleRunnable: Runnable? = null
 
         private var currentPostId: String = ""
+        private var progressJob: Job? = null
+        private var playerListener: Player.Listener? = null
 
         // Gesture detector for double-tap to like
         private val gestureDetector = GestureDetectorCompat(itemView.context,
@@ -144,22 +178,20 @@ class HomeFeedAdapter(
         )
 
         private fun showDoubleTapLikeAnimation() {
-            val fadeIn = AnimationUtils.loadAnimation(itemView.context, R.anim.like_heart_in)
-            val fadeOut = AnimationUtils.loadAnimation(itemView.context, R.anim.like_heart_out)
-
-            doubleTapHeart.alpha = 1f
-            doubleTapHeart.startAnimation(fadeIn)
-
-            doubleTapHeart.postDelayed({
-                doubleTapHeart.startAnimation(fadeOut)
-                fadeOut.setAnimationListener(object : android.view.animation.Animation.AnimationListener {
-                    override fun onAnimationStart(animation: android.view.animation.Animation?) {}
-                    override fun onAnimationRepeat(animation: android.view.animation.Animation?) {}
-                    override fun onAnimationEnd(animation: android.view.animation.Animation?) {
-                        doubleTapHeart.alpha = 0f
-                    }
-                })
-            }, 500)
+            doubleTapHeart.visibility = View.VISIBLE
+            doubleTapHeart.playAnimation()
+            doubleTapHeart.addAnimatorListener(object : android.animation.Animator.AnimatorListener {
+                override fun onAnimationStart(animation: android.animation.Animator) {}
+                override fun onAnimationEnd(animation: android.animation.Animator) {
+                    doubleTapHeart.visibility = View.GONE
+                    doubleTapHeart.removeAllAnimatorListeners()
+                }
+                override fun onAnimationCancel(animation: android.animation.Animator) {
+                    doubleTapHeart.visibility = View.GONE
+                    doubleTapHeart.removeAllAnimatorListeners()
+                }
+                override fun onAnimationRepeat(animation: android.animation.Animator) {}
+            })
         }
 
         @SuppressLint("ClickableViewAccessibility")
@@ -205,12 +237,20 @@ class HomeFeedAdapter(
             // Profile image
             loadBase64Image(post.userProfileImage, profileImage, R.drawable.default_profile)
 
-            // Image display: carousel vs single
-            val allImages = post.allImages
-            if (allImages.size > 1) {
-                setupCarousel(allImages)
+            // Media display: video, carousel, or single image
+            if (post.isVideo) {
+                setupVideo(post)
             } else {
-                setupSingleImage(allImages, post.postImageUrl)
+                // Hide video components
+                hideVideoComponents()
+                
+                // Image display: carousel vs single
+                val allImages = post.allImages
+                if (allImages.size > 1) {
+                    setupCarousel(allImages)
+                } else {
+                    setupSingleImage(allImages, post.postImageUrl)
+                }
             }
 
             // Like state
@@ -232,15 +272,67 @@ class HomeFeedAdapter(
             }
 
             // Click listeners
-            heartButton.setOnClickListener { onLikeClick(post.postId) }
+            heartButton.setOnClickListener { 
+                animateHeartButton()
+                onLikeClick(post.postId) 
+            }
             commentButton.setOnClickListener { onCommentClick(post.postId) }
             shareButton.setOnClickListener { onShareClick(post.postId) }
-            saveButton.setOnClickListener { onSaveClick(post.postId) }
+            saveButton.setOnClickListener { 
+                animateSaveButton()
+                onSaveClick(post.postId) 
+            }
             profileImage.setOnClickListener { onProfileClick(post.userId) }
             usernameText.setOnClickListener { onProfileClick(post.userId) }
             menuButton.setOnClickListener { onMenuClick(post) }
             viewComments.setOnClickListener { onCommentClick(post.postId) }
             addCommentRow.setOnClickListener { onCommentClick(post.postId) }
+        }
+        
+        private fun animateHeartButton() {
+            heartButton.animate()
+                .scaleX(0.7f)
+                .scaleY(0.7f)
+                .setDuration(100)
+                .withEndAction {
+                    heartButton.animate()
+                        .scaleX(1.2f)
+                        .scaleY(1.2f)
+                        .setDuration(150)
+                        .setInterpolator(android.view.animation.OvershootInterpolator(3f))
+                        .withEndAction {
+                            heartButton.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100)
+                                .start()
+                        }
+                        .start()
+                }
+                .start()
+        }
+        
+        private fun animateSaveButton() {
+            saveButton.animate()
+                .scaleX(0.8f)
+                .scaleY(0.8f)
+                .setDuration(100)
+                .withEndAction {
+                    saveButton.animate()
+                        .scaleX(1.1f)
+                        .scaleY(1.1f)
+                        .setDuration(150)
+                        .setInterpolator(android.view.animation.OvershootInterpolator(2f))
+                        .withEndAction {
+                            saveButton.animate()
+                                .scaleX(1f)
+                                .scaleY(1f)
+                                .setDuration(100)
+                                .start()
+                        }
+                        .start()
+                }
+                .start()
         }
 
         private fun setupSubtitle(post: Post) {
@@ -351,11 +443,201 @@ class HomeFeedAdapter(
             }
         }
 
+        // ========================= VIDEO METHODS =========================
+
+        private fun setupVideo(post: Post) {
+            Log.d("HomeFeedAdapter", "Setting up video for post ${post.postId}")
+            Log.d("HomeFeedAdapter", "  videoUrl: ${post.videoUrl}")
+            Log.d("HomeFeedAdapter", "  thumbnailUrl: ${post.thumbnailUrl}")
+            Log.d("HomeFeedAdapter", "  displayThumbnail: ${post.displayThumbnail}")
+            
+            // Hide image components
+            postImage.visibility = View.GONE
+            postCarousel.visibility = View.GONE
+            carouselCounter.visibility = View.GONE
+            carouselDots.visibility = View.GONE
+
+            // Show video components
+            videoPlayer.visibility = View.VISIBLE
+            videoThumbnail.visibility = View.VISIBLE
+            videoProgress.visibility = View.VISIBLE
+            muteIcon.visibility = View.VISIBLE
+            
+            // Show duration badge
+            if (post.formattedDuration.isNotEmpty()) {
+                videoDuration.visibility = View.VISIBLE
+                videoDuration.text = post.formattedDuration
+            } else {
+                videoDuration.visibility = View.GONE
+            }
+
+            // Show views count for videos
+            if (post.viewsCount > 0) {
+                videoViewsContainer.visibility = View.VISIBLE
+                videoViewsCount.text = formatViewCount(post.viewsCount)
+            } else {
+                videoViewsContainer.visibility = View.GONE
+            }
+
+            // Load thumbnail - now supports both URL and base64
+            val thumbnailSource = post.displayThumbnail
+            if (thumbnailSource.isNotBlank()) {
+                if (thumbnailSource.startsWith("http://") || thumbnailSource.startsWith("https://")) {
+                    // Load from URL using Glide
+                    Glide.with(itemView.context)
+                        .load(thumbnailSource)
+                        .centerCrop()
+                        .placeholder(R.drawable.bg_image_placeholder)
+                        .error(R.drawable.bg_image_placeholder)
+                        .into(videoThumbnail)
+                } else {
+                    // Try as base64
+                    loadBase64Image(thumbnailSource, videoThumbnail, R.drawable.bg_image_placeholder)
+                }
+            } else {
+                videoThumbnail.setImageResource(R.drawable.bg_image_placeholder)
+            }
+
+            // Setup player using the pool
+            playerPool?.let { pool ->
+                Log.d("HomeFeedAdapter", "Preparing video in pool for ${post.postId}")
+                pool.prepareVideo(post.postId, post.videoUrl)
+                videoPlayer.player = pool.getPlayerForPost(post.postId)
+                
+                // Setup mute icon state
+                updateMuteIcon(pool.isMuted.value)
+                
+                // Setup player listener for progress updates
+                setupPlayerListener(post.postId)
+            } ?: run {
+                Log.w("HomeFeedAdapter", "PlayerPool is null! Video won't play.")
+            }
+
+            // Mute icon click - toggle mute
+            muteIcon.setOnClickListener {
+                playerPool?.toggleMute()
+                updateMuteIcon(playerPool?.isMuted?.value ?: true)
+                onMuteToggle?.invoke()
+            }
+
+            // Video click - toggle play/pause or navigate
+            videoPlayer.setOnClickListener {
+                onVideoClick?.invoke(post.postId)
+            }
+        }
+
+        private fun setupPlayerListener(postId: String) {
+            // Remove old listener
+            playerListener?.let {
+                playerPool?.removePlayerListener(postId, it)
+            }
+
+            playerListener = object : Player.Listener {
+                override fun onPlaybackStateChanged(playbackState: Int) {
+                    when (playbackState) {
+                        Player.STATE_READY -> {
+                            videoThumbnail.visibility = View.GONE
+                            startProgressUpdates(postId)
+                        }
+                        Player.STATE_BUFFERING -> {
+                            // Could show loading indicator
+                        }
+                        Player.STATE_ENDED -> {
+                            // Video looped (repeatMode is ONE)
+                        }
+                        Player.STATE_IDLE -> {
+                            videoThumbnail.visibility = View.VISIBLE
+                            stopProgressUpdates()
+                        }
+                    }
+                }
+
+                override fun onIsPlayingChanged(isPlaying: Boolean) {
+                    if (isPlaying) {
+                        videoThumbnail.visibility = View.GONE
+                        playPauseButton.visibility = View.GONE
+                    } else {
+                        playPauseButton.alpha = 0.7f
+                        playPauseButton.visibility = View.VISIBLE
+                    }
+                }
+            }
+
+            playerPool?.addPlayerListener(postId, playerListener!!)
+        }
+
+        private fun startProgressUpdates(postId: String) {
+            progressJob?.cancel()
+            progressJob = coroutineScope.launch {
+                while (isActive) {
+                    val player = playerPool?.getPlayerForPost(postId)
+                    if (player != null && player.duration > 0) {
+                        val progress = (player.currentPosition * 100 / player.duration).toInt()
+                        videoProgress.progress = progress
+                    }
+                    delay(100)
+                }
+            }
+        }
+
+        private fun stopProgressUpdates() {
+            progressJob?.cancel()
+            progressJob = null
+        }
+
+        private fun hideVideoComponents() {
+            videoPlayer.visibility = View.GONE
+            videoPlayer.player = null
+            videoThumbnail.visibility = View.GONE
+            videoProgress.visibility = View.GONE
+            muteIcon.visibility = View.GONE
+            videoDuration.visibility = View.GONE
+            videoViewsContainer.visibility = View.GONE
+            playPauseButton.visibility = View.GONE
+            stopProgressUpdates()
+        }
+
+        private fun updateMuteIcon(isMuted: Boolean) {
+            muteIcon.setImageResource(
+                if (isMuted) R.drawable.ic_volume_off else R.drawable.ic_volume_on
+            )
+        }
+
+        private fun formatViewCount(count: Int): String {
+            return when {
+                count >= 1_000_000 -> String.format("%.1fM", count / 1_000_000.0)
+                count >= 1_000 -> String.format("%.1fK", count / 1_000.0)
+                else -> count.toString()
+            }
+        }
+
+        /** Attach player for this post (called by VideoAutoPlayManager) */
+        fun attachPlayer(postId: String) {
+            if (currentPostId == postId) {
+                playerPool?.let { pool ->
+                    videoPlayer.player = pool.getPlayerForPost(postId)
+                }
+            }
+        }
+
+        /** Detach player from this view holder */
+        fun detachPlayer() {
+            videoPlayer.player = null
+            stopProgressUpdates()
+        }
+
         fun cleanup() {
             subtitleRunnable?.let { subtitleHandler.removeCallbacks(it) }
             subtitleRunnable = null
             pageChangeCallback?.let { postCarousel.unregisterOnPageChangeCallback(it) }
             pageChangeCallback = null
+            // Video cleanup
+            playerListener?.let {
+                playerPool?.removePlayerListener(currentPostId, it)
+            }
+            playerListener = null
+            stopProgressUpdates()
+            videoPlayer.player = null
         }
     }
 
@@ -384,17 +666,54 @@ class HomeFeedAdapter(
     // ========================= HELPERS =========================
 
     private fun loadBase64Image(base64: String, imageView: ImageView, fallbackRes: Int) {
-        if (base64.isNotEmpty()) {
-            try {
-                val bytes = Base64.decode(base64, Base64.DEFAULT)
-                val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
-                if (bitmap != null) {
-                    imageView.setImageBitmap(bitmap)
-                    return
-                }
-            } catch (_: Exception) { }
+        if (base64.isEmpty()) {
+            if (fallbackRes != 0) imageView.setImageResource(fallbackRes)
+            return
         }
+        
+        // Check if it's a URL (for Supabase Storage images)
+        if (base64.startsWith("http://") || base64.startsWith("https://")) {
+            Glide.with(imageView.context)
+                .load(base64)
+                .centerCrop()
+                .into(imageView)
+            return
+        }
+        
+        // Otherwise try to decode as base64
+        try {
+            val bytes = Base64.decode(base64, Base64.DEFAULT)
+            val bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.size)
+            if (bitmap != null) {
+                imageView.setImageBitmap(bitmap)
+                return
+            }
+        } catch (e: Exception) {
+            Log.w("HomeFeedAdapter", "Failed to decode image: ${e.message}")
+        }
+        
         if (fallbackRes != 0) imageView.setImageResource(fallbackRes)
+    }
+
+    /**
+     * Load image from URL using Glide (for video thumbnails and profile pics)
+     */
+    private fun loadUrlImage(url: String, imageView: ImageView, fallbackRes: Int = 0) {
+        if (url.isEmpty()) {
+            if (fallbackRes != 0) imageView.setImageResource(fallbackRes)
+            return
+        }
+        
+        Glide.with(imageView.context)
+            .load(url)
+            .centerCrop()
+            .apply {
+                if (fallbackRes != 0) {
+                    placeholder(fallbackRes)
+                    error(fallbackRes)
+                }
+            }
+            .into(imageView)
     }
 
     private fun getTimeAgo(timestamp: Long): String {
@@ -416,6 +735,18 @@ class HomeFeedAdapter(
 
     private fun Int.dpToPx(): Int =
         (this * android.content.res.Resources.getSystem().displayMetrics.density).toInt()
+
+    // ========================= PUBLIC HELPERS =========================
+
+    /**
+     * Get Post at a specific position (for VideoAutoPlayManager).
+     * Returns null if position is invalid or item is not a PostItem.
+     */
+    fun getPostAtPosition(position: Int): Post? {
+        if (position < 0 || position >= itemCount) return null
+        val item = getItem(position)
+        return (item as? HomeFeedItem.PostItem)?.post
+    }
 
     // ========================= DIFF CALLBACK =========================
 

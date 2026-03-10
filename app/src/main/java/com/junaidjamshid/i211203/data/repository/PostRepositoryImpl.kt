@@ -320,4 +320,70 @@ class PostRepositoryImpl @Inject constructor(
             Resource.Error(e.message ?: "Failed to get likers")
         }
     }
+    
+    // ========================= VIDEO METHODS =========================
+    
+    override suspend fun recordVideoView(postId: String, userId: String): Resource<Unit> {
+        return try {
+            postDataSource.recordVideoView(postId, userId)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to record video view")
+        }
+    }
+    
+    override suspend fun getVideoViewCount(postId: String): Resource<Int> {
+        return try {
+            val count = postDataSource.getVideoViewCount(postId)
+            Resource.Success(count)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to get video view count")
+        }
+    }
+    
+    override suspend fun createVideoPost(
+        caption: String,
+        videoUrl: String,
+        thumbnailUrl: String,
+        videoDuration: Int,
+        videoWidth: Int,
+        videoHeight: Int,
+        location: String,
+        musicName: String,
+        musicArtist: String,
+        isReel: Boolean
+    ): Resource<Post> {
+        return try {
+            val currentUserId = userDataSource.getCurrentUserId()
+            if (currentUserId != null) {
+                val user = userDataSource.getUserById(currentUserId)
+                
+                val postDto = PostDto(
+                    userId = currentUserId,
+                    username = user?.username ?: "",
+                    userProfileImage = user?.profilePicture ?: "",
+                    caption = caption,
+                    location = location,
+                    musicName = musicName,
+                    musicArtist = musicArtist,
+                    // Video-specific fields
+                    mediaType = if (isReel) "reel" else "video",
+                    videoUrl = videoUrl,
+                    thumbnailUrl = thumbnailUrl,
+                    videoDuration = videoDuration,
+                    videoWidth = videoWidth,
+                    videoHeight = videoHeight,
+                    aspectRatio = if (videoWidth > 0) videoHeight.toFloat() / videoWidth else 1f,
+                    viewsCount = 0
+                )
+                
+                val createdPost = postDataSource.createPost(postDto)
+                Resource.Success(createdPost.toDomain(currentUserId))
+            } else {
+                Resource.Error("User not logged in")
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to create video post")
+        }
+    }
 }

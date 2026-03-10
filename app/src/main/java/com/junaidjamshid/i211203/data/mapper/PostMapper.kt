@@ -3,6 +3,7 @@ package com.junaidjamshid.i211203.data.mapper
 import com.junaidjamshid.i211203.data.dto.CommentDto
 import com.junaidjamshid.i211203.data.dto.PostDto
 import com.junaidjamshid.i211203.domain.model.Comment
+import com.junaidjamshid.i211203.domain.model.MediaType
 import com.junaidjamshid.i211203.domain.model.Post
 
 /**
@@ -26,7 +27,16 @@ object PostMapper {
             likesCount = likes.size,
             commentsCount = comments.size,
             isLikedByCurrentUser = likes.containsKey(currentUserId),
-            isSavedByCurrentUser = false
+            isSavedByCurrentUser = false,
+            // Video/Reel fields
+            mediaType = MediaType.fromString(mediaType),
+            videoUrl = videoUrl,
+            thumbnailUrl = thumbnailUrl,
+            videoDuration = videoDuration,
+            videoWidth = videoWidth,
+            videoHeight = videoHeight,
+            aspectRatio = aspectRatio,
+            viewsCount = viewsCount
         )
     }
     

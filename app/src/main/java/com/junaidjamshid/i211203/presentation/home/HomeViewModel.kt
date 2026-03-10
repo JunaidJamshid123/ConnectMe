@@ -1,7 +1,9 @@
 package com.junaidjamshid.i211203.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junaidjamshid.i211203.domain.repository.PostRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.domain.usecase.auth.GetCurrentUserUseCase
 import com.junaidjamshid.i211203.domain.usecase.post.GetFeedPostsUseCase
@@ -19,6 +21,7 @@ import javax.inject.Inject
 
 /**
  * ViewModel for Home screen following Clean Architecture.
+ * Supports image posts, carousels, and video/reel posts with view tracking.
  */
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -27,7 +30,8 @@ class HomeViewModel @Inject constructor(
     private val getStoriesUseCase: GetStoriesUseCase,
     private val likePostUseCase: LikePostUseCase,
     private val unlikePostUseCase: UnlikePostUseCase,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val postRepository: PostRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -269,6 +273,37 @@ class HomeViewModel @Inject constructor(
         currentUserId?.let { userId ->
             viewModelScope.launch {
                 // TODO: Implement save post use case
+            }
+        }
+    }
+    
+    /**
+     * Track a video view after minimum watch time (3 seconds).
+     * Updates the view count optimistically in UI.
+     */
+    fun trackVideoView(postId: String) {
+        currentUserId?.let { userId ->
+            // Optimistic update - increment view count locally
+            _uiState.update { state ->
+                state.copy(
+                    posts = state.posts.map { post ->
+                        if (post.postId == postId && post.isVideo) {
+                            post.copy(viewsCount = post.viewsCount + 1)
+                        } else post
+                    }
+                )
+            }
+            
+            // Record the view in the backend
+            viewModelScope.launch {
+                try {
+                    postRepository.recordVideoView(postId, userId)
+                    Log.d("HomeViewModel", "Video view recorded for post: $postId")
+                } catch (e: Exception) {
+                    Log.e("HomeViewModel", "Failed to record video view: ${e.message}")
+                    // Note: We don't revert the UI update for view counts 
+                    // as it's not critical and avoids flicker
+                }
             }
         }
     }

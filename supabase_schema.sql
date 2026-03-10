@@ -84,7 +84,59 @@ BEGIN
     IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'image_urls') THEN
         ALTER TABLE posts ADD COLUMN image_urls TEXT DEFAULT '[]';
     END IF;
+    -- Video support columns
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'media_type') THEN
+        ALTER TABLE posts ADD COLUMN media_type TEXT DEFAULT 'image';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'video_url') THEN
+        ALTER TABLE posts ADD COLUMN video_url TEXT DEFAULT '';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'thumbnail_url') THEN
+        ALTER TABLE posts ADD COLUMN thumbnail_url TEXT DEFAULT '';
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'video_duration') THEN
+        ALTER TABLE posts ADD COLUMN video_duration INTEGER DEFAULT 0;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'video_width') THEN
+        ALTER TABLE posts ADD COLUMN video_width INTEGER DEFAULT 0;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'video_height') THEN
+        ALTER TABLE posts ADD COLUMN video_height INTEGER DEFAULT 0;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'aspect_ratio') THEN
+        ALTER TABLE posts ADD COLUMN aspect_ratio REAL DEFAULT 1.0;
+    END IF;
+    IF NOT EXISTS (SELECT 1 FROM information_schema.columns WHERE table_name = 'posts' AND column_name = 'views_count') THEN
+        ALTER TABLE posts ADD COLUMN views_count INTEGER DEFAULT 0;
+    END IF;
 END $$;
+
+-- Index for media type queries (feed filtering)
+CREATE INDEX IF NOT EXISTS idx_posts_media_type ON posts(media_type);
+
+-- =====================================================
+-- VIDEO VIEWS TABLE (Track video/reel views)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS video_views (
+    id BIGSERIAL PRIMARY KEY,
+    post_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    watch_duration INTEGER DEFAULT 0,
+    watched_at BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
+    UNIQUE(post_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_video_views_post_id ON video_views(post_id);
+CREATE INDEX IF NOT EXISTS idx_video_views_user_id ON video_views(user_id);
+
+-- RLS for video_views
+ALTER TABLE video_views ENABLE ROW LEVEL SECURITY;
+DROP POLICY IF EXISTS "Video views are viewable by post owner" ON video_views;
+CREATE POLICY "Video views are viewable by post owner" ON video_views FOR SELECT USING (true);
+DROP POLICY IF EXISTS "Users can record video views" ON video_views;
+CREATE POLICY "Users can record video views" ON video_views FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can update their video views" ON video_views;
+CREATE POLICY "Users can update their video views" ON video_views FOR UPDATE USING (auth.uid()::text = user_id::text);
 
 -- =====================================================
 -- POST IMAGES TABLE (for carousel / multiple images)
@@ -427,3 +479,16 @@ CREATE POLICY "Users can delete searches" ON recent_searches FOR DELETE USING (a
 -- 2. post-images (public)
 -- 3. story-images (public)
 -- 4. message-images (authenticated access only)
+-- 5. videos (public) - For video posts and reels
+-- 6. video-thumbnails (public) - For video thumbnail images
+
+-- =====================================================
+-- STORAGE RLS POLICIES (Run in Supabase Dashboard -> Storage -> Policies)
+-- =====================================================
+-- For 'videos' bucket:
+-- SELECT: Allow public access (anyone can view)
+-- INSERT: Allow authenticated users to upload to their folder
+-- DELETE: Allow users to delete their own videos
+--
+-- Example policy for INSERT on videos bucket:
+-- ((bucket_id = 'videos'::text) AND (auth.role() = 'authenticated'::text))

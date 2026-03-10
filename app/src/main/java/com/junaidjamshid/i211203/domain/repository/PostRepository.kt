@@ -61,4 +61,32 @@ interface PostRepository {
     suspend fun deleteComment(postId: String, commentId: String): Resource<Unit>
     
     suspend fun getPostLikers(postId: String): Resource<List<String>>
+    
+    // ========================= VIDEO METHODS =========================
+    
+    /**
+     * Record that a user has viewed a video post.
+     */
+    suspend fun recordVideoView(postId: String, userId: String): Resource<Unit>
+    
+    /**
+     * Get the view count for a video post.
+     */
+    suspend fun getVideoViewCount(postId: String): Resource<Int>
+    
+    /**
+     * Create a video post.
+     */
+    suspend fun createVideoPost(
+        caption: String,
+        videoUrl: String,
+        thumbnailUrl: String,
+        videoDuration: Int,
+        videoWidth: Int,
+        videoHeight: Int,
+        location: String = "",
+        musicName: String = "",
+        musicArtist: String = "",
+        isReel: Boolean = false
+    ): Resource<Post>
 }

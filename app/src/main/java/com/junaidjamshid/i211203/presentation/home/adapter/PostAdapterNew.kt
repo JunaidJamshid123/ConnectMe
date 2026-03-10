@@ -7,32 +7,54 @@ import android.text.SpannableStringBuilder
 import android.text.Spanned
 import android.text.style.StyleSpan
 import android.util.Base64
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.LinearLayout
+import android.widget.ProgressBar
 import android.widget.TextView
+import androidx.media3.common.MediaItem
+import androidx.media3.common.Player
+import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.PlayerView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.bumptech.glide.Glide
 import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.domain.model.Post
 import com.junaidjamshid.i211203.presentation.post.adapter.ImageCarouselAdapter
 
 /**
- * Instagram-style Post Adapter with carousel, location, and music support.
+ * Instagram-style Post Adapter with carousel, location, music, and VIDEO support.
  * Location and music alternate in the subtitle below the username.
  */
+@androidx.annotation.OptIn(androidx.media3.common.util.UnstableApi::class)
 class PostAdapterNew(
     private val onLikeClick: (String) -> Unit,
     private val onCommentClick: (String) -> Unit,
     private val onShareClick: (String) -> Unit,
     private val onSaveClick: (String) -> Unit,
     private val onProfileClick: (String) -> Unit,
-    private val onMenuClick: (Post) -> Unit
+    private val onMenuClick: (Post) -> Unit,
+    private val onVideoViewTracked: ((String) -> Unit)? = null
 ) : ListAdapter<Post, PostAdapterNew.PostViewHolder>(PostDiffCallback()) {
+
+    companion object {
+        private const val TAG = "PostAdapterNew"
+    }
+
+    /** Currently playing video post ID */
+    private var currentlyPlayingPostId: String? = null
+
+    /** Map of postId to ExoPlayer for video posts */
+    private val videoPlayers = mutableMapOf<String, ExoPlayer>()
+
+    /** Global mute state */
+    private var isMuted = true
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PostViewHolder {
         val view = LayoutInflater.from(parent.context)
@@ -47,6 +69,67 @@ class PostAdapterNew(
     override fun onViewRecycled(holder: PostViewHolder) {
         super.onViewRecycled(holder)
         holder.cleanup()
+    }
+
+    /**
+     * Play video for a specific post
+     */
+    fun playVideo(postId: String) {
+        if (currentlyPlayingPostId == postId) return // Already playing
+
+        // Pause current video if any
+        currentlyPlayingPostId?.let { pauseVideo(it) }
+
+        currentlyPlayingPostId = postId
+        videoPlayers[postId]?.let { player ->
+            player.playWhenReady = true
+            Log.d(TAG, "Playing video for post: $postId")
+        }
+    }
+
+    /**
+     * Pause video for a specific post
+     */
+    fun pauseVideo(postId: String) {
+        videoPlayers[postId]?.let { player ->
+            player.playWhenReady = false
+            Log.d(TAG, "Paused video for post: $postId")
+        }
+        if (currentlyPlayingPostId == postId) {
+            currentlyPlayingPostId = null
+        }
+    }
+
+    /**
+     * Pause all videos
+     */
+    fun pauseAllVideos() {
+        videoPlayers.values.forEach { it.playWhenReady = false }
+        currentlyPlayingPostId = null
+    }
+
+    /**
+     * Toggle global mute state
+     */
+    fun toggleMute(): Boolean {
+        isMuted = !isMuted
+        videoPlayers.values.forEach { it.volume = if (isMuted) 0f else 1f }
+        return isMuted
+    }
+
+    /**
+     * Release all video players - call when fragment is destroyed
+     */
+    fun releaseAllPlayers() {
+        videoPlayers.values.forEach { 
+            try {
+                it.release()
+            } catch (e: Exception) {
+                Log.w(TAG, "Error releasing player: ${e.message}")
+            }
+        }
+        videoPlayers.clear()
+        currentlyPlayingPostId = null
     }
 
     inner class PostViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
@@ -66,12 +149,25 @@ class PostAdapterNew(
         private val timestamp: TextView = itemView.findViewById(R.id.timestamp)
         private val menuButton: ImageView = itemView.findViewById(R.id.menu_dots)
 
+        // Video views
+        private val videoPlayerView: PlayerView = itemView.findViewById(R.id.video_player)
+        private val videoThumbnail: ImageView = itemView.findViewById(R.id.video_thumbnail)
+        private val videoProgress: ProgressBar = itemView.findViewById(R.id.video_progress)
+        private val muteIcon: ImageView = itemView.findViewById(R.id.mute_icon)
+        private val videoDuration: TextView = itemView.findViewById(R.id.video_duration)
+        private val videoViewsContainer: LinearLayout = itemView.findViewById(R.id.video_views_container)
+        private val videoViewsCount: TextView = itemView.findViewById(R.id.video_views_count)
+        private val playPauseButton: ImageView = itemView.findViewById(R.id.play_pause_button)
+
         private var carouselAdapter: ImageCarouselAdapter? = null
         private var pageChangeCallback: ViewPager2.OnPageChangeCallback? = null
         private val subtitleHandler = Handler(Looper.getMainLooper())
         private var subtitleRunnable: Runnable? = null
+        
+        private var currentPostId: String? = null
 
         fun bind(post: Post) {
+            currentPostId = post.postId
             usernameText.text = post.username
             likesCount.text = "${post.likesCount} likes"
             timestamp.text = getTimeAgo(post.timestamp)
@@ -92,14 +188,19 @@ class PostAdapterNew(
             setupSubtitle(post)
 
             // Profile image
-            loadBase64Image(post.userProfileImage, profileImage, R.drawable.default_profile)
+            loadProfileImage(post.userProfileImage, profileImage)
 
-            // Image display: carousel vs single
-            val allImages = post.allImages
-            if (allImages.size > 1) {
-                setupCarousel(allImages)
+            // Media display: VIDEO vs IMAGE carousel vs single image
+            if (post.isVideo && post.videoUrl.isNotBlank()) {
+                setupVideoPost(post)
             } else {
-                setupSingleImage(allImages, post.postImageUrl)
+                hideVideoViews()
+                val allImages = post.allImages
+                if (allImages.size > 1) {
+                    setupCarousel(allImages)
+                } else {
+                    setupSingleImage(allImages, post.postImageUrl)
+                }
             }
 
             // Like state
@@ -116,6 +217,150 @@ class PostAdapterNew(
             profileImage.setOnClickListener { onProfileClick(post.userId) }
             usernameText.setOnClickListener { onProfileClick(post.userId) }
             menuButton.setOnClickListener { onMenuClick(post) }
+        }
+
+        private fun setupVideoPost(post: Post) {
+            Log.d(TAG, "Setting up video post: ${post.postId}, URL: ${post.videoUrl}")
+            
+            // Hide image views
+            postImage.visibility = View.GONE
+            postCarousel.visibility = View.GONE
+            carouselCounter.visibility = View.GONE
+            carouselDots.visibility = View.GONE
+
+            // Show video views
+            videoPlayerView.visibility = View.VISIBLE
+            videoThumbnail.visibility = View.VISIBLE
+            muteIcon.visibility = View.VISIBLE
+            
+            // Show duration if available
+            if (post.videoDuration > 0) {
+                videoDuration.text = post.formattedDuration
+                videoDuration.visibility = View.VISIBLE
+            } else {
+                videoDuration.visibility = View.GONE
+            }
+
+            // Show views count if available
+            if (post.viewsCount > 0) {
+                videoViewsCount.text = formatViewsCount(post.viewsCount)
+                videoViewsContainer.visibility = View.VISIBLE
+            } else {
+                videoViewsContainer.visibility = View.GONE
+            }
+
+            // Load thumbnail
+            if (post.thumbnailUrl.isNotBlank()) {
+                Glide.with(itemView.context)
+                    .load(post.thumbnailUrl)
+                    .centerCrop()
+                    .placeholder(R.drawable.bg_image_placeholder)
+                    .into(videoThumbnail)
+            } else {
+                videoThumbnail.setImageResource(R.drawable.bg_image_placeholder)
+            }
+
+            // Update mute icon
+            muteIcon.setImageResource(
+                if (isMuted) R.drawable.ic_volume_off else R.drawable.ic_volume_on
+            )
+
+            // Setup ExoPlayer
+            setupExoPlayer(post)
+
+            // Mute toggle click
+            muteIcon.setOnClickListener {
+                val newMuteState = toggleMute()
+                muteIcon.setImageResource(
+                    if (newMuteState) R.drawable.ic_volume_off else R.drawable.ic_volume_on
+                )
+            }
+
+            // Play/pause on video tap
+            videoPlayerView.setOnClickListener {
+                val player = videoPlayers[post.postId]
+                if (player?.isPlaying == true) {
+                    pauseVideo(post.postId)
+                    playPauseButton.setImageResource(R.drawable.ic_play_circle)
+                    playPauseButton.alpha = 1f
+                    playPauseButton.visibility = View.VISIBLE
+                } else {
+                    playVideo(post.postId)
+                    playPauseButton.animate().alpha(0f).setDuration(300).start()
+                }
+            }
+        }
+
+        private fun setupExoPlayer(post: Post) {
+            // Create or reuse player
+            val player = videoPlayers.getOrPut(post.postId) {
+                ExoPlayer.Builder(itemView.context).build().also { newPlayer ->
+                    newPlayer.repeatMode = Player.REPEAT_MODE_ONE // Loop video
+                    newPlayer.volume = if (isMuted) 0f else 1f
+                    
+                    newPlayer.addListener(object : Player.Listener {
+                        override fun onPlaybackStateChanged(playbackState: Int) {
+                            when (playbackState) {
+                                Player.STATE_BUFFERING -> {
+                                    videoProgress.visibility = View.VISIBLE
+                                }
+                                Player.STATE_READY -> {
+                                    videoProgress.visibility = View.GONE
+                                    // Hide thumbnail when video is ready to play
+                                    if (newPlayer.isPlaying) {
+                                        videoThumbnail.visibility = View.GONE
+                                    }
+                                }
+                                Player.STATE_ENDED -> {
+                                    // Track video view
+                                    onVideoViewTracked?.invoke(post.postId)
+                                }
+                                Player.STATE_IDLE -> {
+                                    videoProgress.visibility = View.GONE
+                                }
+                            }
+                        }
+
+                        override fun onIsPlayingChanged(isPlaying: Boolean) {
+                            if (isPlaying) {
+                                videoThumbnail.visibility = View.GONE
+                                playPauseButton.visibility = View.GONE
+                            }
+                        }
+                    })
+                }
+            }
+
+            // Set media item if not already set or different
+            val mediaItem = MediaItem.fromUri(post.videoUrl)
+            if (player.currentMediaItem?.localConfiguration?.uri?.toString() != post.videoUrl) {
+                player.setMediaItem(mediaItem)
+                player.prepare()
+            }
+
+            // Attach to PlayerView
+            videoPlayerView.player = player
+        }
+
+        private fun hideVideoViews() {
+            videoPlayerView.visibility = View.GONE
+            videoThumbnail.visibility = View.GONE
+            videoProgress.visibility = View.GONE
+            muteIcon.visibility = View.GONE
+            videoDuration.visibility = View.GONE
+            videoViewsContainer.visibility = View.GONE
+            playPauseButton.visibility = View.GONE
+            
+            // Detach player
+            videoPlayerView.player = null
+        }
+
+        private fun formatViewsCount(count: Int): String {
+            return when {
+                count >= 1_000_000 -> "${count / 1_000_000}M"
+                count >= 1_000 -> "${count / 1_000}K"
+                else -> count.toString()
+            }
         }
 
         /**
@@ -248,6 +493,29 @@ class PostAdapterNew(
             if (fallbackRes != 0) imageView.setImageResource(fallbackRes)
         }
 
+        /**
+         * Load profile image - supports both base64 and URL
+         */
+        private fun loadProfileImage(imageData: String, imageView: ImageView) {
+            if (imageData.isBlank()) {
+                imageView.setImageResource(R.drawable.default_profile)
+                return
+            }
+            
+            // Check if it's a URL
+            if (imageData.startsWith("http://") || imageData.startsWith("https://")) {
+                Glide.with(itemView.context)
+                    .load(imageData)
+                    .circleCrop()
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .into(imageView)
+            } else {
+                // Assume base64
+                loadBase64Image(imageData, imageView, R.drawable.default_profile)
+            }
+        }
+
         private fun Int.dpToPx(): Int =
             (this * itemView.context.resources.displayMetrics.density).toInt()
 
@@ -273,6 +541,10 @@ class PostAdapterNew(
             subtitleRunnable = null
             pageChangeCallback?.let { postCarousel.unregisterOnPageChangeCallback(it) }
             pageChangeCallback = null
+            
+            // Detach video player from view (don't release - managed by adapter)
+            videoPlayerView.player = null
+            currentPostId = null
         }
     }
 

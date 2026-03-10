@@ -1,7 +1,9 @@
 package com.junaidjamshid.i211203.presentation.post
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseStorageDataSource
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
 import com.junaidjamshid.i211203.domain.repository.PostRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
@@ -12,6 +14,8 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.io.File
+import java.util.UUID
 import javax.inject.Inject
 
 /**
@@ -21,8 +25,13 @@ import javax.inject.Inject
 class PostViewModel @Inject constructor(
     private val postRepository: PostRepository,
     private val userRepository: UserRepository,
-    private val authRepository: AuthRepository
+    private val authRepository: AuthRepository,
+    private val storageDataSource: SupabaseStorageDataSource
 ) : ViewModel() {
+    
+    companion object {
+        private const val TAG = "PostViewModel"
+    }
     
     private val _uiState = MutableStateFlow(PostUiState())
     val uiState: StateFlow<PostUiState> = _uiState.asStateFlow()
@@ -277,12 +286,120 @@ class PostViewModel @Inject constructor(
     fun clearMusic() {
         _addPostUiState.update { it.copy(musicName = "", musicArtist = "") }
     }
+    
+    /**
+     * Clear all selected images
+     */
+    fun clearImages() {
+        _addPostUiState.update { 
+            it.copy(selectedImageBytesList = emptyList(), hasImages = false) 
+        }
+    }
 
     /**
      * Clear location
      */
     fun clearLocation() {
         _addPostUiState.update { it.copy(location = "") }
+    }
+    
+    /**
+     * Create a video post - uploads video and thumbnail to storage, then creates post.
+     */
+    fun createVideoPost(videoPath: String, thumbnailBytes: ByteArray?, duration: Int) {
+        val state = _addPostUiState.value
+        
+        viewModelScope.launch {
+            _addPostUiState.update { it.copy(isLoading = true) }
+            
+            try {
+                // Get current user ID
+                val userId = authRepository.getCurrentUserId()
+                if (userId == null) {
+                    _addPostUiState.update {
+                        it.copy(isLoading = false, error = "User not logged in")
+                    }
+                    return@launch
+                }
+                
+                // Generate a unique post ID for storage paths
+                val postId = UUID.randomUUID().toString()
+                
+                Log.d(TAG, "Starting video upload for postId: $postId")
+                Log.d(TAG, "Video path: $videoPath")
+                
+                // 1. Upload video to Supabase Storage
+                val videoFile = File(videoPath)
+                Log.d(TAG, "File exists: ${videoFile.exists()}, size: ${videoFile.length()}")
+                
+                if (!videoFile.exists()) {
+                    Log.e(TAG, "Video file not found at: $videoPath")
+                    _addPostUiState.update {
+                        it.copy(isLoading = false, error = "Video file not found at: $videoPath")
+                    }
+                    return@launch
+                }
+                
+                Log.d(TAG, "Uploading video file: ${videoFile.absolutePath}, size: ${videoFile.length() / 1024 / 1024} MB")
+                val videoUrl = storageDataSource.uploadVideo(videoFile, userId, postId)
+                Log.d(TAG, "Video uploaded successfully: $videoUrl")
+                
+                // 2. Upload thumbnail to Supabase Storage
+                var thumbnailUrl = ""
+                if (thumbnailBytes != null) {
+                    Log.d(TAG, "Uploading thumbnail...")
+                    // Convert bytes to bitmap and upload
+                    val bitmap = android.graphics.BitmapFactory.decodeByteArray(
+                        thumbnailBytes, 0, thumbnailBytes.size
+                    )
+                    if (bitmap != null) {
+                        thumbnailUrl = storageDataSource.uploadVideoThumbnail(
+                            bitmap, userId, postId
+                        )
+                        Log.d(TAG, "Thumbnail uploaded: $thumbnailUrl")
+                    }
+                }
+                
+                // 3. Get video dimensions
+                val metadata = storageDataSource.getVideoMetadata(videoFile)
+                
+                // 4. Create the video post record
+                Log.d(TAG, "Creating video post record...")
+                val result = postRepository.createVideoPost(
+                    caption = state.caption,
+                    videoUrl = videoUrl,
+                    thumbnailUrl = thumbnailUrl,
+                    videoDuration = duration,
+                    videoWidth = metadata.width,
+                    videoHeight = metadata.height,
+                    location = state.location,
+                    musicName = state.musicName,
+                    musicArtist = state.musicArtist,
+                    isReel = duration <= 60_000 // Treat short videos as reels
+                )
+                
+                when (result) {
+                    is Resource.Success -> {
+                        Log.d(TAG, "Video post created successfully!")
+                        _addPostUiState.update { s ->
+                            s.copy(isLoading = false, postCreated = true, error = null)
+                        }
+                    }
+                    is Resource.Error -> {
+                        Log.e(TAG, "Failed to create video post: ${result.message}")
+                        _addPostUiState.update {
+                            it.copy(isLoading = false, error = result.message ?: "Failed to create video post")
+                        }
+                    }
+                    else -> { /* Loading state */ }
+                }
+            } catch (e: Exception) {
+                Log.e(TAG, "Error creating video post", e)
+                _addPostUiState.update {
+                    it.copy(isLoading = false, error = e.message ?: "Failed to create video post")
+                }
+            }
+        }
     }
     
     fun clearError() {

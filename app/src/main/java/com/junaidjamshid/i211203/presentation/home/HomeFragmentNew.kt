@@ -25,10 +25,13 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.facebook.shimmer.ShimmerFrameLayout
 import com.junaidjamshid.i211203.R
+import com.junaidjamshid.i211203.presentation.common.animation.StaggeredFadeAnimator
 import com.junaidjamshid.i211203.presentation.discover.DiscoverPeopleActivity
 import com.junaidjamshid.i211203.presentation.home.adapter.HomeFeedAdapter
 import com.junaidjamshid.i211203.presentation.home.adapter.HomeFeedItem
 import com.junaidjamshid.i211203.presentation.home.adapter.StoryAdapterNew
+import com.junaidjamshid.i211203.presentation.home.video.ExoPlayerPool
+import com.junaidjamshid.i211203.presentation.home.video.VideoAutoPlayManager
 import com.junaidjamshid.i211203.presentation.main.MainActivityNew
 import com.junaidjamshid.i211203.presentation.post.CommentsActivity
 import com.junaidjamshid.i211203.presentation.post.PostDetailActivity
@@ -40,6 +43,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Home Fragment refactored to use Clean Architecture with ViewModel.
+ * Supports image posts, carousels, and video/reel posts with auto-play.
  */
 @AndroidEntryPoint
 class HomeFragmentNew : Fragment() {
@@ -56,6 +60,11 @@ class HomeFragmentNew : Fragment() {
     private var postsContainer: FrameLayout? = null
     private var shimmerStories: ShimmerFrameLayout? = null
     private var shimmerPosts: ShimmerFrameLayout? = null
+    private var staggeredAnimator: StaggeredFadeAnimator? = null
+    
+    // Video playback components
+    private var playerPool: ExoPlayerPool? = null
+    private var videoAutoPlayManager: VideoAutoPlayManager? = null
     
     private val TAG = "HomeFragmentNew"
 
@@ -78,6 +87,8 @@ class HomeFragmentNew : Fragment() {
         val addStory = view.findViewById<FrameLayout>(R.id.addStroy)
         val dms = view.findViewById<ImageView>(R.id.DMs)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
+        val logoText = view.findViewById<TextView>(R.id.instagram_logo)
+        val nestedScrollView = view.findViewById<androidx.core.widget.NestedScrollView>(R.id.nested_scroll_view)
         emptyStateView = view.findViewById(R.id.empty_state)
         storiesContainer = view.findViewById(R.id.stories_container)
         postsContainer = view.findViewById(R.id.posts_container)
@@ -106,6 +117,12 @@ class HomeFragmentNew : Fragment() {
             // Launch dedicated Add Story screen
             startActivity(Intent(requireContext(), AddStoryActivity::class.java))
         }
+        
+        // Smooth scroll to top when logo is tapped
+        logoText?.setOnClickListener {
+            nestedScrollView?.smoothScrollTo(0, 0)
+            recyclerView.scrollToPosition(0)
+        }
     }
     
     private fun setupSwipeRefresh(view: View) {
@@ -117,11 +134,15 @@ class HomeFragmentNew : Fragment() {
             android.R.color.holo_red_light
         )
         swipeRefreshLayout?.setOnRefreshListener {
+            staggeredAnimator?.resetAnimationState()
             viewModel.onRefresh()
         }
     }
     
     private fun setupRecyclerViews(view: View) {
+        // Initialize ExoPlayer pool for video playback
+        playerPool = ExoPlayerPool(requireContext())
+        
         // Posts RecyclerView (now multi-type with suggestions)
         recyclerView = view.findViewById(R.id.recycler_view_posts)
         recyclerView.layoutManager = LinearLayoutManager(context)
@@ -135,10 +156,41 @@ class HomeFragmentNew : Fragment() {
             onFollowClick = { userId -> viewModel.onFollowUser(userId) },
             onSeeAllSuggestionsClick = {
                 startActivity(DiscoverPeopleActivity.newIntent(requireContext()))
+            },
+            onMuteToggle = { 
+                // Optional: handle mute toggle feedback
+                val muted = videoAutoPlayManager?.isMuted() ?: true
+                Toast.makeText(context, if (muted) "Sound off" else "Sound on", Toast.LENGTH_SHORT).show()
+            },
+            onVideoClick = { postId ->
+                // Toggle play/pause on tap
+                videoAutoPlayManager?.togglePlayPause(postId)
             }
         )
         feedAdapter.currentUserId = viewModel.currentUserId ?: ""
+        feedAdapter.playerPool = playerPool
         recyclerView.adapter = feedAdapter
+        
+        // Add staggered animation for smooth item appearance
+        staggeredAnimator = StaggeredFadeAnimator()
+        recyclerView.itemAnimator = staggeredAnimator
+        
+        // RecyclerView optimizations for smooth scrolling
+        recyclerView.setHasFixedSize(false)
+        recyclerView.setItemViewCacheSize(10)
+        (recyclerView.layoutManager as? LinearLayoutManager)?.initialPrefetchItemCount = 5
+        
+        // Initialize VideoAutoPlayManager for auto-play on scroll
+        videoAutoPlayManager = VideoAutoPlayManager(
+            recyclerView = recyclerView,
+            playerPool = playerPool!!,
+            onVideoViewTracked = { postId ->
+                viewModel.trackVideoView(postId)
+            }
+        )
+        videoAutoPlayManager?.setAdapter(feedAdapter) { position ->
+            feedAdapter.getPostAtPosition(position)
+        }
         
         // Stories RecyclerView
         storiesRecyclerView = view.findViewById(R.id.recycler_view_stories)
@@ -325,6 +377,29 @@ class HomeFragmentNew : Fragment() {
      */
     fun refreshFeed() {
         viewModel.onRefresh()
+    }
+    
+    // ========================= VIDEO LIFECYCLE =========================
+    
+    override fun onResume() {
+        super.onResume()
+        // Resume video auto-play when fragment becomes visible
+        videoAutoPlayManager?.resume()
+    }
+    
+    override fun onPause() {
+        super.onPause()
+        // Pause all videos when fragment goes to background
+        videoAutoPlayManager?.pauseAll()
+    }
+    
+    override fun onDestroyView() {
+        // Clean up video resources
+        videoAutoPlayManager?.release()
+        videoAutoPlayManager = null
+        playerPool?.releaseAll()
+        playerPool = null
+        super.onDestroyView()
     }
     
     companion object {
