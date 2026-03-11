@@ -31,6 +31,11 @@ class FollowViewModel @Inject constructor(
     private var targetUserId: String? = null
     
     /**
+     * Get current user ID for adapter to prevent self-follow
+     */
+    fun getLoggedInUserId(): String? = currentUserId
+    
+    /**
      * Initialize with user ID and load both counts + followers list
      */
     fun initialize(userId: String?, initialTab: FollowTab = FollowTab.FOLLOWERS) {
@@ -169,6 +174,9 @@ class FollowViewModel @Inject constructor(
      * Toggle follow status for a user with optimistic update
      */
     fun toggleFollow(userId: String) {
+        // Prevent self-follow
+        if (userId == currentUserId) return
+        
         val userIndex = _uiState.value.users.indexOfFirst { it.user.userId == userId }
         if (userIndex == -1) return
         

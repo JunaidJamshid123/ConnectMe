@@ -33,6 +33,7 @@ import com.junaidjamshid.i211203.presentation.home.adapter.StoryAdapterNew
 import com.junaidjamshid.i211203.presentation.home.video.ExoPlayerPool
 import com.junaidjamshid.i211203.presentation.home.video.VideoAutoPlayManager
 import com.junaidjamshid.i211203.presentation.main.MainActivityNew
+import com.junaidjamshid.i211203.presentation.messages.DmsActivity
 import com.junaidjamshid.i211203.presentation.post.CommentsActivity
 import com.junaidjamshid.i211203.presentation.post.PostDetailActivity
 import com.junaidjamshid.i211203.presentation.profile.UserProfileActivity
@@ -109,8 +110,8 @@ class HomeFragmentNew : Fragment() {
         })
 
         dms.setOnClickListener {
-            // Navigate to contacts/DMs tab
-            (activity as? MainActivityNew)?.navigateToTab(R.id.nav_contacts)
+            // Open DMs Activity
+            startActivity(DmsActivity.newIntent(requireContext()))
         }
         
         addStory.setOnClickListener {

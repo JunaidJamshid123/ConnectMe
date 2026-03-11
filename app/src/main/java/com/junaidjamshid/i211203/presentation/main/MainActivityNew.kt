@@ -11,10 +11,10 @@ import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.junaidjamshid.i211203.R
-import com.junaidjamshid.i211203.presentation.contacts.ContactsFragmentNew
 import com.junaidjamshid.i211203.presentation.home.HomeFragmentNew
 import com.junaidjamshid.i211203.presentation.post.AddPostFragmentNew
 import com.junaidjamshid.i211203.presentation.profile.ProfileFragmentNew
+import com.junaidjamshid.i211203.presentation.reels.ReelsFragment
 import com.junaidjamshid.i211203.presentation.search.SearchFragmentNew
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -32,7 +32,7 @@ class MainActivityNew : AppCompatActivity() {
     private val homeFragment by lazy { HomeFragmentNew() }
     private val searchFragment by lazy { SearchFragmentNew() }
     private val addPostFragment by lazy { AddPostFragmentNew() }
-    private val contactsFragment by lazy { ContactsFragmentNew() }
+    private val reelsFragment by lazy { ReelsFragment() }
     private val profileFragment by lazy { ProfileFragmentNew() }
     
     private var activeFragment: Fragment = homeFragment
@@ -70,7 +70,7 @@ class MainActivityNew : AppCompatActivity() {
         // Add all fragments but hide all except home
         supportFragmentManager.beginTransaction().apply {
             add(R.id.fragment_container, profileFragment, "profile").hide(profileFragment)
-            add(R.id.fragment_container, contactsFragment, "contacts").hide(contactsFragment)
+            add(R.id.fragment_container, reelsFragment, "reels").hide(reelsFragment)
             add(R.id.fragment_container, addPostFragment, "add_post").hide(addPostFragment)
             add(R.id.fragment_container, searchFragment, "search").hide(searchFragment)
             add(R.id.fragment_container, homeFragment, "home")
@@ -85,7 +85,7 @@ class MainActivityNew : AppCompatActivity() {
                 R.id.nav_home -> homeFragment
                 R.id.nav_search -> searchFragment
                 R.id.nav_add_post -> addPostFragment
-                R.id.nav_contacts -> contactsFragment
+                R.id.nav_contacts -> reelsFragment  // Changed from contactsFragment to reelsFragment
                 R.id.nav_profile -> profileFragment
                 else -> return@setOnItemSelectedListener false
             }

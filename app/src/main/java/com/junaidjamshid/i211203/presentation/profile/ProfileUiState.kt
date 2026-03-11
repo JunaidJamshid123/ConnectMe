@@ -9,7 +9,10 @@ import com.junaidjamshid.i211203.domain.model.User
 data class ProfileUiState(
     val isLoading: Boolean = false,
     val user: User? = null,
-    val posts: List<Post> = emptyList(),
+    val posts: List<Post> = emptyList(),           // All posts (for backward compatibility)
+    val imagePosts: List<Post> = emptyList(),      // Only image posts (no videos)
+    val reelPosts: List<Post> = emptyList(),       // Only video/reel posts
+    val savedPosts: List<Post> = emptyList(),      // Saved posts
     val postsCount: Int = 0,
     val followersCount: Int = 0,
     val followingCount: Int = 0,

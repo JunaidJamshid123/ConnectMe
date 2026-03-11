@@ -66,7 +66,8 @@ class FollowersActivity : AppCompatActivity() {
                 viewModel.removeFollower(user.user.userId)
             },
             showRemoveButton = true,
-            isCurrentUserProfile = true
+            isCurrentUserProfile = true,
+            currentUserId = viewModel.getLoggedInUserId()
         )
         
         binding.followersRecyclerView.apply {

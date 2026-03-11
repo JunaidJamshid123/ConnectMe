@@ -15,11 +15,11 @@
         android:layout_height="0dp"
         android:layout_weight="1" />
 
-    <!-- Divider -->
+    <!-- Divider - Instagram style -->
     <View
         android:layout_width="match_parent"
-        android:layout_height="0.3dp"
-        android:background="#DBDBDB" />
+        android:layout_height="0.5dp"
+        android:background="#262626" />
 
     <!-- Bottom Navigation -->
     <com.google.android.material.bottomnavigation.BottomNavigationView

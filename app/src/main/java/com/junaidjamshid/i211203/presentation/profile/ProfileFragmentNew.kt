@@ -36,6 +36,7 @@ import kotlinx.coroutines.launch
 
 /**
  * Instagram-style Profile Fragment with pixel-perfect design.
+ * Supports 3 tabs: Posts (images), Reels (videos), Saved
  */
 @AndroidEntryPoint
 class ProfileFragmentNew : Fragment() {
@@ -44,10 +45,15 @@ class ProfileFragmentNew : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ProfileViewModel by viewModels()
-    private lateinit var postGridAdapter: PostGridAdapterNew
+    
+    // Adapters for each tab
+    private lateinit var postGridAdapter: PostGridAdapterNew      // Posts (images only)
+    private lateinit var reelsGridAdapter: PostGridAdapterNew     // Reels (videos only)
+    private lateinit var savedGridAdapter: PostGridAdapterNew     // Saved posts
     private lateinit var highlightAdapter: StoryHighlightAdapter
 
-    private var isGridTabActive = true
+    // Tab state: 0 = Posts, 1 = Reels, 2 = Saved
+    private var activeTab = 0
     private var hasShownContent = false
 
     override fun onCreateView(
@@ -72,6 +78,7 @@ class ProfileFragmentNew : Fragment() {
     }
 
     private fun setupRecyclerView() {
+        // Posts adapter (images only)
         postGridAdapter = PostGridAdapterNew { post ->
             // Navigate to post detail
         }
@@ -79,6 +86,28 @@ class ProfileFragmentNew : Fragment() {
         binding.recyclerView.apply {
             layoutManager = GridLayoutManager(requireContext(), 3)
             adapter = postGridAdapter
+            isNestedScrollingEnabled = false
+        }
+
+        // Reels adapter (videos only)
+        reelsGridAdapter = PostGridAdapterNew { post ->
+            // Navigate to reel detail / full screen player
+        }
+
+        binding.reelsRecyclerView.apply {
+            layoutManager = GridLayoutManager(requireContext(), 3)
+            adapter = reelsGridAdapter
+            isNestedScrollingEnabled = false
+        }
+
+        // Saved posts adapter
+        savedGridAdapter = PostGridAdapterNew { post ->
+            // Navigate to saved post detail
+        }
+
+        binding.savedRecyclerView.apply {
+            layoutManager = GridLayoutManager(requireContext(), 3)
+            adapter = savedGridAdapter
             isNestedScrollingEnabled = false
         }
     }
@@ -167,36 +196,85 @@ class ProfileFragmentNew : Fragment() {
     }
 
     private fun setupTabs() {
+        // Posts tab (images)
         binding.tabGrid.setOnClickListener {
-            if (!isGridTabActive) {
-                isGridTabActive = true
+            if (activeTab != 0) {
+                activeTab = 0
                 updateTabUI()
+                updateContentVisibility()
             }
         }
 
-        binding.tabTagged.setOnClickListener {
-            if (isGridTabActive) {
-                isGridTabActive = false
+        // Reels tab (videos)
+        binding.tabReels.setOnClickListener {
+            if (activeTab != 1) {
+                activeTab = 1
                 updateTabUI()
-                // Show tagged posts or empty state
-                Toast.makeText(requireContext(), "Tagged photos", Toast.LENGTH_SHORT).show()
+                updateContentVisibility()
+            }
+        }
+
+        // Saved tab
+        binding.tabSaved.setOnClickListener {
+            if (activeTab != 2) {
+                activeTab = 2
+                updateTabUI()
+                updateContentVisibility()
             }
         }
     }
 
     private fun updateTabUI() {
-        if (isGridTabActive) {
-            binding.tabGridIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.tabGridIndicator.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.tabTaggedIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.instagram_text_gray))
-            binding.tabTaggedIndicator.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            binding.recyclerView.isVisible = true
-        } else {
-            binding.tabGridIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.instagram_text_gray))
-            binding.tabGridIndicator.setBackgroundColor(android.graphics.Color.TRANSPARENT)
-            binding.tabTaggedIcon.setColorFilter(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.tabTaggedIndicator.setBackgroundColor(ContextCompat.getColor(requireContext(), R.color.black))
-            binding.recyclerView.isVisible = false
+        val activeColor = ContextCompat.getColor(requireContext(), R.color.black)
+        val inactiveColor = ContextCompat.getColor(requireContext(), R.color.instagram_text_gray)
+        val transparent = android.graphics.Color.TRANSPARENT
+
+        // Posts tab
+        binding.tabGridIcon.setColorFilter(if (activeTab == 0) activeColor else inactiveColor)
+        binding.tabGridIndicator.setBackgroundColor(if (activeTab == 0) activeColor else transparent)
+
+        // Reels tab
+        binding.tabReelsIcon.setColorFilter(if (activeTab == 1) activeColor else inactiveColor)
+        binding.tabReelsIndicator.setBackgroundColor(if (activeTab == 1) activeColor else transparent)
+
+        // Saved tab
+        binding.tabSavedIcon.setColorFilter(if (activeTab == 2) activeColor else inactiveColor)
+        binding.tabSavedIndicator.setBackgroundColor(if (activeTab == 2) activeColor else transparent)
+    }
+
+    private fun updateContentVisibility() {
+        val state = viewModel.uiState.value
+        
+        // Pause all videos when switching tabs
+        postGridAdapter.pauseAllVideos()
+        reelsGridAdapter.pauseAllVideos()
+        savedGridAdapter.pauseAllVideos()
+
+        when (activeTab) {
+            0 -> { // Posts (images)
+                binding.recyclerView.isVisible = state.imagePosts.isNotEmpty()
+                binding.reelsRecyclerView.isVisible = false
+                binding.savedRecyclerView.isVisible = false
+                binding.emptyPostsContainer.isVisible = state.imagePosts.isEmpty() && !state.isLoading
+                binding.emptyReelsContainer.isVisible = false
+                binding.emptySavedContainer.isVisible = false
+            }
+            1 -> { // Reels (videos)
+                binding.recyclerView.isVisible = false
+                binding.reelsRecyclerView.isVisible = state.reelPosts.isNotEmpty()
+                binding.savedRecyclerView.isVisible = false
+                binding.emptyPostsContainer.isVisible = false
+                binding.emptyReelsContainer.isVisible = state.reelPosts.isEmpty() && !state.isLoading
+                binding.emptySavedContainer.isVisible = false
+            }
+            2 -> { // Saved
+                binding.recyclerView.isVisible = false
+                binding.reelsRecyclerView.isVisible = false
+                binding.savedRecyclerView.isVisible = state.savedPosts.isNotEmpty()
+                binding.emptyPostsContainer.isVisible = false
+                binding.emptyReelsContainer.isVisible = false
+                binding.emptySavedContainer.isVisible = state.savedPosts.isEmpty() && !state.isLoading
+            }
         }
     }
 
@@ -310,11 +388,13 @@ class ProfileFragmentNew : Fragment() {
         // Highlights subtitle — show only when user has no highlights yet
         binding.highlightsSubtitle.isVisible = highlightAdapter.itemCount <= 1
 
-        // Posts grid
-        val hasPosts = state.posts.isNotEmpty()
-        postGridAdapter.submitList(state.posts)
-        binding.recyclerView.isVisible = hasPosts && isGridTabActive
-        binding.emptyPostsContainer.isVisible = !hasPosts && !state.isLoading
+        // Submit posts to adapters (filtered by type)
+        postGridAdapter.submitList(state.imagePosts)
+        reelsGridAdapter.submitList(state.reelPosts)
+        savedGridAdapter.submitList(state.savedPosts)
+
+        // Update content visibility based on active tab
+        updateContentVisibility()
 
         // Logout
         if (state.logoutSuccess) {
@@ -375,8 +455,20 @@ class ProfileFragmentNew : Fragment() {
         viewModel.loadCurrentUserProfile()
     }
 
+    override fun onPause() {
+        super.onPause()
+        // Pause all videos when fragment is paused
+        postGridAdapter.pauseAllVideos()
+        reelsGridAdapter.pauseAllVideos()
+        savedGridAdapter.pauseAllVideos()
+    }
+
     override fun onDestroyView() {
         super.onDestroyView()
+        // Release all video players
+        postGridAdapter.releaseAllPlayers()
+        reelsGridAdapter.releaseAllPlayers()
+        savedGridAdapter.releaseAllPlayers()
         hasShownContent = false
         _binding = null
     }

@@ -10,8 +10,11 @@ import io.github.jan.supabase.realtime.PostgresAction
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.launch
 import kotlinx.serialization.Serializable
 import java.util.UUID
 import javax.inject.Inject
@@ -75,12 +78,15 @@ class SupabaseMessageDataSource @Inject constructor(
     }
     
     /**
-     * Get conversations for current user as a Flow
+     * Get conversations for current user as a Flow with proper real-time subscription
      */
-    fun getConversations(): Flow<List<MessageDto>> = flow {
-        val currentUserId = getCurrentUserId() ?: return@flow
+    fun getConversations(): Flow<List<MessageDto>> = callbackFlow {
+        val currentUserId = getCurrentUserId() ?: run {
+            close()
+            return@callbackFlow
+        }
         
-        emit(getConversationsList(currentUserId))
+        trySend(getConversationsList(currentUserId))
         
         val channel = supabaseClient.realtime.channel("conversations-$currentUserId")
         val changeFlow = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
@@ -89,8 +95,22 @@ class SupabaseMessageDataSource @Inject constructor(
         
         channel.subscribe()
         
-        changeFlow.collect {
-            emit(getConversationsList(currentUserId))
+        val job = launch {
+            changeFlow.collect {
+                trySend(getConversationsList(currentUserId))
+            }
+        }
+        
+        awaitClose {
+            job.cancel()
+            launch {
+                try {
+                    channel.unsubscribe()
+                    supabaseClient.realtime.removeChannel(channel)
+                } catch (e: Exception) {
+                    // Ignore cleanup errors
+                }
+            }
         }
     }
     
@@ -124,10 +144,11 @@ class SupabaseMessageDataSource @Inject constructor(
     }
     
     /**
-     * Get messages for a specific conversation as a Flow
+     * Get messages for a specific conversation as a Flow with proper real-time subscription
      */
-    fun getMessages(conversationId: String): Flow<List<MessageDto>> = flow {
-        emit(getMessagesList(conversationId))
+    fun getMessages(conversationId: String): Flow<List<MessageDto>> = callbackFlow {
+        // Emit initial messages
+        trySend(getMessagesList(conversationId))
         
         val channel = supabaseClient.realtime.channel("messages-$conversationId")
         val changeFlow = channel.postgresChangeFlow<PostgresAction>(schema = "public") {
@@ -137,8 +158,24 @@ class SupabaseMessageDataSource @Inject constructor(
         
         channel.subscribe()
         
-        changeFlow.collect {
-            emit(getMessagesList(conversationId))
+        // Launch a coroutine to collect real-time changes
+        val job = launch {
+            changeFlow.collect {
+                trySend(getMessagesList(conversationId))
+            }
+        }
+        
+        // Cleanup when flow is cancelled
+        awaitClose {
+            job.cancel()
+            launch {
+                try {
+                    channel.unsubscribe()
+                    supabaseClient.realtime.removeChannel(channel)
+                } catch (e: Exception) {
+                    // Ignore cleanup errors
+                }
+            }
         }
     }
     

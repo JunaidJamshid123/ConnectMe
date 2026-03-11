@@ -113,6 +113,10 @@ class UserRepositoryImpl @Inject constructor(
     
     override suspend fun followUser(currentUserId: String, targetUserId: String): Resource<Unit> {
         return try {
+            // Prevent self-follow
+            if (currentUserId == targetUserId) {
+                return Resource.Error("Cannot follow yourself")
+            }
             userDataSource.followUser(currentUserId, targetUserId)
             Resource.Success(Unit)
         } catch (e: Exception) {
@@ -122,6 +126,10 @@ class UserRepositoryImpl @Inject constructor(
     
     override suspend fun unfollowUser(currentUserId: String, targetUserId: String): Resource<Unit> {
         return try {
+            // Prevent self-unfollow
+            if (currentUserId == targetUserId) {
+                return Resource.Error("Cannot unfollow yourself")
+            }
             userDataSource.unfollowUser(currentUserId, targetUserId)
             Resource.Success(Unit)
         } catch (e: Exception) {
@@ -243,6 +251,10 @@ class UserRepositoryImpl @Inject constructor(
         return try {
             val currentUserId = userDataSource.getCurrentUserId()
             if (currentUserId != null) {
+                // Prevent self-follow
+                if (currentUserId == targetUserId) {
+                    return Resource.Error("Cannot follow yourself")
+                }
                 userDataSource.followUser(currentUserId, targetUserId)
                 Resource.Success(Unit)
             } else {
@@ -257,6 +269,10 @@ class UserRepositoryImpl @Inject constructor(
         return try {
             val currentUserId = userDataSource.getCurrentUserId()
             if (currentUserId != null) {
+                // Prevent self-unfollow
+                if (currentUserId == targetUserId) {
+                    return Resource.Error("Cannot unfollow yourself")
+                }
                 userDataSource.unfollowUser(currentUserId, targetUserId)
                 Resource.Success(Unit)
             } else {

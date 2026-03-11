@@ -2,7 +2,10 @@ package com.junaidjamshid.i211203.presentation.chat
 
 import android.content.Intent
 import android.graphics.BitmapFactory
+import android.graphics.Color
+import android.os.Build
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
@@ -35,6 +38,12 @@ class ChatActivity : AppCompatActivity() {
         supportActionBar?.hide()
         binding = ActivityChatsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        
+        // Set light status bar with dark icons
+        window.statusBarColor = Color.WHITE
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            window.decorView.systemUiVisibility = View.SYSTEM_UI_FLAG_LIGHT_STATUS_BAR
+        }
         
         receiverUserId = intent.getStringExtra("USER_ID") ?: ""
         if (receiverUserId.isEmpty()) {

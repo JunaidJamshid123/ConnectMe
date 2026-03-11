@@ -248,9 +248,17 @@ class SearchFragmentNew : Fragment() {
         val imm = ContextCompat.getSystemService(requireContext(), InputMethodManager::class.java)
         imm?.hideSoftInputFromWindow(binding.etSearch.windowToken, 0)
     }
+
+    override fun onPause() {
+        super.onPause()
+        // Pause all videos when fragment is paused
+        exploreAdapter.pauseAllVideos()
+    }
     
     override fun onDestroyView() {
         super.onDestroyView()
+        // Release all video players
+        exploreAdapter.releaseAllPlayers()
         _binding = null
     }
 }

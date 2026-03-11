@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    android:paddingHorizontal="8dp"
+    android:paddingVertical="8dp">
+
+    <!-- Profile Image Container -->
+    <FrameLayout
+        android:layout_width="72dp"
+        android:layout_height="72dp">
+
+        <!-- Profile image -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
+            android:layout_gravity="center"
+            android:src="@drawable/default_profile" />
+
+        <!-- Story ring for non-current user -->
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/story_ring"
+            android:layout_width="72dp"
+            android:layout_height="72dp"
+            android:layout_gravity="center"
+            android:src="@drawable/story_gradient_ring"
+            android:visibility="gone" />
+
+        <!-- Add button for current user -->
+        <FrameLayout
+            android:id="@+id/add_note_container"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:layout_gravity="bottom|end"
+            android:background="@drawable/bg_add_note_button"
+            android:visibility="gone"
+            tools:visibility="visible">
+
+            <ImageView
+                android:layout_width="14dp"
+                android:layout_height="14dp"
+                android:layout_gravity="center"
+                android:src="@drawable/ic_add"
+                app:tint="@color/white" />
+        </FrameLayout>
+
+        <!-- Online indicator for others -->
+        <View
+            android:id="@+id/online_indicator"
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:layout_gravity="bottom|end"
+            android:layout_marginEnd="2dp"
+            android:layout_marginBottom="2dp"
+            android:background="@drawable/bg_online_indicator"
+            android:visibility="gone"
+            tools:visibility="visible" />
+    </FrameLayout>
+
+    <!-- Username -->
+    <TextView
+        android:id="@+id/tv_username"
+        android:layout_width="76dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:ellipsize="end"
+        android:gravity="center"
+        android:maxLines="1"
+        android:textColor="#262626"
+        android:textSize="12sp"
+        tools:text="username" />
+
+</LinearLayout>

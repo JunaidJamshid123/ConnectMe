@@ -86,6 +86,13 @@ class ProfileViewModel @Inject constructor(
                 loadUserPosts(userId)
             }
 
+            // Load saved posts (only for current user)
+            if (isCurrentUser) {
+                launch {
+                    loadSavedPosts(userId)
+                }
+            }
+
             // Check for active stories
             launch {
                 checkActiveStories(userId)
@@ -106,9 +113,15 @@ class ProfileViewModel @Inject constructor(
                 when (result) {
                     is Resource.Success -> {
                         result.data?.let { posts ->
+                            // Filter posts into images and videos/reels
+                            val imagePosts = posts.filter { !it.isVideo }
+                            val reelPosts = posts.filter { it.isVideo }
+                            
                             _uiState.update { state ->
                                 state.copy(
                                     posts = posts,
+                                    imagePosts = imagePosts,
+                                    reelPosts = reelPosts,
                                     postsCount = posts.size
                                 )
                             }
@@ -116,6 +129,25 @@ class ProfileViewModel @Inject constructor(
                     }
                     else -> { /* Handle other states */ }
                 }
+            }
+        }
+    }
+
+    private fun loadSavedPosts(userId: String) {
+        viewModelScope.launch {
+            val result = postRepository.getSavedPosts(userId)
+            when (result) {
+                is Resource.Success -> {
+                    result.data?.let { savedPosts ->
+                        _uiState.update { state ->
+                            state.copy(savedPosts = savedPosts)
+                        }
+                    }
+                }
+                is Resource.Error -> {
+                    // Silently fail for saved posts - not critical
+                }
+                else -> { /* Loading state */ }
             }
         }
     }

@@ -423,14 +423,14 @@
                     android:paddingStart="10dp" />
             </LinearLayout>
 
-            <!-- ========== TAB BAR (Grid / Tagged) ========== -->
+            <!-- ========== TAB BAR (Posts / Reels / Saved) ========== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:baselineAligned="false"
                 android:orientation="horizontal">
 
-                <!-- Grid Tab -->
+                <!-- Posts Tab (Grid - Images only) -->
                 <FrameLayout
                     android:id="@+id/tab_grid"
                     android:layout_width="0dp"
@@ -443,7 +443,7 @@
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
-                        android:contentDescription="Grid view"
+                        android:contentDescription="Posts"
                         android:src="@drawable/ic_grid_on"
                         app:tint="#262626" />
 
@@ -456,26 +456,52 @@
                         android:background="#262626" />
                 </FrameLayout>
 
-                <!-- Tagged Tab -->
+                <!-- Reels Tab (Videos) -->
                 <FrameLayout
-                    android:id="@+id/tab_tagged"
+                    android:id="@+id/tab_reels"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="?attr/selectableItemBackground">
 
                     <ImageView
-                        android:id="@+id/tab_tagged_icon"
+                        android:id="@+id/tab_reels_icon"
                         android:layout_width="24dp"
                         android:layout_height="24dp"
                         android:layout_gravity="center"
-                        android:contentDescription="Tagged photos"
-                        android:src="@drawable/ic_person_tag"
+                        android:contentDescription="Reels"
+                        android:src="@drawable/ic_reels"
                         app:tint="#8E8E8E" />
 
                     <!-- Inactive indicator -->
                     <View
-                        android:id="@+id/tab_tagged_indicator"
+                        android:id="@+id/tab_reels_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="@android:color/transparent" />
+                </FrameLayout>
+
+                <!-- Saved Tab -->
+                <FrameLayout
+                    android:id="@+id/tab_saved"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_saved_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Saved"
+                        android:src="@drawable/ic_bookmark"
+                        app:tint="#8E8E8E" />
+
+                    <!-- Inactive indicator -->
+                    <View
+                        android:id="@+id/tab_saved_indicator"
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_gravity="bottom"
@@ -489,7 +515,7 @@
                 android:layout_height="0.5dp"
                 android:background="#DBDBDB" />
 
-            <!-- ========== POSTS GRID ========== -->
+            <!-- ========== POSTS GRID (Images only) ========== -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/recycler_view"
                 android:layout_width="match_parent"
@@ -497,6 +523,26 @@
                 android:clipToPadding="false"
                 android:nestedScrollingEnabled="false"
                 android:overScrollMode="never" />
+
+            <!-- ========== REELS GRID (Videos) ========== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reels_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone" />
+
+            <!-- ========== SAVED POSTS GRID ========== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/saved_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone" />
 
             <!-- Empty state for no posts -->
             <LinearLayout
@@ -552,6 +598,98 @@
                     android:textColor="#0095F6"
                     android:textSize="14sp"
                     android:textStyle="bold" />
+            </LinearLayout>
+
+            <!-- Empty state for no reels -->
+            <LinearLayout
+                android:id="@+id/empty_reels_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="60dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp">
+
+                    <View
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:background="@drawable/bg_highlight_circle_thin" />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_reels"
+                        app:tint="#262626" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="No Reels Yet"
+                    android:textColor="#262626"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="When you share reels, they will\nappear on your profile."
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
+            </LinearLayout>
+
+            <!-- Empty state for no saved posts -->
+            <LinearLayout
+                android:id="@+id/empty_saved_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:orientation="vertical"
+                android:padding="60dp"
+                android:visibility="gone">
+
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp">
+
+                    <View
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:background="@drawable/bg_highlight_circle_thin" />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_bookmark"
+                        app:tint="#262626" />
+                </FrameLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="No Saved Posts"
+                    android:textColor="#262626"
+                    android:textSize="26sp" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="12dp"
+                    android:gravity="center"
+                    android:text="Save photos and videos that you\nwant to see again."
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
             </LinearLayout>
 
         </LinearLayout>

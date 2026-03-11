@@ -25,7 +25,8 @@ class FollowAdapterNew(
     private val onFollowClick: (FollowUser) -> Unit,
     private val onRemoveClick: ((FollowUser) -> Unit)?,
     private val showRemoveButton: Boolean = false,
-    private val isCurrentUserProfile: Boolean = true
+    private val isCurrentUserProfile: Boolean = true,
+    private val currentUserId: String? = null
 ) : ListAdapter<FollowUser, FollowAdapterNew.FollowViewHolder>(FollowUserDiffCallback()) {
     
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FollowViewHolder {
@@ -71,38 +72,48 @@ class FollowAdapterNew(
                 profileImage.setImageResource(R.drawable.default_profile)
             }
             
-            // Configure action button based on follow state
-            when {
-                followUser.isFollowing -> {
-                    // Already following - show "Following" button (gray background like Instagram)
-                    actionButton.text = context.getString(R.string.following)
-                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.black))
-                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFEFEFEF.toInt())
-                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFFDBDBDB.toInt())
-                    actionButton.strokeWidth = dpToPx(1f)
+            // Check if this user is the current user (can't follow yourself)
+            val isCurrentUser = currentUserId != null && user.userId == currentUserId
+            
+            if (isCurrentUser) {
+                // Hide action button for self - you can't follow yourself
+                actionButton.visibility = View.GONE
+            } else {
+                actionButton.visibility = View.VISIBLE
+                
+                // Configure action button based on follow state
+                when {
+                    followUser.isFollowing -> {
+                        // Already following - show "Following" button (gray background like Instagram)
+                        actionButton.text = context.getString(R.string.following)
+                        actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.black))
+                        actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFFEFEFEF.toInt())
+                        actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFFDBDBDB.toInt())
+                        actionButton.strokeWidth = dpToPx(1f)
+                    }
+                    followUser.isFollowedBy && !followUser.isFollowing -> {
+                        // They follow you but you don't follow them - show "Follow Back" (blue)
+                        actionButton.text = context.getString(R.string.follow_back)
+                        actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+                        actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                        actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                        actionButton.strokeWidth = 0
+                    }
+                    else -> {
+                        // Not following - show "Follow" button (blue)
+                        actionButton.text = context.getString(R.string.follow)
+                        actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
+                        actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                        actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
+                        actionButton.strokeWidth = 0
+                    }
                 }
-                followUser.isFollowedBy && !followUser.isFollowing -> {
-                    // They follow you but you don't follow them - show "Follow Back" (blue)
-                    actionButton.text = context.getString(R.string.follow_back)
-                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
-                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
-                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
-                    actionButton.strokeWidth = 0
-                }
-                else -> {
-                    // Not following - show "Follow" button (blue)
-                    actionButton.text = context.getString(R.string.follow)
-                    actionButton.setTextColor(ContextCompat.getColor(context, android.R.color.white))
-                    actionButton.backgroundTintList = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
-                    actionButton.strokeColor = android.content.res.ColorStateList.valueOf(0xFF0095F6.toInt())
-                    actionButton.strokeWidth = 0
-                }
+                
+                actionButton.setOnClickListener { onFollowClick(followUser) }
             }
             
-            actionButton.setOnClickListener { onFollowClick(followUser) }
-            
-            // Show remove button only for own profile's followers list
-            if (showRemoveButton && isCurrentUserProfile && onRemoveClick != null) {
+            // Show remove button only for own profile's followers list (and not for self)
+            if (showRemoveButton && isCurrentUserProfile && onRemoveClick != null && !isCurrentUser) {
                 removeButton.visibility = View.VISIBLE
                 removeButton.setOnClickListener { onRemoveClick.invoke(followUser) }
             } else {
