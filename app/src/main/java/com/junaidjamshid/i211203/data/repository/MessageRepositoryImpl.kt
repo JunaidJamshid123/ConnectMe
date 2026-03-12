@@ -146,6 +146,14 @@ class MessageRepositoryImpl @Inject constructor(
         }
     }
     
+    override suspend fun sendTypingIndicator(conversationId: String, userId: String, isTyping: Boolean) {
+        messageDataSource.sendTypingIndicator(conversationId, userId, isTyping)
+    }
+    
+    override fun observeTypingIndicator(conversationId: String, userId: String): kotlinx.coroutines.flow.Flow<Boolean> {
+        return messageDataSource.observeTypingIndicator(conversationId, userId)
+    }
+    
     private fun getConversationId(userId1: String, userId2: String): String {
         return if (userId1 < userId2) "${userId1}_${userId2}" else "${userId2}_${userId1}"
     }

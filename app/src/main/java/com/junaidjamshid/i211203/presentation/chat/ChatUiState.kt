@@ -12,7 +12,12 @@ data class ChatUiState(
     val otherUser: User? = null,
     val isVanishModeEnabled: Boolean = false,
     val messageSent: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    // Typing indicator
+    val isOtherUserTyping: Boolean = false,
+    // Online status
+    val isOtherUserOnline: Boolean = false,
+    val lastSeenTimestamp: Long? = null
 )
 
 /**

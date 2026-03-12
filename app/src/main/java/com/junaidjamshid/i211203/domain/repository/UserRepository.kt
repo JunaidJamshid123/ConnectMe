@@ -57,6 +57,9 @@ interface UserRepository {
     
     suspend fun updateLastSeen(userId: String): Resource<Unit>
     
+    // Observe online status
+    fun observeUserOnlineStatus(userId: String): Flow<Pair<Boolean, Long?>>
+    
     // Recent searches
     fun getRecentSearches(): Flow<Resource<List<User>>>
     

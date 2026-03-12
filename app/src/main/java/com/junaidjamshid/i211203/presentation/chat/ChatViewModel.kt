@@ -7,6 +7,8 @@ import com.junaidjamshid.i211203.domain.repository.MessageRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -29,6 +31,8 @@ class ChatViewModel @Inject constructor(
     
     private var currentConversationId: String? = null
     private var receiverId: String? = null
+    private var typingJob: Job? = null
+    private var lastTypingTime: Long = 0
     
     val currentUserId: String?
         get() = authRepository.getCurrentUserId()
@@ -40,6 +44,7 @@ class ChatViewModel @Inject constructor(
         receiverId = otherUserId
         loadOtherUserDetails(otherUserId)
         loadMessages(otherUserId)
+        subscribeToOnlineStatus()
     }
     
     private fun loadOtherUserDetails(userId: String) {
@@ -62,6 +67,9 @@ class ChatViewModel @Inject constructor(
         val currentId = currentUserId ?: return
         val conversationId = getConversationId(currentId, otherUserId)
         currentConversationId = conversationId
+        
+        // Subscribe to typing indicator after conversationId is set
+        subscribeToTypingIndicator()
         
         viewModelScope.launch {
             _uiState.update { it.copy(isLoading = true) }
@@ -163,5 +171,103 @@ class ChatViewModel @Inject constructor(
     
     fun resetMessageSent() {
         _uiState.update { it.copy(messageSent = false) }
+    }
+    
+    /**
+     * Called when user is typing
+     * Throttles typing events to avoid too many updates
+     */
+    fun onUserTyping() {
+        val currentTime = System.currentTimeMillis()
+        
+        // Only send typing event if more than 2 seconds since last one
+        if (currentTime - lastTypingTime > 2000) {
+            lastTypingTime = currentTime
+            sendTypingIndicator(true)
+        }
+        
+        // Cancel previous job
+        typingJob?.cancel()
+        
+        // After 3 seconds of no typing, send stopped typing
+        typingJob = viewModelScope.launch {
+            delay(3000)
+            sendTypingIndicator(false)
+        }
+    }
+    
+    /**
+     * Called when user stops typing (e.g., loses focus)
+     */
+    fun onUserStoppedTyping() {
+        typingJob?.cancel()
+        sendTypingIndicator(false)
+    }
+    
+    private fun sendTypingIndicator(isTyping: Boolean) {
+        val conversationId = currentConversationId ?: return
+        val userId = currentUserId ?: return
+        
+        viewModelScope.launch {
+            messageRepository.sendTypingIndicator(conversationId, userId, isTyping)
+        }
+    }
+    
+    /**
+     * Subscribe to typing indicators from other user
+     */
+    private fun subscribeToTypingIndicator() {
+        val conversationId = currentConversationId ?: return
+        val otherUserId = receiverId ?: return
+        
+        viewModelScope.launch {
+            messageRepository.observeTypingIndicator(conversationId, otherUserId).collect { isTyping ->
+                _uiState.update { it.copy(isOtherUserTyping = isTyping) }
+            }
+        }
+    }
+    
+    /**
+     * Subscribe to online status of other user
+     */
+    private fun subscribeToOnlineStatus() {
+        val otherUserId = receiverId ?: return
+        
+        viewModelScope.launch {
+            userRepository.observeUserOnlineStatus(otherUserId).collect { (isOnline, lastSeen) ->
+                _uiState.update { 
+                    it.copy(
+                        isOtherUserOnline = isOnline,
+                        lastSeenTimestamp = lastSeen
+                    )
+                }
+            }
+        }
+    }
+    
+    /**
+     * Format last seen timestamp to human-readable string
+     */
+    fun formatLastSeen(timestamp: Long?): String {
+        if (timestamp == null) return ""
+        
+        val now = System.currentTimeMillis()
+        val diff = now - timestamp
+        
+        return when {
+            diff < 60_000 -> "Active now"
+            diff < 3600_000 -> "Active ${diff / 60_000}m ago"
+            diff < 86400_000 -> "Active ${diff / 3600_000}h ago"
+            else -> {
+                val days = diff / 86400_000
+                if (days == 1L) "Active yesterday" else "Active ${days}d ago"
+            }
+        }
+    }
+    
+    override fun onCleared() {
+        super.onCleared()
+        // Stop typing indicator when leaving chat
+        onUserStoppedTyping()
     }
 }

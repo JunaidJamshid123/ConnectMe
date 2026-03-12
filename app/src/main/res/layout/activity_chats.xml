@@ -60,10 +60,9 @@
                 android:id="@+id/txtOnlineStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Active now"
                 android:textColor="#8E8E8E"
                 android:textSize="12sp"
-                android:visibility="gone" />
+                android:visibility="visible" />
         </LinearLayout>
 
         <!-- Action buttons -->
@@ -102,17 +101,31 @@
         android:background="#DBDBDB" />
 
     <!-- ====== MESSAGES LIST ====== -->
-    <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerViewChats"
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="1"
-        android:background="@color/white"
-        android:clipToPadding="false"
-        android:overScrollMode="never"
-        android:paddingHorizontal="12dp"
-        android:paddingTop="8dp"
-        android:paddingBottom="8dp" />
+        android:layout_weight="1">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerViewChats"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="@color/white"
+            android:clipToPadding="false"
+            android:overScrollMode="never"
+            android:paddingHorizontal="12dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="48dp" />
+
+        <!-- Typing Indicator - positioned at bottom -->
+        <include
+            android:id="@+id/typingIndicator"
+            layout="@layout/layout_typing_indicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom|start" />
+
+    </FrameLayout>
 
     <!-- ====== MESSAGE INPUT AREA ====== -->
     <LinearLayout

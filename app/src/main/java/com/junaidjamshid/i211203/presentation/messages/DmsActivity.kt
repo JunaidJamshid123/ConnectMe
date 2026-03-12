@@ -155,8 +155,8 @@ class DmsActivity : AppCompatActivity() {
     private fun openChat(userId: String, username: String, profilePicture: String?) {
         val intent = Intent(this, ChatActivity::class.java).apply {
             putExtra("USER_ID", userId)
-            putExtra("USERNAME", username)
-            putExtra("PROFILE_PICTURE", profilePicture ?: "")
+            // Note: Don't pass profile picture through Intent - it exceeds Binder transaction limit
+            // ChatActivity fetches user data from repository using USER_ID
         }
         startActivity(intent)
     }

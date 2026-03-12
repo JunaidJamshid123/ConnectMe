@@ -37,4 +37,9 @@ interface MessageRepository {
     suspend fun deleteConversation(conversationId: String): Resource<Unit>
     
     suspend fun setVanishMode(conversationId: String, enabled: Boolean): Resource<Unit>
+    
+    // Typing indicator
+    suspend fun sendTypingIndicator(conversationId: String, userId: String, isTyping: Boolean)
+    
+    fun observeTypingIndicator(conversationId: String, userId: String): Flow<Boolean>
 }

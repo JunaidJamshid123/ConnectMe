@@ -52,8 +52,8 @@ dependencies {
     implementation 'androidx.profileinstaller:profileinstaller:1.4.1'
 
     // Hilt - Dependency Injection
-    implementation 'com.google.dagger:hilt-android:2.51.1'
-    ksp 'com.google.dagger:hilt-compiler:2.51.1'
+    implementation 'com.google.dagger:hilt-android:2.53'
+    ksp 'com.google.dagger:hilt-compiler:2.53'
 
     // Room - Local Database
     implementation 'androidx.room:room-runtime:2.6.1'
@@ -64,6 +64,7 @@ dependencies {
     implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.7.0'
+    implementation 'androidx.lifecycle:lifecycle-process:2.7.0'
 
     // Coroutines
     implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.7.3'

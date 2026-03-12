@@ -217,6 +217,14 @@ class UserRepositoryImpl @Inject constructor(
         }
     }
     
+    override fun observeUserOnlineStatus(userId: String): Flow<Pair<Boolean, Long?>> {
+        return userDataSource.getUserByIdFlow(userId).map { userDto ->
+            val isOnline = userDto?.onlineStatus ?: false
+            val lastSeen = if (userDto?.lastSeen != 0L) userDto?.lastSeen else null
+            Pair(isOnline, lastSeen)
+        }
+    }
+    
     override fun getUserProfile(userId: String): Flow<Resource<User>> {
         return flow {
             emit(Resource.Loading())

@@ -7,6 +7,8 @@ import io.github.jan.supabase.postgrest.postgrest
 import io.github.jan.supabase.postgrest.query.Order
 import io.github.jan.supabase.postgrest.query.filter.FilterOperator
 import io.github.jan.supabase.realtime.PostgresAction
+import io.github.jan.supabase.realtime.RealtimeChannel
+import io.github.jan.supabase.realtime.broadcastFlow
 import io.github.jan.supabase.realtime.channel
 import io.github.jan.supabase.realtime.postgresChangeFlow
 import io.github.jan.supabase.realtime.realtime
@@ -313,6 +315,81 @@ class SupabaseMessageDataSource @Inject constructor(
             Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
+        }
+    }
+    
+    // Typing indicator channels map to manage subscriptions
+    private val typingChannels = mutableMapOf<String, RealtimeChannel>()
+    
+    /**
+     * Typing event data class for serialization
+     */
+    @Serializable
+    data class TypingEvent(
+        val userId: String,
+        val isTyping: Boolean
+    )
+    
+    /**
+     * Send typing indicator via Supabase Realtime broadcast
+     */
+    suspend fun sendTypingIndicator(conversationId: String, userId: String, isTyping: Boolean) {
+        try {
+            val channelKey = "typing-$conversationId"
+            val channel = typingChannels.getOrPut(channelKey) {
+                supabaseClient.realtime.channel(channelKey).also { it.subscribe() }
+            }
+            
+            // Convert to JsonObject for broadcast
+            val message = kotlinx.serialization.json.buildJsonObject {
+                put("userId", kotlinx.serialization.json.JsonPrimitive(userId))
+                put("isTyping", kotlinx.serialization.json.JsonPrimitive(isTyping))
+            }
+            
+            channel.broadcast(
+                event = "typing",
+                message = message
+            )
+        } catch (e: Exception) {
+            // Silently ignore typing errors
+        }
+    }
+    
+    /**
+     * Observe typing indicators from other user via Supabase Realtime broadcast
+     */
+    fun observeTypingIndicator(conversationId: String, otherUserId: String): Flow<Boolean> = callbackFlow {
+        val channelKey = "typing-$conversationId"
+        val channel = supabaseClient.realtime.channel(channelKey)
+        
+        // Subscribe to broadcast events
+        val broadcastFlow = channel.broadcastFlow<TypingEvent>(event = "typing")
+        
+        channel.subscribe()
+        
+        // Emit initial state as not typing
+        trySend(false)
+        
+        val job = launch {
+            broadcastFlow.collect { event ->
+                // Only emit if it's from the other user
+                if (event.userId == otherUserId) {
+                    trySend(event.isTyping)
+                }
+            }
+        }
+        
+        awaitClose {
+            job.cancel()
+            launch {
+                try {
+                    channel.unsubscribe()
+                    supabaseClient.realtime.removeChannel(channel)
+                    typingChannels.remove(channelKey)
+                } catch (e: Exception) {
+                    // Ignore cleanup errors
+                }
+            }
         }
     }
 }
