@@ -3,6 +3,7 @@ package com.junaidjamshid.i211203.data.repository
 import android.util.Base64
 import com.junaidjamshid.i211203.data.dto.CommentDto
 import com.junaidjamshid.i211203.data.dto.PostDto
+import com.junaidjamshid.i211203.data.mapper.PostMapper
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDto
 import com.junaidjamshid.i211203.data.remote.supabase.SupabasePostDataSource
@@ -33,7 +34,15 @@ class PostRepositoryImpl @Inject constructor(
             .map { posts ->
                 // Enrich posts with latest user profile images from the users table
                 val enrichedPosts = enrichPostsWithUserData(posts)
-                Resource.Success(enrichedPosts.map { it.toDomain(userId) }) as Resource<List<Post>>
+                // Get saved post IDs for current user
+                val savedPostIds = try {
+                    postDataSource.getSavedPostIds(userId).toSet()
+                } catch (e: Exception) {
+                    emptySet()
+                }
+                Resource.Success(enrichedPosts.map { dto -> 
+                    dto.toDomain(userId).copy(isSavedByCurrentUser = savedPostIds.contains(dto.postId))
+                }) as Resource<List<Post>>
             }
             .catch { e ->
                 emit(Resource.Error(e.message ?: "Failed to load posts"))
@@ -246,18 +255,39 @@ class PostRepositoryImpl @Inject constructor(
     }
     
     override suspend fun savePost(postId: String, userId: String): Resource<Unit> {
-        // TODO: Implement saved posts feature
-        return Resource.Success(Unit)
+        return try {
+            postDataSource.savePost(postId, userId)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to save post")
+        }
     }
     
     override suspend fun unsavePost(postId: String, userId: String): Resource<Unit> {
-        // TODO: Implement saved posts feature
-        return Resource.Success(Unit)
+        return try {
+            postDataSource.unsavePost(postId, userId)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to unsave post")
+        }
     }
     
     override suspend fun getSavedPosts(userId: String): Resource<List<Post>> {
-        // TODO: Implement saved posts feature
-        return Resource.Success(emptyList())
+        return try {
+            val currentUserId = userDataSource.getCurrentUserId() ?: userId
+            val savedPostDtos = postDataSource.getSavedPosts(userId)
+            val savedPostIds = postDataSource.getSavedPostIds(currentUserId)
+            val posts = savedPostDtos.map { dto -> 
+                PostMapper.run {
+                    dto.toDomain(currentUserId).copy(
+                        isSavedByCurrentUser = savedPostIds.contains(dto.postId)
+                    )
+                }
+            }
+            Resource.Success(posts)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to get saved posts")
+        }
     }
     
     override suspend fun addComment(postId: String, commentText: String): Resource<Comment> {

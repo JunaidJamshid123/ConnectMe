@@ -105,45 +105,64 @@ class DmsActivity : AppCompatActivity() {
             binding.tvUsername.text = user.username.ifEmpty { user.fullName }
         }
 
-        // Loading
-        binding.progressLoading.isVisible = state.isLoading && state.friends.isEmpty()
-
-        // Empty state
-        binding.emptyState.isVisible = !state.isLoading && state.friends.isEmpty()
-
-        // Friends list - show filtered results (can be empty when no search matches)
-        val displayFriends = if (binding.etSearch.text.isNullOrEmpty()) {
-            state.friends
+        // Handle shimmer loading
+        if (state.isLoading && state.friends.isEmpty()) {
+            // Show shimmer
+            binding.shimmerNotes.visibility = android.view.View.VISIBLE
+            binding.shimmerNotes.startShimmer()
+            binding.shimmerFriends.visibility = android.view.View.VISIBLE
+            binding.shimmerFriends.startShimmer()
+            binding.rvNotes.visibility = android.view.View.GONE
+            binding.rvFriends.visibility = android.view.View.GONE
+            binding.emptyState.visibility = android.view.View.GONE
+            binding.progressLoading.visibility = android.view.View.GONE
         } else {
-            state.filteredFriends
-        }
-        binding.rvFriends.isVisible = state.friends.isNotEmpty()
-        friendsAdapter.submitList(displayFriends)
+            // Hide shimmer
+            binding.shimmerNotes.stopShimmer()
+            binding.shimmerNotes.visibility = android.view.View.GONE
+            binding.shimmerFriends.stopShimmer()
+            binding.shimmerFriends.visibility = android.view.View.GONE
+            
+            // Show notes
+            binding.rvNotes.visibility = android.view.View.VISIBLE
+            
+            // Empty state
+            binding.emptyState.isVisible = state.friends.isEmpty()
 
-        // Notes row - current user first, then online friends, then others
-        val currentUserNote = state.currentUser?.let { user ->
-            DmsNoteUser(
-                userId = user.userId,
-                username = "Your note",
-                profilePicture = user.profilePicture,
-                isOnline = false,
-                isCurrentUser = true
-            )
-        } ?: DmsNoteUser("self", "Your note", null, false, isCurrentUser = true)
-
-        val friendNotes = state.friends
-            .sortedByDescending { it.isOnline }
-            .take(15)
-            .map { 
-                DmsNoteUser(
-                    it.user.userId, 
-                    it.user.username.ifEmpty { it.user.fullName }, 
-                    it.user.profilePicture, 
-                    it.isOnline
-                ) 
+            // Friends list - show filtered results (can be empty when no search matches)
+            val displayFriends = if (binding.etSearch.text.isNullOrEmpty()) {
+                state.friends
+            } else {
+                state.filteredFriends
             }
-        
-        notesAdapter.submitList(listOf(currentUserNote) + friendNotes)
+            binding.rvFriends.isVisible = state.friends.isNotEmpty()
+            friendsAdapter.submitList(displayFriends)
+
+            // Notes row - current user first, then online friends, then others
+            val currentUserNote = state.currentUser?.let { user ->
+                DmsNoteUser(
+                    userId = user.userId,
+                    username = "Your note",
+                    profilePicture = user.profilePicture,
+                    isOnline = false,
+                    isCurrentUser = true
+                )
+            } ?: DmsNoteUser("self", "Your note", null, false, isCurrentUser = true)
+
+            val friendNotes = state.friends
+                .sortedByDescending { it.isOnline }
+                .take(15)
+                .map { 
+                    DmsNoteUser(
+                        it.user.userId, 
+                        it.user.username.ifEmpty { it.user.fullName }, 
+                        it.user.profilePicture, 
+                        it.isOnline
+                    ) 
+                }
+            
+            notesAdapter.submitList(listOf(currentUserNote) + friendNotes)
+        }
 
         // Error
         state.error?.let { error ->

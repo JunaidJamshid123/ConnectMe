@@ -208,6 +208,12 @@ class PostAdapterNew(
                 if (post.isLikedByCurrentUser) R.drawable.ic_heart_filled
                 else R.drawable.ic_heart_outline
             )
+            
+            // Save state
+            saveButton.setImageResource(
+                if (post.isSavedByCurrentUser) R.drawable.ic_bookmark_filled
+                else R.drawable.ic_bookmark
+            )
 
             // Click listeners
             heartButton.setOnClickListener { onLikeClick(post.postId) }

@@ -161,6 +161,17 @@ class ChatActivity : AppCompatActivity() {
     }
     
     private fun handleUiState(state: ChatUiState) {
+        // Handle shimmer loading
+        if (state.isLoading && state.messages.isEmpty()) {
+            binding.shimmerContainer.visibility = View.VISIBLE
+            binding.shimmerContainer.startShimmer()
+            binding.recyclerViewChats.visibility = View.GONE
+        } else {
+            binding.shimmerContainer.stopShimmer()
+            binding.shimmerContainer.visibility = View.GONE
+            binding.recyclerViewChats.visibility = View.VISIBLE
+        }
+        
         // Update other user info
         state.otherUser?.let { user ->
             binding.txtUserName.text = user.username

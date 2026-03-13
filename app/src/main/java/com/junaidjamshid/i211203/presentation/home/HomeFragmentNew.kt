@@ -361,7 +361,6 @@ class HomeFragmentNew : Fragment() {
     
     private fun onSaveClicked(postId: String) {
         viewModel.onSavePost(postId)
-        Toast.makeText(context, "Post saved", Toast.LENGTH_SHORT).show()
     }
     
     private fun onProfileClicked(userId: String) {

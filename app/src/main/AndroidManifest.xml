@@ -64,6 +64,11 @@
             android:exported="false"
             android:theme="@style/Theme.I211203" />
 
+        <activity
+            android:name=".presentation.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <!-- Chat Activity -->
         <activity
             android:name=".presentation.chat.ChatActivity"

@@ -31,4 +31,10 @@ interface AuthRepository {
     suspend fun sendPasswordResetEmail(email: String): Resource<Unit>
     
     suspend fun updatePushToken(token: String): Resource<Unit>
+    
+    suspend fun verifyEmailExists(email: String): Resource<Boolean>
+    
+    suspend fun verifyUsernameForEmail(email: String, username: String): Resource<Boolean>
+    
+    suspend fun resetPassword(email: String, newPassword: String): Resource<Unit>
 }

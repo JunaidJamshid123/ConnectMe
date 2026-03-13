@@ -117,6 +117,21 @@ class HomeFeedAdapter(
             is HomeFeedItem.SuggestionsItem -> (holder as SuggestionsViewHolder).bind(item.suggestions)
         }
     }
+    
+    override fun onBindViewHolder(holder: RecyclerView.ViewHolder, position: Int, payloads: MutableList<Any>) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads)
+            return
+        }
+        
+        val item = getItem(position)
+        if (item is HomeFeedItem.PostItem && holder is PostViewHolder) {
+            val changes = payloads.filterIsInstance<Set<*>>().flatten().toSet()
+            holder.bindPartial(item.post, changes)
+        } else {
+            super.onBindViewHolder(holder, position, payloads)
+        }
+    }
 
     override fun onViewRecycled(holder: RecyclerView.ViewHolder) {
         super.onViewRecycled(holder)
@@ -258,6 +273,12 @@ class HomeFeedAdapter(
                 if (post.isLikedByCurrentUser) R.drawable.ic_heart_filled
                 else R.drawable.ic_heart_outline
             )
+            
+            // Save state
+            saveButton.setImageResource(
+                if (post.isSavedByCurrentUser) R.drawable.ic_bookmark_filled
+                else R.drawable.ic_bookmark
+            )
 
             // View all comments
             if (post.commentsCount > 0) {
@@ -333,6 +354,39 @@ class HomeFeedAdapter(
                         .start()
                 }
                 .start()
+        }
+        
+        /**
+         * Partial bind for efficient updates - only updates changed UI elements.
+         */
+        fun bindPartial(post: Post, changes: Set<*>) {
+            if (changes.contains("like")) {
+                heartButton.setImageResource(
+                    if (post.isLikedByCurrentUser) R.drawable.ic_heart_filled
+                    else R.drawable.ic_heart_outline
+                )
+            }
+            if (changes.contains("save")) {
+                saveButton.setImageResource(
+                    if (post.isSavedByCurrentUser) R.drawable.ic_bookmark_filled
+                    else R.drawable.ic_bookmark
+                )
+            }
+            if (changes.contains("likesCount")) {
+                likesCount.text = "${post.likesCount} likes"
+            }
+            if (changes.contains("commentsCount")) {
+                if (post.commentsCount > 0) {
+                    viewComments.visibility = View.VISIBLE
+                    viewComments.text = if (post.commentsCount == 1) {
+                        "View 1 comment"
+                    } else {
+                        "View all ${post.commentsCount} comments"
+                    }
+                } else {
+                    viewComments.visibility = View.GONE
+                }
+            }
         }
 
         private fun setupSubtitle(post: Post) {
@@ -762,6 +816,30 @@ class HomeFeedAdapter(
 
         override fun areContentsTheSame(oldItem: HomeFeedItem, newItem: HomeFeedItem): Boolean {
             return oldItem == newItem
+        }
+        
+        override fun getChangePayload(oldItem: HomeFeedItem, newItem: HomeFeedItem): Any? {
+            if (oldItem is HomeFeedItem.PostItem && newItem is HomeFeedItem.PostItem) {
+                val oldPost = oldItem.post
+                val newPost = newItem.post
+                val changes = mutableSetOf<String>()
+                
+                if (oldPost.isLikedByCurrentUser != newPost.isLikedByCurrentUser) {
+                    changes.add("like")
+                }
+                if (oldPost.isSavedByCurrentUser != newPost.isSavedByCurrentUser) {
+                    changes.add("save")
+                }
+                if (oldPost.likesCount != newPost.likesCount) {
+                    changes.add("likesCount")
+                }
+                if (oldPost.commentsCount != newPost.commentsCount) {
+                    changes.add("commentsCount")
+                }
+                
+                return if (changes.isNotEmpty()) changes else null
+            }
+            return null
         }
     }
 }

@@ -106,6 +106,17 @@
         android:layout_height="0dp"
         android:layout_weight="1">
 
+        <!-- Shimmer Loading -->
+        <com.facebook.shimmer.ShimmerFrameLayout
+            android:id="@+id/shimmerContainer"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:visibility="gone">
+
+            <include layout="@layout/shimmer_chat_placeholder" />
+
+        </com.facebook.shimmer.ShimmerFrameLayout>
+
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recyclerViewChats"
             android:layout_width="match_parent"

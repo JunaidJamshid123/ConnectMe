@@ -4,6 +4,7 @@ import io.github.jan.supabase.SupabaseClient
 import io.github.jan.supabase.auth.auth
 import io.github.jan.supabase.auth.providers.builtin.Email
 import io.github.jan.supabase.postgrest.postgrest
+import io.github.jan.supabase.postgrest.rpc
 import kotlinx.serialization.json.buildJsonObject
 import kotlinx.serialization.json.put
 import javax.inject.Inject
@@ -87,5 +88,34 @@ class SupabaseAuthDataSource @Inject constructor(
                     eq("user_id", userId)
                 }
             }
+    }
+    
+    /**
+     * Reset password for a user via RPC call.
+     * This calls a stored procedure in Supabase that handles the password update.
+     * 
+     * NOTE: This requires the 'reset_user_password' function to be created in Supabase.
+     * See supabase_schema.sql for the function definition.
+     */
+    suspend fun resetPasswordViaRpc(email: String, newPassword: String) {
+        try {
+            supabaseClient.postgrest.rpc(
+                function = "reset_user_password",
+                parameters = buildJsonObject {
+                    put("user_email", email.lowercase().trim())
+                    put("new_password", newPassword)
+                }
+            )
+        } catch (e: Exception) {
+            // Parse the error message for user-friendly display
+            val errorMessage = when {
+                e.message?.contains("User not found") == true -> "User not found"
+                e.message?.contains("permission denied") == true -> "Permission denied. Please contact support."
+                e.message?.contains("does not exist") == true -> "Password reset not configured. Please run SQL setup."
+                e.message?.contains("gen_salt") == true -> "Database function error. Please update SQL function."
+                else -> e.message ?: "Failed to reset password"
+            }
+            throw Exception(errorMessage)
+        }
     }
 }

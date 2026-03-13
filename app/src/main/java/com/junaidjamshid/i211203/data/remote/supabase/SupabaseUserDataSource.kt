@@ -370,4 +370,19 @@ class SupabaseUserDataSource @Inject constructor(
                 }
             }
     }
+    
+    /**
+     * Get user by email address.
+     * Used for forgot password verification.
+     */
+    suspend fun getUserByEmail(email: String): UserDto? {
+        val result = supabaseClient.postgrest[SupabaseConfig.USERS_TABLE]
+            .select {
+                filter {
+                    eq("email", email.lowercase().trim())
+                }
+            }
+            .decodeSingleOrNull<SupabaseUser>()
+        return result?.toDto()
+    }
 }

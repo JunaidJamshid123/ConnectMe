@@ -42,6 +42,10 @@ class LoginActivity : AppCompatActivity() {
             })
         }
         
+        binding.forgotPasswordLink.setOnClickListener {
+            startActivity(Intent(this, ForgotPasswordActivity::class.java))
+        }
+        
         binding.LoginBtn.setOnClickListener {
             val email = binding.Email.text.toString().trim()
             val password = binding.Password.text.toString().trim()

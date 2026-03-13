@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shimmer skeleton for chat messages -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingHorizontal="12dp"
+    android:paddingTop="8dp">
+
+    <!-- Received message 1 (Left aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="180dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Sent message 1 (Right aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="200dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Sent message 2 (Right aligned, shorter) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="120dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Received message 2 (Left aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="240dp"
+            android:layout_height="56dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Sent message 3 (Right aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="150dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Received message 3 (Left aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="160dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Sent message 4 (Right aligned, longer) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="220dp"
+            android:layout_height="72dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Received message 4 (Left aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="start"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="130dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Sent message 5 (Right aligned) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        android:gravity="end"
+        android:orientation="horizontal">
+
+        <View
+            android:layout_width="170dp"
+            android:layout_height="36dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+</LinearLayout>

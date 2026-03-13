@@ -98,6 +98,17 @@
     </FrameLayout>
 
     <!-- ====== NOTES / STORIES SECTION ====== -->
+    <!-- Shimmer for Notes -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerNotes"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:visibility="gone">
+
+        <include layout="@layout/shimmer_dms_notes_placeholder" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv_notes"
         android:layout_width="match_parent"
@@ -150,7 +161,7 @@
             android:textStyle="bold" />
     </RelativeLayout>
 
-    <!-- Loading state -->
+    <!-- Loading state - replaced with shimmer -->
     <ProgressBar
         android:id="@+id/progress_loading"
         android:layout_width="32dp"
@@ -159,6 +170,18 @@
         android:layout_marginTop="48dp"
         android:indeterminateTint="#0095F6"
         android:visibility="gone" />
+
+    <!-- Shimmer for Friends List -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmerFriends"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:visibility="gone">
+
+        <include layout="@layout/shimmer_dms_friends_placeholder" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
 
     <!-- Empty state -->
     <LinearLayout

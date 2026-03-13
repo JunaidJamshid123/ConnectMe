@@ -560,7 +560,117 @@ class SupabasePostDataSource @Inject constructor(
             false
         }
     }
+    
+    // ========================= SAVED POSTS =========================
+    
+    /**
+     * Save (bookmark) a post for a user.
+     */
+    suspend fun savePost(postId: String, userId: String) {
+        try {
+            val savedPost = SavedPost(
+                post_id = postId,
+                user_id = userId,
+                created_at = System.currentTimeMillis()
+            )
+            supabaseClient.postgrest["saved_posts"]
+                .upsert(savedPost) {
+                    onConflict = "post_id,user_id"
+                }
+            Log.d("PostDataSource", "savePost: saved post $postId for user $userId")
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "savePost failed: ${e.message}", e)
+            throw e
+        }
+    }
+    
+    /**
+     * Unsave (remove bookmark) a post for a user.
+     */
+    suspend fun unsavePost(postId: String, userId: String) {
+        try {
+            supabaseClient.postgrest["saved_posts"]
+                .delete {
+                    filter {
+                        eq("post_id", postId)
+                        eq("user_id", userId)
+                    }
+                }
+            Log.d("PostDataSource", "unsavePost: unsaved post $postId for user $userId")
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "unsavePost failed: ${e.message}", e)
+            throw e
+        }
+    }
+    
+    /**
+     * Check if a post is saved by a user.
+     */
+    suspend fun isPostSavedByUser(postId: String, userId: String): Boolean {
+        return try {
+            val result = supabaseClient.postgrest["saved_posts"]
+                .select {
+                    filter {
+                        eq("post_id", postId)
+                        eq("user_id", userId)
+                    }
+                }
+                .decodeList<SavedPost>()
+            result.isNotEmpty()
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "isPostSavedByUser failed: ${e.message}", e)
+            false
+        }
+    }
+    
+    /**
+     * Get all saved post IDs for a user.
+     */
+    suspend fun getSavedPostIds(userId: String): List<String> {
+        return try {
+            val savedPosts = supabaseClient.postgrest["saved_posts"]
+                .select(columns = Columns.list("post_id")) {
+                    filter { eq("user_id", userId) }
+                    order("created_at", Order.DESCENDING)
+                }
+                .decodeList<Map<String, String>>()
+            savedPosts.mapNotNull { it["post_id"] }
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "getSavedPostIds failed: ${e.message}", e)
+            emptyList()
+        }
+    }
+    
+    /**
+     * Get all saved posts for a user (full post data).
+     */
+    suspend fun getSavedPosts(userId: String): List<PostDto> {
+        return try {
+            val savedPostIds = getSavedPostIds(userId)
+            if (savedPostIds.isEmpty()) return emptyList()
+            
+            val posts = mutableListOf<PostDto>()
+            for (postId in savedPostIds) {
+                getPostById(postId)?.let { posts.add(it) }
+            }
+            posts
+        } catch (e: Exception) {
+            Log.e("PostDataSource", "getSavedPosts failed: ${e.message}", e)
+            emptyList()
+        }
+    }
 }
+
+/**
+ * Supabase representation of Saved Post.
+ */
+@Serializable
+data class SavedPost(
+    val id: Long? = null,
+    val post_id: String,
+    val user_id: String,
+    val created_at: Long = System.currentTimeMillis()
+)
 
 /**
  * Supabase representation of Video View.

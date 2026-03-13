@@ -175,6 +175,20 @@ CREATE INDEX IF NOT EXISTS idx_likes_post_id ON likes(post_id);
 CREATE INDEX IF NOT EXISTS idx_likes_user_id ON likes(user_id);
 
 -- =====================================================
+-- SAVED POSTS TABLE (Bookmarked/Saved posts)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS saved_posts (
+    id BIGSERIAL PRIMARY KEY,
+    post_id UUID NOT NULL,
+    user_id UUID NOT NULL,
+    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
+    UNIQUE(post_id, user_id)
+);
+
+CREATE INDEX IF NOT EXISTS idx_saved_posts_post_id ON saved_posts(post_id);
+CREATE INDEX IF NOT EXISTS idx_saved_posts_user_id ON saved_posts(user_id);
+
+-- =====================================================
 -- COMMENTS TABLE
 -- =====================================================
 CREATE TABLE IF NOT EXISTS comments (
@@ -333,6 +347,7 @@ ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE followers ENABLE ROW LEVEL SECURITY;
 ALTER TABLE posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE likes ENABLE ROW LEVEL SECURITY;
+ALTER TABLE saved_posts ENABLE ROW LEVEL SECURITY;
 ALTER TABLE comments ENABLE ROW LEVEL SECURITY;
 ALTER TABLE stories ENABLE ROW LEVEL SECURITY;
 ALTER TABLE story_viewers ENABLE ROW LEVEL SECURITY;
@@ -365,6 +380,14 @@ DROP POLICY IF EXISTS "Users can like posts" ON likes;
 CREATE POLICY "Users can like posts" ON likes FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
 DROP POLICY IF EXISTS "Users can unlike posts" ON likes;
 CREATE POLICY "Users can unlike posts" ON likes FOR DELETE USING (auth.uid()::text = user_id::text);
+
+-- Saved posts policies
+DROP POLICY IF EXISTS "Users can view their saved posts" ON saved_posts;
+CREATE POLICY "Users can view their saved posts" ON saved_posts FOR SELECT USING (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can save posts" ON saved_posts;
+CREATE POLICY "Users can save posts" ON saved_posts FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+DROP POLICY IF EXISTS "Users can unsave posts" ON saved_posts;
+CREATE POLICY "Users can unsave posts" ON saved_posts FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- Comments policies
 DROP POLICY IF EXISTS "Comments are viewable by everyone" ON comments;
@@ -492,3 +515,48 @@ CREATE POLICY "Users can delete searches" ON recent_searches FOR DELETE USING (a
 --
 -- Example policy for INSERT on videos bucket:
 -- ((bucket_id = 'videos'::text) AND (auth.role() = 'authenticated'::text))
+
+-- =====================================================
+-- PASSWORD RESET FUNCTION
+-- =====================================================
+-- This function allows resetting a user's password after email+username verification.
+-- Uses Supabase's extensions schema where pgcrypto is available.
+
+-- Function to reset user password
+-- Call this via RPC: supabase.postgrest.rpc('reset_user_password', { user_email: '...', new_password: '...' })
+CREATE OR REPLACE FUNCTION reset_user_password(user_email TEXT, new_password TEXT)
+RETURNS BOOLEAN
+LANGUAGE plpgsql
+SECURITY DEFINER
+SET search_path = public, extensions
+AS $$
+DECLARE
+    target_user_id UUID;
+BEGIN
+    -- Find the user in our public.users table
+    SELECT user_id INTO target_user_id
+    FROM users
+    WHERE LOWER(email) = LOWER(user_email);
+    
+    IF target_user_id IS NULL THEN
+        RAISE EXCEPTION 'User not found';
+    END IF;
+    
+    -- Update the password in auth.users using extensions.crypt
+    UPDATE auth.users
+    SET 
+        encrypted_password = extensions.crypt(new_password, extensions.gen_salt('bf')),
+        updated_at = NOW()
+    WHERE id = target_user_id;
+    
+    IF NOT FOUND THEN
+        RAISE EXCEPTION 'Failed to update password';
+    END IF;
+    
+    RETURN TRUE;
+END;
+$$;
+
+-- Grant execute permission to authenticated users (and anon for password reset)
+GRANT EXECUTE ON FUNCTION reset_user_password(TEXT, TEXT) TO anon;
+GRANT EXECUTE ON FUNCTION reset_user_password(TEXT, TEXT) TO authenticated;

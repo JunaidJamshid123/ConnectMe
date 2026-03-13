@@ -269,10 +269,43 @@ class HomeViewModel @Inject constructor(
     }
     
     fun onSavePost(postId: String) {
-        // Save post functionality - can be extended later
         currentUserId?.let { userId ->
             viewModelScope.launch {
-                // TODO: Implement save post use case
+                // Find current save state
+                val currentPost = _uiState.value.posts.find { it.postId == postId }
+                val isCurrentlySaved = currentPost?.isSavedByCurrentUser ?: false
+                
+                // Optimistic update
+                _uiState.update { state ->
+                    state.copy(
+                        posts = state.posts.map { post ->
+                            if (post.postId == postId) {
+                                post.copy(isSavedByCurrentUser = !isCurrentlySaved)
+                            } else post
+                        }
+                    )
+                }
+                
+                // Make API call
+                val result = if (isCurrentlySaved) {
+                    postRepository.unsavePost(postId, userId)
+                } else {
+                    postRepository.savePost(postId, userId)
+                }
+                
+                // Revert on failure
+                if (result is Resource.Error) {
+                    _uiState.update { state ->
+                        state.copy(
+                            posts = state.posts.map { post ->
+                                if (post.postId == postId) {
+                                    post.copy(isSavedByCurrentUser = isCurrentlySaved)
+                                } else post
+                            },
+                            postsError = result.message
+                        )
+                    }
+                }
             }
         }
     }

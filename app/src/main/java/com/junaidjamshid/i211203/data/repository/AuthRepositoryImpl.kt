@@ -109,4 +109,36 @@ class AuthRepositoryImpl @Inject constructor(
             Resource.Error(e.message ?: "Failed to update push token")
         }
     }
+    
+    override suspend fun verifyEmailExists(email: String): Resource<Boolean> {
+        return try {
+            val user = userDataSource.getUserByEmail(email)
+            Resource.Success(user != null)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to verify email")
+        }
+    }
+    
+    override suspend fun verifyUsernameForEmail(email: String, username: String): Resource<Boolean> {
+        return try {
+            val user = userDataSource.getUserByEmail(email)
+            if (user != null) {
+                val matches = user.username.equals(username.trim(), ignoreCase = true)
+                Resource.Success(matches)
+            } else {
+                Resource.Error("User not found")
+            }
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to verify username")
+        }
+    }
+    
+    override suspend fun resetPassword(email: String, newPassword: String): Resource<Unit> {
+        return try {
+            authDataSource.resetPasswordViaRpc(email, newPassword)
+            Resource.Success(Unit)
+        } catch (e: Exception) {
+            Resource.Error(e.message ?: "Failed to reset password")
+        }
+    }
 }
