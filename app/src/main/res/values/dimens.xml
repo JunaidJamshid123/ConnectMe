@@ -23,6 +23,7 @@
 
     <dimen name="button_radius">8dp</dimen>
     <dimen name="profile_image_size">100dp</dimen>
+    <dimen name="profile_image_with_story">76dp</dimen>
     <dimen name="icon_size">24dp</dimen>
     <dimen name="nav_icon_size">24dp</dimen>
     <dimen name="nav_add_icon_size">40dp</dimen>

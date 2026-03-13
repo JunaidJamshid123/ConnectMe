@@ -7,7 +7,23 @@
     android:background="@color/white"
     tools:context=".SearchFragment">
 
+    <!-- Loading Shimmer -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_search"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.95"
+        app:shimmer_highlight_alpha="0.55"
+        app:shimmer_duration="1200">
+
+        <include layout="@layout/shimmer_search_placeholder" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
     <LinearLayout
+        android:id="@+id/search_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">

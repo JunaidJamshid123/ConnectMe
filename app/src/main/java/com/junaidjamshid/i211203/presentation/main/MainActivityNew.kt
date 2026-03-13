@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203.presentation.main
 
+import android.content.Intent
 import android.os.Build
 import android.os.Bundle
 import android.view.View
@@ -44,6 +45,23 @@ class MainActivityNew : AppCompatActivity() {
         setupSystemUI()
         setupBottomNavigation()
         setupFragments()
+        
+        // Handle navigation intent (e.g., from UserProfileActivity when viewing own profile)
+        handleNavigationIntent(intent)
+    }
+    
+    override fun onNewIntent(intent: Intent) {
+        super.onNewIntent(intent)
+        handleNavigationIntent(intent)
+    }
+    
+    private fun handleNavigationIntent(intent: Intent) {
+        if (intent.getBooleanExtra("NAVIGATE_TO_OWN_PROFILE", false)) {
+            // Delay slightly to ensure fragments are set up
+            bottomNav.post {
+                navigateToTab(R.id.nav_profile)
+            }
+        }
     }
     
     private fun setupSystemUI() {

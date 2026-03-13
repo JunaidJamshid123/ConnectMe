@@ -206,6 +206,18 @@ class SearchFragmentNew : Fragment() {
     }
     
     private fun handleUiState(state: SearchUiState) {
+        // Handle loading state with shimmer
+        if (state.isLoadingExplore && state.explorePosts.isEmpty()) {
+            binding.shimmerSearch.visibility = View.VISIBLE
+            binding.shimmerSearch.startShimmer()
+            binding.searchContent.visibility = View.GONE
+            return
+        } else {
+            binding.shimmerSearch.stopShimmer()
+            binding.shimmerSearch.visibility = View.GONE
+            binding.searchContent.visibility = View.VISIBLE
+        }
+        
         // Update explore grid
         exploreAdapter.submitList(state.explorePosts)
         

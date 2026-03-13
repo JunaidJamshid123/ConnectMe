@@ -24,5 +24,7 @@
     <color name="instagram_gradient_start">#F58529</color>
     <color name="instagram_gradient_center">#DD2A7B</color>
     <color name="instagram_gradient_end">#8134AF</color>
+    <color name="instagram_gray">#8E8E8E</color>
+    <color name="instagram_dark">#262626</color>
     <color name="facebook_blue">#1877F2</color>
 </resources>

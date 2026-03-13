@@ -1,316 +1,546 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F0F0F0"
-    tools:context=".UserProfile">
+    android:background="@color/white"
+    android:fitsSystemWindows="true"
+    tools:context=".presentation.profile.UserProfileActivity">
 
-    <ScrollView
+    <!-- Loading Shimmer -->
+    <com.facebook.shimmer.ShimmerFrameLayout
+        android:id="@+id/shimmer_profile"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:visibility="gone"
+        app:shimmer_auto_start="true"
+        app:shimmer_base_alpha="0.95"
+        app:shimmer_highlight_alpha="0.55"
+        app:shimmer_duration="1200">
+
+        <include layout="@layout/shimmer_profile_placeholder" />
+
+    </com.facebook.shimmer.ShimmerFrameLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/profile_content"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:fillViewport="true"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:overScrollMode="never">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
-            <!-- Top Bar with Gray Gradient Background -->
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <!-- ========== TOP ACTION BAR (Instagram Style) ========== -->
+            <LinearLayout
                 android:id="@+id/top_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/gradient_background"
-                android:paddingTop="32dp"
-                android:paddingBottom="16dp">
+                android:background="@color/white"
+                android:gravity="center_vertical"
+                android:minHeight="44dp"
+                android:orientation="horizontal"
+                android:paddingStart="4dp"
+                android:paddingEnd="16dp"
+                android:paddingBottom="8dp">
 
+                <!-- Back Button -->
                 <ImageView
                     android:id="@+id/back_button"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    app:tint="@color/white"
-                    android:padding="12dp"
+                    android:layout_width="44dp"
+                    android:layout_height="44dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    android:layout_marginStart="16dp"/>
+                    android:contentDescription="Back"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_back_arrow"
+                    app:tint="#262626" />
 
+                <!-- Username (center) -->
                 <TextView
-                    android:id="@+id/tv_user_profile"
-                    android:layout_width="wrap_content"
+                    android:id="@+id/tv_username_toolbar"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="User Profile"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="@android:color/white"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"/>
+                    android:layout_weight="1"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
+                    android:text="username"
+                    android:textColor="#262626"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
 
+                <!-- Notification Bell (optional - like Instagram) -->
+                <ImageView
+                    android:id="@+id/btn_notifications"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="20dp"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:contentDescription="Notifications"
+                    android:visibility="gone"
+                    app:tint="#262626" />
+
+                <!-- More Options (Three dots) -->
                 <ImageView
                     android:id="@+id/more_options"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:src="@drawable/menuu"
-                    app:tint="@color/white"
-                    android:padding="12dp"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginEnd="16dp"/>
-            </androidx.constraintlayout.widget.ConstraintLayout>
+                    android:contentDescription="More options"
+                    android:src="@drawable/ic_more_vert"
+                    app:tint="#262626" />
+            </LinearLayout>
 
-            <!-- Profile Card -->
-            <androidx.cardview.widget.CardView
+            <!-- ========== PROFILE HEADER SECTION (Instagram Style) ========== -->
+            <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                android:backgroundTint="#FFFFFF">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="12dp"
+                android:paddingEnd="28dp"
+                android:paddingStart="16dp"
+                android:paddingTop="16dp">
 
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical"
-                    android:gravity="center"
-                    android:padding="16dp">
+                <!-- Profile Picture with Story Ring -->
+                <FrameLayout
+                    android:id="@+id/profile_image_container"
+                    android:layout_width="86dp"
+                    android:layout_height="86dp"
+                    android:layout_marginEnd="28dp">
 
+                    <!-- Story Gradient Ring (shown when user has active stories) -->
+                    <View
+                        android:id="@+id/story_ring"
+                        android:layout_width="86dp"
+                        android:layout_height="86dp"
+                        android:background="@drawable/profile_story_ring"
+                        android:visibility="gone" />
+
+                    <!-- White Ring Spacer -->
+                    <View
+                        android:id="@+id/white_ring"
+                        android:layout_width="80dp"
+                        android:layout_height="80dp"
+                        android:layout_gravity="center"
+                        android:background="@drawable/circle_border"
+                        android:visibility="gone" />
+
+                    <!-- Profile Image -->
                     <de.hdodenhof.circleimageview.CircleImageView
                         android:id="@+id/user_profile_image"
-                        android:layout_width="120dp"
-                        android:layout_height="120dp"
-                        android:src="@drawable/default_profile"
-                        app:civ_border_width="3dp"
-                        app:civ_border_color="#6C757D"
-                        android:layout_marginBottom="16dp"/>
+                        android:layout_width="86dp"
+                        android:layout_height="86dp"
+                        android:layout_gravity="center"
+                        android:scaleType="centerCrop"
+                        android:src="@drawable/default_profile" />
+                </FrameLayout>
 
-                    <TextView
-                        android:id="@+id/user_name_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="User Name"
-                        android:textSize="22sp"
-                        android:textStyle="bold"
-                        android:textColor="#212529"/>
-
-                    <TextView
-                        android:id="@+id/user_bio_text"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Professional photographer | Nature lover | Coffee enthusiast"
-                        android:textSize="14sp"
-                        android:textColor="#6C757D"
-                        android:layout_marginTop="8dp"
-                        android:gravity="center"/>
-                </LinearLayout>
-            </androidx.cardview.widget.CardView>
-
-            <!-- Stats Section -->
-            <androidx.cardview.widget.CardView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginBottom="16dp"
-                app:cardCornerRadius="16dp"
-                app:cardElevation="8dp"
-                android:backgroundTint="#FFFFFF">
-
+                <!-- Stats: Posts, Followers, Following -->
                 <LinearLayout
-                    android:layout_width="match_parent"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:weightSum="3"
-                    android:padding="16dp">
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:orientation="horizontal">
 
+                    <!-- Posts count -->
                     <LinearLayout
                         android:id="@+id/posts_container"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="vertical">
 
                         <TextView
                             android:id="@+id/user_posts_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="#495057"/>
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Posts"
-                            android:textSize="14sp"
-                            android:textColor="#6C757D"/>
+                            android:layout_marginTop="1dp"
+                            android:text="posts"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
+                    <!-- Followers count -->
                     <LinearLayout
                         android:id="@+id/user_followers"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="4dp">
 
                         <TextView
                             android:id="@+id/user_followers_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="#495057"/>
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Followers"
-                            android:textSize="14sp"
-                            android:textColor="#6C757D"/>
+                            android:layout_marginTop="1dp"
+                            android:text="followers"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
                     </LinearLayout>
 
+                    <!-- Following count -->
                     <LinearLayout
                         android:id="@+id/user_following"
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:orientation="vertical"
+                        android:background="?attr/selectableItemBackground"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackground"
-                        android:gravity="center">
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="4dp">
 
                         <TextView
                             android:id="@+id/user_following_count"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textSize="20sp"
-                            android:textStyle="bold"
-                            android:textColor="#495057"/>
+                            android:textColor="#262626"
+                            android:textSize="17sp"
+                            android:textStyle="bold" />
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Following"
-                            android:textSize="14sp"
-                            android:textColor="#6C757D"/>
+                            android:layout_marginTop="1dp"
+                            android:text="following"
+                            android:textColor="#262626"
+                            android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
-            </androidx.cardview.widget.CardView>
+            </LinearLayout>
 
-            <!-- Action Buttons -->
+            <!-- ========== NAME & BIO SECTION (Instagram Style) ========== -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal"
-                android:paddingHorizontal="16dp"
-                android:paddingBottom="16dp"
-                android:gravity="center">
+                android:orientation="vertical"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="0dp">
 
-                <androidx.appcompat.widget.AppCompatButton
+                <!-- Full Name / Display Name -->
+                <TextView
+                    android:id="@+id/user_name_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:fontFamily="sans-serif-medium"
+                    android:text="Full Name"
+                    android:textColor="#262626"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <!-- Bio -->
+                <TextView
+                    android:id="@+id/user_bio_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="2dp"
+                    android:lineSpacingExtra="2dp"
+                    android:text=""
+                    android:textColor="#262626"
+                    android:textSize="14sp"
+                    android:visibility="gone" />
+
+                <!-- Link / Website -->
+                <TextView
+                    android:id="@+id/user_link_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="1dp"
+                    android:text=""
+                    android:textColor="#00376B"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    android:visibility="gone" />
+            </LinearLayout>
+
+            <!-- ========== ACTION BUTTONS (Follow, Message, Add Person) ========== -->
+            <LinearLayout
+                android:id="@+id/action_buttons_container"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="4dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="14dp">
+
+                <!-- Follow / Following Button (Blue when Follow, Gray when Following) -->
+                <TextView
                     android:id="@+id/btn_follow"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
                     android:layout_weight="1"
-                    android:layout_marginEnd="8dp"
+                    android:background="@drawable/bg_follow_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
                     android:text="Follow"
                     android:textAllCaps="false"
                     android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:paddingVertical="12dp"
-                    android:background="@drawable/button_primary_gray"
-                    android:elevation="4dp"/>
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
 
-                <androidx.appcompat.widget.AppCompatButton
+                <!-- Message Button -->
+                <TextView
                     android:id="@+id/btn_message"
                     android:layout_width="0dp"
-                    android:layout_height="wrap_content"
+                    android:layout_height="32dp"
+                    android:layout_marginEnd="4dp"
+                    android:layout_marginStart="4dp"
                     android:layout_weight="1"
-                    android:layout_marginStart="8dp"
+                    android:background="@drawable/bg_instagram_button"
+                    android:fontFamily="sans-serif-medium"
+                    android:gravity="center"
                     android:text="Message"
                     android:textAllCaps="false"
-                    android:textColor="@android:color/white"
-                    android:textSize="16sp"
-                    android:paddingVertical="12dp"
-                    android:background="@drawable/button_secondary_gray"
-                    android:elevation="4dp"/>
+                    android:textColor="#262626"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Subscribe/Add Person Icon Button -->
+                <FrameLayout
+                    android:id="@+id/btn_add_person"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:layout_marginStart="4dp"
+                    android:background="@drawable/bg_instagram_button">
+
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Suggest people"
+                        android:src="@drawable/ic_person_add"
+                        app:tint="#262626" />
+                </FrameLayout>
             </LinearLayout>
 
-            <!-- Posts Section -->
-            <RelativeLayout
+            <!-- ========== MUTUAL FOLLOWERS SECTION ========== -->
+            <LinearLayout
+                android:id="@+id/mutual_followers_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:paddingHorizontal="16dp"
-                android:paddingVertical="8dp">
+                android:gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingBottom="8dp"
+                android:paddingEnd="16dp"
+                android:paddingStart="16dp"
+                android:paddingTop="12dp"
+                android:visibility="gone">
 
+                <!-- Stacked profile pictures would go here -->
                 <TextView
+                    android:id="@+id/tv_mutual_followers"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Posts"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    android:textColor="#212529"
-                    android:layout_centerVertical="true"/>
+                    android:text="Followed by user1, user2 + 3 more"
+                    android:textColor="#8E8E8E"
+                    android:textSize="12sp" />
+            </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/grid_view"
-                    android:layout_width="36dp"
-                    android:layout_height="36dp"
-                    android:src="@drawable/ic_grid"
-                    android:layout_alignParentEnd="true"
-                    android:padding="6dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"/>
-            </RelativeLayout>
+            <!-- ========== TAB BAR (Posts / Reels) ========== -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="8dp"
+                android:baselineAligned="false"
+                android:orientation="horizontal">
 
-            <!-- Posts RecyclerView -->
+                <!-- Posts Tab (Grid) -->
+                <FrameLayout
+                    android:id="@+id/tab_grid"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_grid_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Posts"
+                        android:src="@drawable/ic_grid_on"
+                        app:tint="#262626" />
+
+                    <!-- Active indicator -->
+                    <View
+                        android:id="@+id/tab_grid_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="#262626" />
+                </FrameLayout>
+
+                <!-- Reels Tab -->
+                <FrameLayout
+                    android:id="@+id/tab_reels"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_reels_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Reels"
+                        android:src="@drawable/ic_reels"
+                        app:tint="#8E8E8E" />
+
+                    <!-- Inactive indicator -->
+                    <View
+                        android:id="@+id/tab_reels_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="@android:color/transparent" />
+                </FrameLayout>
+
+                <!-- Tagged Tab -->
+                <FrameLayout
+                    android:id="@+id/tab_tagged"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:background="?attr/selectableItemBackground">
+
+                    <ImageView
+                        android:id="@+id/tab_tagged_icon"
+                        android:layout_width="24dp"
+                        android:layout_height="24dp"
+                        android:layout_gravity="center"
+                        android:contentDescription="Tagged"
+                        android:src="@drawable/ic_person_tag"
+                        app:tint="#8E8E8E" />
+
+                    <!-- Inactive indicator -->
+                    <View
+                        android:id="@+id/tab_tagged_indicator"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:layout_gravity="bottom"
+                        android:background="@android:color/transparent" />
+                </FrameLayout>
+            </LinearLayout>
+
+            <!-- Thin separator line -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#DBDBDB" />
+
+            <!-- ========== POSTS GRID ========== -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/posts_recycler_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:clipToPadding="false"
-                android:padding="4dp"/>
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never" />
 
-            <!-- Empty State -->
+            <!-- ========== REELS GRID ========== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/reels_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone" />
+
+            <!-- ========== TAGGED POSTS GRID ========== -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/tagged_recycler_view"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:clipToPadding="false"
+                android:nestedScrollingEnabled="false"
+                android:overScrollMode="never"
+                android:visibility="gone" />
+
+            <!-- Empty State for No Posts -->
             <LinearLayout
                 android:id="@+id/empty_posts_view"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical"
+                android:layout_height="wrap_content"
                 android:gravity="center"
-                android:visibility="gone"
-                android:padding="32dp">
+                android:orientation="vertical"
+                android:padding="60dp"
+                android:visibility="gone">
+
+                <!-- Camera circle border -->
+                <FrameLayout
+                    android:layout_width="72dp"
+                    android:layout_height="72dp">
+
+                    <View
+                        android:layout_width="72dp"
+                        android:layout_height="72dp"
+                        android:background="@drawable/bg_highlight_circle_thin" />
+
+                    <ImageView
+                        android:layout_width="36dp"
+                        android:layout_height="36dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_camera_outline"
+                        app:tint="#262626" />
+                </FrameLayout>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="No posts yet"
-                    android:textSize="20sp"
-                    android:textStyle="bold"
-                    android:textColor="#212529"/>
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="sans-serif-light"
+                    android:text="No Posts Yet"
+                    android:textColor="#262626"
+                    android:textSize="26sp" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Posts will appear here when this user shares something"
-                    android:textSize="14sp"
-                    android:textColor="#6C757D"
+                    android:layout_marginTop="12dp"
                     android:gravity="center"
-                    android:layout_marginTop="8dp"/>
+                    android:text="When they share photos or videos,\nyou'll see them here."
+                    android:textColor="#8E8E8E"
+                    android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>
-    </ScrollView>
-</androidx.constraintlayout.widget.ConstraintLayout>
+    </androidx.core.widget.NestedScrollView>
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

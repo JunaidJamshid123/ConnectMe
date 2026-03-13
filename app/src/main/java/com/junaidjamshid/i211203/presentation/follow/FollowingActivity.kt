@@ -95,7 +95,38 @@ class FollowingActivity : AppCompatActivity() {
     }
     
     private fun handleUiState(state: FollowUiState) {
-        followAdapter.submitList(state.users)
+        // Handle shimmer loading
+        if (state.isLoading && state.users.isEmpty()) {
+            binding.shimmerContainer.visibility = View.VISIBLE
+            binding.shimmerContainer.startShimmer()
+            binding.followersRecyclerView.visibility = View.GONE
+            binding.emptyStateView.visibility = View.GONE
+        } else {
+            binding.shimmerContainer.stopShimmer()
+            binding.shimmerContainer.visibility = View.GONE
+            
+            followAdapter.submitList(state.users)
+            
+            // Show/hide empty state
+            if (state.users.isEmpty()) {
+                binding.emptyStateView.visibility = View.VISIBLE
+                binding.followersRecyclerView.visibility = View.GONE
+                
+                when (state.currentTab) {
+                    FollowTab.FOLLOWERS -> {
+                        binding.emptyTitle.text = getString(R.string.no_followers_yet)
+                        binding.emptySubtitle.text = getString(R.string.followers_will_appear_here)
+                    }
+                    FollowTab.FOLLOWING -> {
+                        binding.emptyTitle.text = getString(R.string.no_following_yet)
+                        binding.emptySubtitle.text = getString(R.string.following_will_appear_here)
+                    }
+                }
+            } else {
+                binding.emptyStateView.visibility = View.GONE
+                binding.followersRecyclerView.visibility = View.VISIBLE
+            }
+        }
         
         // Update counts
         binding.followersCount.text = state.followersCount.toString()
@@ -103,26 +134,6 @@ class FollowingActivity : AppCompatActivity() {
         
         // Update tab selection UI
         updateTabSelection(state.currentTab)
-        
-        // Show/hide empty state
-        if (state.users.isEmpty() && !state.isLoading) {
-            binding.emptyStateView.visibility = View.VISIBLE
-            binding.followersRecyclerView.visibility = View.GONE
-            
-            when (state.currentTab) {
-                FollowTab.FOLLOWERS -> {
-                    binding.emptyTitle.text = getString(R.string.no_followers_yet)
-                    binding.emptySubtitle.text = getString(R.string.followers_will_appear_here)
-                }
-                FollowTab.FOLLOWING -> {
-                    binding.emptyTitle.text = getString(R.string.no_following_yet)
-                    binding.emptySubtitle.text = getString(R.string.following_will_appear_here)
-                }
-            }
-        } else {
-            binding.emptyStateView.visibility = View.GONE
-            binding.followersRecyclerView.visibility = View.VISIBLE
-        }
         
         state.error?.let { error ->
             Toast.makeText(this, error, Toast.LENGTH_SHORT).show()

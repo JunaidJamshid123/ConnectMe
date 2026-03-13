@@ -1,0 +1,319 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Shimmer skeleton for followers/following list -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/white"
+    android:orientation="vertical"
+    android:paddingHorizontal="16dp">
+
+    <!-- Item 1 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <!-- Profile picture circle -->
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <!-- Text container -->
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <!-- Username -->
+            <View
+                android:layout_width="120dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <!-- Full name -->
+            <View
+                android:layout_width="80dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <!-- Follow button -->
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 2 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="140dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 3 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="130dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="90dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 4 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="110dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="70dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 5 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="95dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="120dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 6 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="140dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="100dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 7 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="115dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="85dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+    <!-- Item 8 -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="60dp"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:paddingVertical="8dp">
+
+        <View
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/shimmer_circle" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="12dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="105dp"
+                android:layout_height="14dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+
+            <View
+                android:layout_width="130dp"
+                android:layout_height="12dp"
+                android:layout_marginTop="6dp"
+                android:background="@drawable/shimmer_rounded_rect" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="90dp"
+            android:layout_height="32dp"
+            android:background="@drawable/shimmer_rounded_rect" />
+    </LinearLayout>
+
+</LinearLayout>
