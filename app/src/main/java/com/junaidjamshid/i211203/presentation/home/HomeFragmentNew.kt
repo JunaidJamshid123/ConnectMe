@@ -34,6 +34,7 @@ import com.junaidjamshid.i211203.presentation.home.video.ExoPlayerPool
 import com.junaidjamshid.i211203.presentation.home.video.VideoAutoPlayManager
 import com.junaidjamshid.i211203.presentation.main.MainActivityNew
 import com.junaidjamshid.i211203.presentation.messages.DmsActivity
+import com.junaidjamshid.i211203.presentation.notifications.NotificationsActivity
 import com.junaidjamshid.i211203.presentation.post.CommentsActivity
 import com.junaidjamshid.i211203.presentation.post.PostDetailActivity
 import com.junaidjamshid.i211203.presentation.profile.UserProfileActivity
@@ -87,6 +88,7 @@ class HomeFragmentNew : Fragment() {
     private fun setupViews(view: View) {
         val addStory = view.findViewById<FrameLayout>(R.id.addStroy)
         val dms = view.findViewById<ImageView>(R.id.DMs)
+        val notificationsIcon = view.findViewById<ImageView>(R.id.notifications_icon)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
         val logoText = view.findViewById<TextView>(R.id.instagram_logo)
         val nestedScrollView = view.findViewById<androidx.core.widget.NestedScrollView>(R.id.nested_scroll_view)
@@ -112,6 +114,11 @@ class HomeFragmentNew : Fragment() {
         dms.setOnClickListener {
             // Open DMs Activity
             startActivity(DmsActivity.newIntent(requireContext()))
+        }
+        
+        notificationsIcon.setOnClickListener {
+            // Open Notifications Activity
+            startActivity(NotificationsActivity.newIntent(requireContext()))
         }
         
         addStory.setOnClickListener {

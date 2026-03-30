@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="?attr/selectableItemBackground"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    android:paddingHorizontal="16dp"
+    android:paddingVertical="12dp">
+
+    <!-- Profile Image with optional story ring -->
+    <FrameLayout
+        android:layout_width="44dp"
+        android:layout_height="44dp">
+
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/profile_image"
+            android:layout_width="44dp"
+            android:layout_height="44dp"
+            android:src="@drawable/default_profile"
+            app:civ_border_color="#DBDBDB"
+            app:civ_border_width="0.5dp" />
+
+        <!-- Story ring indicator (if user has story) -->
+        <View
+            android:id="@+id/story_ring"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:layout_gravity="center"
+            android:background="@drawable/story_ring_gradient"
+            android:visibility="gone" />
+
+    </FrameLayout>
+
+    <!-- Notification Content -->
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="12dp"
+        android:layout_weight="1"
+        android:orientation="vertical">
+
+        <!-- Notification Text (username + action + time) -->
+        <TextView
+            android:id="@+id/notification_text"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ellipsize="end"
+            android:maxLines="3"
+            android:textColor="#262626"
+            android:textSize="13sp"
+            android:lineSpacingExtra="2dp"
+            tools:text="john_doe liked your photo. 2h" />
+
+    </LinearLayout>
+
+    <!-- Follow Button (for follow notifications) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_follow"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:minWidth="90dp"
+        android:fontFamily="sans-serif-medium"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:paddingHorizontal="16dp"
+        android:text="Follow"
+        android:textAllCaps="false"
+        android:textColor="#FFFFFF"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:backgroundTint="#0095F6"
+        app:cornerRadius="8dp"
+        app:rippleColor="#330095F6"
+        app:strokeWidth="0dp"
+        tools:visibility="visible" />
+
+    <!-- Following Button (already following state) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_following"
+        style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+        android:layout_width="wrap_content"
+        android:layout_height="32dp"
+        android:minWidth="90dp"
+        android:fontFamily="sans-serif-medium"
+        android:insetBottom="0dp"
+        android:insetTop="0dp"
+        android:paddingHorizontal="12dp"
+        android:text="Following"
+        android:textAllCaps="false"
+        android:textColor="#262626"
+        android:textSize="13sp"
+        android:visibility="gone"
+        app:backgroundTint="#FFFFFF"
+        app:cornerRadius="8dp"
+        app:rippleColor="#33000000"
+        app:strokeColor="#DBDBDB"
+        app:strokeWidth="1dp" />
+
+    <!-- Post Thumbnail (for like/comment notifications) -->
+    <ImageView
+        android:id="@+id/post_thumbnail"
+        android:layout_width="44dp"
+        android:layout_height="44dp"
+        android:background="#EFEFEF"
+        android:scaleType="centerCrop"
+        android:visibility="gone"
+        tools:visibility="visible" />
+
+</LinearLayout>

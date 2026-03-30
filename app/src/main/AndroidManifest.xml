@@ -144,6 +144,12 @@
             android:exported="false"
             android:theme="@style/Theme.I211203" />
 
+        <!-- Notifications Activity -->
+        <activity
+            android:name=".presentation.notifications.NotificationsActivity"
+            android:exported="false"
+            android:theme="@style/Theme.I211203" />
+
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
