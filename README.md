@@ -98,6 +98,18 @@
     <td><img src="connectME/edit.png" width="180"/></td>
     <td><img src="connectME/followers.png" width="180"/></td>
   </tr>
+  <tr>
+    <td align="center"><b>Notifications</b></td>
+    <td align="center"><b>Chats</b></td>
+    <td align="center"><b>Conversations</b></td>
+    <td align="center"><b>Story</b></td>
+  </tr>
+  <tr>
+    <td><img src="connectME/notification.png" width="180"/></td>
+    <td><img src="connectME/chats.png" width="180"/></td>
+    <td><img src="connectME/conversations.png" width="180"/></td>
+    <td><img src="connectME/story.png" width="180"/></td>
+  </tr>
 </table>
 
 ---
