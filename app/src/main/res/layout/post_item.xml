@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:padding="0.5dp"
-    android:background="@color/white">
+    android:background="@color/background_primary">
 
     <ImageView
         android:id="@+id/post_image"
         android:layout_width="match_parent"
         android:layout_height="130dp"
         android:scaleType="centerCrop"
-        android:background="#EFEFEF"
+        android:background="@color/input_background"
         android:contentDescription="Post Image" />
 
     <!-- Video thumbnail (for video posts) -->
@@ -20,7 +20,7 @@
         android:layout_width="match_parent"
         android:layout_height="130dp"
         android:scaleType="centerCrop"
-        android:background="#EFEFEF"
+        android:background="@color/input_background"
         android:visibility="gone"
         android:contentDescription="Video Thumbnail" />
 

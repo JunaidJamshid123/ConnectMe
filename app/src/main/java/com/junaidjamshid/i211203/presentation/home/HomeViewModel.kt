@@ -3,6 +3,7 @@ package com.junaidjamshid.i211203.presentation.home
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.junaidjamshid.i211203.domain.repository.NotificationRepository
 import com.junaidjamshid.i211203.domain.repository.PostRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.domain.usecase.auth.GetCurrentUserUseCase
@@ -10,11 +11,15 @@ import com.junaidjamshid.i211203.domain.usecase.post.GetFeedPostsUseCase
 import com.junaidjamshid.i211203.domain.usecase.post.LikePostUseCase
 import com.junaidjamshid.i211203.domain.usecase.post.UnlikePostUseCase
 import com.junaidjamshid.i211203.domain.usecase.story.GetStoriesUseCase
+import com.junaidjamshid.i211203.util.NotificationEventBus
 import com.junaidjamshid.i211203.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.launchIn
+import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -31,7 +36,9 @@ class HomeViewModel @Inject constructor(
     private val likePostUseCase: LikePostUseCase,
     private val unlikePostUseCase: UnlikePostUseCase,
     private val userRepository: UserRepository,
-    private val postRepository: PostRepository
+    private val postRepository: PostRepository,
+    private val notificationRepository: NotificationRepository,
+    private val notificationEventBus: NotificationEventBus
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(HomeUiState())
@@ -46,6 +53,68 @@ class HomeViewModel @Inject constructor(
         loadStories()
         loadFollowing()
         loadSuggestions()
+        loadNotificationCount()
+        subscribeToNotifications()
+        subscribeToEventBus()
+    }
+    
+    private fun loadNotificationCount() {
+        viewModelScope.launch {
+            when (val result = notificationRepository.getUnreadCount()) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(unreadNotificationCount = result.data ?: 0) }
+                }
+                else -> { /* Ignore errors */ }
+            }
+        }
+    }
+    
+    private fun subscribeToNotifications() {
+        notificationRepository.subscribeToNewNotifications()
+            .onEach { notification ->
+                Log.d("HomeViewModel", "New notification received via realtime: ${notification.type}")
+                // Increment unread count when new notification arrives
+                _uiState.update { state ->
+                    state.copy(unreadNotificationCount = state.unreadNotificationCount + 1)
+                }
+            }
+            .catch { e ->
+                Log.e("HomeViewModel", "Error in notification subscription: ${e.message}")
+            }
+            .launchIn(viewModelScope)
+    }
+    
+    private fun subscribeToEventBus() {
+        // Listen for new notifications from event bus (for local notifications created by current user's actions)
+        notificationEventBus.newNotifications
+            .onEach { notification ->
+                Log.d("HomeViewModel", "New notification via event bus: ${notification.type}")
+                _uiState.update { state ->
+                    state.copy(unreadNotificationCount = state.unreadNotificationCount + 1)
+                }
+            }
+            .launchIn(viewModelScope)
+        
+        // Listen for unread count changes
+        notificationEventBus.unreadCountChanged
+            .onEach { count ->
+                _uiState.update { it.copy(unreadNotificationCount = count) }
+            }
+            .launchIn(viewModelScope)
+        
+        // Listen for all read event
+        notificationEventBus.allRead
+            .onEach {
+                _uiState.update { it.copy(unreadNotificationCount = 0) }
+            }
+            .launchIn(viewModelScope)
+    }
+    
+    /**
+     * Call this when returning from notifications screen to refresh count
+     */
+    fun refreshNotificationCount() {
+        loadNotificationCount()
     }
     
     private fun loadCurrentUser() {

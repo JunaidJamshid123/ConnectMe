@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -12,7 +12,7 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="?attr/actionBarSize"
-        android:background="@color/white"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="4dp"
@@ -27,7 +27,7 @@
             android:contentDescription="Back"
             android:padding="12dp"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <!-- Username with dropdown -->
         <LinearLayout
@@ -46,7 +46,7 @@
                 android:letterSpacing="-0.02"
                 android:maxLines="1"
                 android:text="username"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="22sp"
                 android:textStyle="bold"
                 tools:text="junaidjamshid" />
@@ -56,7 +56,7 @@
                 android:layout_height="24dp"
                 android:layout_marginStart="4dp"
                 android:src="@drawable/ic_dropdown_arrow"
-                app:tint="#000000" />
+                app:tint="@color/text_primary" />
         </LinearLayout>
     </LinearLayout>
 
@@ -79,7 +79,7 @@
                 android:layout_width="16dp"
                 android:layout_height="16dp"
                 android:src="@drawable/ic_search"
-                app:tint="#8E8E8E" />
+                app:tint="@color/text_secondary" />
 
             <EditText
                 android:id="@+id/et_search"
@@ -91,8 +91,8 @@
                 android:hint="Search"
                 android:imeOptions="actionSearch"
                 android:inputType="text"
-                android:textColor="#262626"
-                android:textColorHint="#8E8E8E"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="16sp" />
         </LinearLayout>
     </FrameLayout>
@@ -127,7 +127,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB" />
+        android:background="@color/divider" />
 
     <!-- Messages header with filter -->
     <RelativeLayout
@@ -144,7 +144,7 @@
             android:layout_centerVertical="true"
             android:fontFamily="sans-serif-medium"
             android:text="Messages"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -156,7 +156,7 @@
             android:layout_centerVertical="true"
             android:fontFamily="sans-serif"
             android:text="Requests"
-            android:textColor="#0095F6"
+            android:textColor="@color/instagram_blue"
             android:textSize="14sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -197,7 +197,7 @@
             android:layout_width="96dp"
             android:layout_height="96dp"
             android:src="@drawable/message_new"
-            app:tint="#DBDBDB" />
+            app:tint="@color/divider" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -205,7 +205,7 @@
             android:layout_marginTop="24dp"
             android:fontFamily="sans-serif-medium"
             android:text="Message your friends"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="22sp" />
 
         <TextView
@@ -216,7 +216,7 @@
             android:lineSpacingExtra="4dp"
             android:paddingHorizontal="32dp"
             android:text="Follow people to start chatting with them."
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
         <TextView
@@ -229,7 +229,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="12dp"
             android:text="Send message"
-            android:textColor="#0095F6"
+            android:textColor="@color/instagram_blue"
             android:textSize="14sp" />
     </LinearLayout>
 

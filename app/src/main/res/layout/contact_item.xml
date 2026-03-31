@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="#FFFFFF">
+    android:background="@color/background_primary">
 
     <!-- Swipe background layer -->
     <LinearLayout
@@ -19,7 +19,7 @@
             android:id="@+id/actionPin"
             android:layout_width="72dp"
             android:layout_height="match_parent"
-            android:background="#E8E8E8"
+            android:background="@color/shimmer"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -43,7 +43,7 @@
             android:id="@+id/actionMute"
             android:layout_width="72dp"
             android:layout_height="match_parent"
-            android:background="#E8E8E8"
+            android:background="@color/shimmer"
             android:gravity="center"
             android:orientation="vertical">
 
@@ -81,7 +81,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Delete"
-                android:textColor="#FFFFFF"
+                android:textColor="@color/white"
                 android:textSize="11sp" />
 
         </LinearLayout>
@@ -93,7 +93,7 @@
         android:id="@+id/foregroundLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/background_primary"
         android:paddingStart="16dp"
         android:paddingEnd="16dp"
         android:paddingTop="10dp"
@@ -147,7 +147,7 @@
                 android:fontFamily="sans-serif"
                 android:maxLines="1"
                 android:text="username"
-                android:textColor="#262626"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:textStyle="bold" />
 
@@ -168,7 +168,7 @@
                     android:fontFamily="sans-serif"
                     android:maxLines="1"
                     android:text="Last message..."
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -178,7 +178,7 @@
                     android:layout_marginStart="4dp"
                     android:fontFamily="sans-serif"
                     android:text=" · 3h"
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
             </LinearLayout>

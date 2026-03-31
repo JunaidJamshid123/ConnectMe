@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     tools:context=".ProfileFragment">
 
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -39,7 +39,7 @@
                 android:id="@+id/toolbar_container"
                 android:layout_width="match_parent"
                 android:layout_height="44dp"
-                android:background="@color/white"
+                android:background="@color/background_primary"
                 android:gravity="center_vertical"
                 android:orientation="horizontal"
                 android:paddingStart="16dp"
@@ -53,7 +53,7 @@
                     android:layout_marginEnd="4dp"
                     android:src="@drawable/ic_lock"
                     android:visibility="gone"
-                    app:tint="#262626"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Private account" />
 
                 <!-- Username + Dropdown -->
@@ -70,7 +70,7 @@
                         android:layout_height="wrap_content"
                         android:fontFamily="sans-serif-medium"
                         android:text="username"
-                        android:textColor="#262626"
+                        android:textColor="@color/text_primary"
                         android:textSize="22sp"
                         android:textStyle="bold" />
 
@@ -80,7 +80,7 @@
                         android:layout_height="14dp"
                         android:layout_marginStart="4dp"
                         android:src="@drawable/ic_dropdown_arrow"
-                        app:tint="#262626"
+                        app:tint="@color/text_primary"
                         android:contentDescription="Switch accounts" />
                 </LinearLayout>
 
@@ -92,7 +92,7 @@
                     android:layout_marginEnd="24dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_add_content"
-                    app:tint="#262626"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Create" />
 
                 <ImageView
@@ -101,7 +101,7 @@
                     android:layout_height="24dp"
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:src="@drawable/ic_hamburger_menu"
-                    app:tint="#262626"
+                    app:tint="@color/text_primary"
                     android:contentDescription="Menu" />
             </LinearLayout>
 
@@ -169,7 +169,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -178,7 +178,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="posts"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
 
@@ -199,7 +199,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -208,7 +208,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="followers"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
 
@@ -229,7 +229,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -238,7 +238,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="following"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -260,7 +260,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="Full Name"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -271,7 +271,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
                     android:text=""
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp"
                     android:visibility="gone" />
 
@@ -283,7 +283,7 @@
                     android:layout_marginTop="2dp"
                     android:lineSpacingExtra="2dp"
                     android:text="No bio yet"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp" />
 
                 <!-- Link / Website -->
@@ -293,7 +293,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
                     android:text=""
-                    android:textColor="#00376B"
+                    android:textColor="@color/instagram_blue"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -322,7 +322,7 @@
                     android:gravity="center"
                     android:text="Edit profile"
                     android:textAllCaps="false"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -339,7 +339,7 @@
                     android:gravity="center"
                     android:text="Share profile"
                     android:textAllCaps="false"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -356,7 +356,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Discover people"
                         android:src="@drawable/ic_person_add"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -385,7 +385,7 @@
                         android:layout_weight="1"
                         android:fontFamily="sans-serif-medium"
                         android:text="Story highlights"
-                        android:textColor="#262626"
+                        android:textColor="@color/text_primary"
                         android:textSize="14sp"
                         android:textStyle="bold" />
 
@@ -396,7 +396,7 @@
                         android:contentDescription="Expand"
                         android:rotation="-90"
                         android:src="@drawable/ic_dropdown_arrow"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </LinearLayout>
 
                 <!-- Highlights subtitle -->
@@ -408,7 +408,7 @@
                     android:paddingEnd="16dp"
                     android:paddingStart="16dp"
                     android:text="Keep your favorite stories on your profile"
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="13sp" />
 
                 <!-- Highlights Horizontal RecyclerView -->
@@ -445,7 +445,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Posts"
                         android:src="@drawable/ic_grid_on"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
 
                     <!-- Active indicator -->
                     <View
@@ -453,7 +453,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_gravity="bottom"
-                        android:background="#262626" />
+                        android:background="@color/divider" />
                 </FrameLayout>
 
                 <!-- Reels Tab (Videos) -->
@@ -471,7 +471,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Reels"
                         android:src="@drawable/ic_reels"
-                        app:tint="#8E8E8E" />
+                        app:tint="@color/text_secondary" />
 
                     <!-- Inactive indicator -->
                     <View
@@ -497,7 +497,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Saved"
                         android:src="@drawable/ic_bookmark"
-                        app:tint="#8E8E8E" />
+                        app:tint="@color/text_secondary" />
 
                     <!-- Inactive indicator -->
                     <View
@@ -513,7 +513,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#DBDBDB" />
+                android:background="@color/divider" />
 
             <!-- ========== POSTS GRID (Images only) ========== -->
             <androidx.recyclerview.widget.RecyclerView
@@ -569,7 +569,7 @@
                         android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_camera_outline"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <TextView
@@ -578,7 +578,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-light"
                     android:text="Share Photos"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="26sp" />
 
                 <TextView
@@ -587,7 +587,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="When you share photos, they will\nappear on your profile."
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
 
                 <TextView
@@ -595,7 +595,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Share your first photo"
-                    android:textColor="#0095F6"
+                    android:textColor="@color/instagram_blue"
                     android:textSize="14sp"
                     android:textStyle="bold" />
             </LinearLayout>
@@ -624,7 +624,7 @@
                         android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_reels"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <TextView
@@ -633,7 +633,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-light"
                     android:text="No Reels Yet"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="26sp" />
 
                 <TextView
@@ -642,7 +642,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="When you share reels, they will\nappear on your profile."
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
 
@@ -670,7 +670,7 @@
                         android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_bookmark"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <TextView
@@ -679,7 +679,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-light"
                     android:text="No Saved Posts"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="26sp" />
 
                 <TextView
@@ -688,7 +688,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="Save photos and videos that you\nwant to see again."
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
 

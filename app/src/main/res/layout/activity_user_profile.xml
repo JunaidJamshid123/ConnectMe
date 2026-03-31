@@ -5,7 +5,7 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true"
     tools:context=".presentation.profile.UserProfileActivity">
 
@@ -41,7 +41,7 @@
                 android:id="@+id/top_bar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/white"
+                android:background="@color/background_primary"
                 android:gravity="center_vertical"
                 android:minHeight="44dp"
                 android:orientation="horizontal"
@@ -58,7 +58,7 @@
                     android:contentDescription="Back"
                     android:padding="10dp"
                     android:src="@drawable/ic_back_arrow"
-                    app:tint="#262626" />
+                    app:tint="@color/text_primary" />
 
                 <!-- Username (center) -->
                 <TextView
@@ -69,7 +69,7 @@
                     android:fontFamily="sans-serif-medium"
                     android:gravity="center"
                     android:text="username"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="16sp"
                     android:textStyle="bold" />
 
@@ -82,7 +82,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="Notifications"
                     android:visibility="gone"
-                    app:tint="#262626" />
+                    app:tint="@color/text_primary" />
 
                 <!-- More Options (Three dots) -->
                 <ImageView
@@ -92,7 +92,7 @@
                     android:background="?attr/selectableItemBackgroundBorderless"
                     android:contentDescription="More options"
                     android:src="@drawable/ic_more_vert"
-                    app:tint="#262626" />
+                    app:tint="@color/text_primary" />
             </LinearLayout>
 
             <!-- ========== PROFILE HEADER SECTION (Instagram Style) ========== -->
@@ -163,7 +163,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -172,7 +172,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="posts"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
 
@@ -195,7 +195,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -204,7 +204,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="followers"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
 
@@ -227,7 +227,7 @@
                             android:layout_height="wrap_content"
                             android:fontFamily="sans-serif-medium"
                             android:text="0"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="17sp"
                             android:textStyle="bold" />
 
@@ -236,7 +236,7 @@
                             android:layout_height="wrap_content"
                             android:layout_marginTop="1dp"
                             android:text="following"
-                            android:textColor="#262626"
+                            android:textColor="@color/text_primary"
                             android:textSize="13sp" />
                     </LinearLayout>
                 </LinearLayout>
@@ -258,7 +258,7 @@
                     android:layout_height="wrap_content"
                     android:fontFamily="sans-serif-medium"
                     android:text="Full Name"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:textStyle="bold" />
 
@@ -270,7 +270,7 @@
                     android:layout_marginTop="2dp"
                     android:lineSpacingExtra="2dp"
                     android:text=""
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="14sp"
                     android:visibility="gone" />
 
@@ -281,7 +281,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="1dp"
                     android:text=""
-                    android:textColor="#00376B"
+                    android:textColor="@color/instagram_blue"
                     android:textSize="14sp"
                     android:textStyle="bold"
                     android:visibility="gone" />
@@ -328,7 +328,7 @@
                     android:gravity="center"
                     android:text="Message"
                     android:textAllCaps="false"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="13sp"
                     android:textStyle="bold" />
 
@@ -346,7 +346,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Suggest people"
                         android:src="@drawable/ic_person_add"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
             </LinearLayout>
 
@@ -369,7 +369,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Followed by user1, user2 + 3 more"
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="12sp" />
             </LinearLayout>
 
@@ -396,7 +396,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Posts"
                         android:src="@drawable/ic_grid_on"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
 
                     <!-- Active indicator -->
                     <View
@@ -404,7 +404,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
                         android:layout_gravity="bottom"
-                        android:background="#262626" />
+                        android:background="@color/divider" />
                 </FrameLayout>
 
                 <!-- Reels Tab -->
@@ -422,7 +422,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Reels"
                         android:src="@drawable/ic_reels"
-                        app:tint="#8E8E8E" />
+                        app:tint="@color/text_secondary" />
 
                     <!-- Inactive indicator -->
                     <View
@@ -448,7 +448,7 @@
                         android:layout_gravity="center"
                         android:contentDescription="Tagged"
                         android:src="@drawable/ic_person_tag"
-                        app:tint="#8E8E8E" />
+                        app:tint="@color/text_secondary" />
 
                     <!-- Inactive indicator -->
                     <View
@@ -464,7 +464,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
-                android:background="#DBDBDB" />
+                android:background="@color/divider" />
 
             <!-- ========== POSTS GRID ========== -->
             <androidx.recyclerview.widget.RecyclerView
@@ -520,7 +520,7 @@
                         android:layout_height="36dp"
                         android:layout_gravity="center"
                         android:src="@drawable/ic_camera_outline"
-                        app:tint="#262626" />
+                        app:tint="@color/text_primary" />
                 </FrameLayout>
 
                 <TextView
@@ -529,7 +529,7 @@
                     android:layout_marginTop="16dp"
                     android:fontFamily="sans-serif-light"
                     android:text="No Posts Yet"
-                    android:textColor="#262626"
+                    android:textColor="@color/text_primary"
                     android:textSize="26sp" />
 
                 <TextView
@@ -538,7 +538,7 @@
                     android:layout_marginTop="12dp"
                     android:gravity="center"
                     android:text="When they share photos or videos,\nyou'll see them here."
-                    android:textColor="#8E8E8E"
+                    android:textColor="@color/text_secondary"
                     android:textSize="14sp" />
             </LinearLayout>
         </LinearLayout>

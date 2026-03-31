@@ -3,12 +3,14 @@ package com.junaidjamshid.i211203.di
 import com.junaidjamshid.i211203.data.repository.AuthRepositoryImpl
 import com.junaidjamshid.i211203.data.repository.CallRepositoryImpl
 import com.junaidjamshid.i211203.data.repository.MessageRepositoryImpl
+import com.junaidjamshid.i211203.data.repository.NotificationRepositoryImpl
 import com.junaidjamshid.i211203.data.repository.PostRepositoryImpl
 import com.junaidjamshid.i211203.data.repository.StoryRepositoryImpl
 import com.junaidjamshid.i211203.data.repository.UserRepositoryImpl
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
 import com.junaidjamshid.i211203.domain.repository.CallRepository
 import com.junaidjamshid.i211203.domain.repository.MessageRepository
+import com.junaidjamshid.i211203.domain.repository.NotificationRepository
 import com.junaidjamshid.i211203.domain.repository.PostRepository
 import com.junaidjamshid.i211203.domain.repository.StoryRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
@@ -60,4 +62,10 @@ abstract class RepositoryModule {
     abstract fun bindCallRepository(
         callRepositoryImpl: CallRepositoryImpl
     ): CallRepository
+    
+    @Binds
+    @Singleton
+    abstract fun bindNotificationRepository(
+        notificationRepositoryImpl: NotificationRepositoryImpl
+    ): NotificationRepository
 }

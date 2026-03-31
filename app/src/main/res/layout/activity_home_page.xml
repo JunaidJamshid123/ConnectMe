@@ -31,7 +31,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="My Community"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:textSize="28sp"
                     android:textStyle="bold" />
 
@@ -39,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="A place for all your questions"
-                    android:textColor="@color/black"
+                    android:textColor="@color/text_primary"
                     android:textSize="20sp"
                     android:textStyle="normal" />
             </LinearLayout>
@@ -166,7 +166,7 @@
                         android:text="JunaidJamshid95"
                         android:layout_marginTop="4dp"
                         android:layout_marginLeft="20dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_toRightOf="@+id/profile_image"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -244,7 +244,7 @@
                         android:textStyle="bold"
                         android:textSize="15sp"
                         android:layout_marginStart="10dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_height="wrap_content"/>
 
                     <TextView
@@ -254,7 +254,7 @@
                         android:textStyle="normal"
                         android:textSize="15sp"
                         android:layout_marginStart="5dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 
@@ -290,7 +290,7 @@
                         android:text="JunaidJamshid95"
                         android:layout_marginTop="4dp"
                         android:layout_marginLeft="20dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_toRightOf="@+id/profile_image2"
                         android:textSize="20sp"
                         android:textStyle="bold" />
@@ -368,7 +368,7 @@
                         android:textStyle="bold"
                         android:textSize="15sp"
                         android:layout_marginStart="10dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_height="wrap_content"/>
 
                     <TextView
@@ -378,7 +378,7 @@
                         android:textStyle="normal"
                         android:textSize="15sp"
                         android:layout_marginStart="5dp"
-                        android:textColor="@color/black"
+                        android:textColor="@color/text_primary"
                         android:layout_height="wrap_content"/>
                 </LinearLayout>
 

@@ -37,7 +37,7 @@
                 android:maxWidth="260dp"
                 android:paddingHorizontal="16dp"
                 android:paddingVertical="10dp"
-                android:textColor="#262626"
+                android:textColor="@color/text_primary"
                 android:textSize="15sp"
                 android:lineSpacingExtra="2dp"
                 tools:text="I am doing great, thanks!" />
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginStart="4dp"
                 android:layout_marginTop="4dp"
-                android:textColor="#8E8E8E"
+                android:textColor="@color/text_secondary"
                 android:textSize="11sp"
                 tools:text="2:31 PM" />
 

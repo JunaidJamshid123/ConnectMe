@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true">
 
     <!-- Status Bar Space -->
@@ -12,7 +12,7 @@
         android:id="@+id/status_bar_space"
         android:layout_width="match_parent"
         android:layout_height="24dp"
-        android:background="#FFFFFF"
+        android:background="@color/background_primary"
         app:layout_constraintTop_toTopOf="parent" />
 
     <!-- Top Bar - Instagram Style -->
@@ -20,7 +20,7 @@
         android:id="@+id/topBar"
         android:layout_width="match_parent"
         android:layout_height="44dp"
-        android:background="#FFFFFF"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingHorizontal="16dp"
@@ -33,7 +33,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:id="@+id/title"
@@ -43,7 +43,7 @@
             android:layout_weight="1"
             android:fontFamily="sans-serif-medium"
             android:text="Notifications"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="22sp" />
 
     </LinearLayout>
@@ -53,7 +53,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB"
+        android:background="@color/divider"
         app:layout_constraintTop_toBottomOf="@id/topBar" />
 
     <!-- Shimmer Loading -->
@@ -119,7 +119,7 @@
             android:layout_width="80dp"
             android:layout_height="80dp"
             android:src="@drawable/ic_heart_outline"
-            app:tint="#DBDBDB" />
+            app:tint="@color/divider" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -127,7 +127,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="sans-serif-medium"
             android:text="Activity On Your Posts"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="20sp" />
 
         <TextView
@@ -136,7 +136,7 @@
             android:layout_marginTop="8dp"
             android:gravity="center"
             android:text="When someone likes or comments on one of your posts, you'll see it here."
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
     </LinearLayout>

@@ -6,6 +6,7 @@ import com.junaidjamshid.i211203.data.dto.PostDto
 import com.junaidjamshid.i211203.data.mapper.PostMapper
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.PostMapper.toDto
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseNotificationDataSource
 import com.junaidjamshid.i211203.data.remote.supabase.SupabasePostDataSource
 import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.Comment
@@ -26,7 +27,8 @@ import javax.inject.Singleton
 @Singleton
 class PostRepositoryImpl @Inject constructor(
     private val postDataSource: SupabasePostDataSource,
-    private val userDataSource: SupabaseUserDataSource
+    private val userDataSource: SupabaseUserDataSource,
+    private val notificationDataSource: SupabaseNotificationDataSource
 ) : PostRepository {
     
     override fun getFeedPosts(userId: String): Flow<Resource<List<Post>>> {
@@ -204,6 +206,10 @@ class PostRepositoryImpl @Inject constructor(
             val currentUserId = userDataSource.getCurrentUserId()
             if (currentUserId != null) {
                 postDataSource.likePost(postId, currentUserId)
+                
+                // Create notification for post owner (if not self)
+                createLikeNotification(postId, currentUserId)
+                
                 Resource.Success(Unit)
             } else {
                 Resource.Error("User not logged in")
@@ -230,9 +236,40 @@ class PostRepositoryImpl @Inject constructor(
     override suspend fun likePost(postId: String, userId: String): Resource<Unit> {
         return try {
             postDataSource.likePost(postId, userId)
+            
+            // Create notification for post owner (if not self)
+            createLikeNotification(postId, userId)
+            
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to like post")
+        }
+    }
+    
+    /**
+     * Creates a like notification for the post owner.
+     * Does not create notification if the liker is the post owner.
+     */
+    private suspend fun createLikeNotification(postId: String, likerId: String) {
+        try {
+            val post = postDataSource.getPostById(postId) ?: return
+            
+            // Don't notify self
+            if (post.userId == likerId) return
+            
+            val liker = userDataSource.getUserById(likerId) ?: return
+            
+            notificationDataSource.createNotification(
+                recipientId = post.userId,
+                actorId = likerId,
+                actorUsername = liker.username,
+                actorProfileImage = liker.profilePicture ?: "",
+                type = "like",
+                postId = postId,
+                postThumbnail = post.postImageUrl
+            )
+        } catch (_: Exception) {
+            // Silently fail - don't break the like operation
         }
     }
     
@@ -295,8 +332,9 @@ class PostRepositoryImpl @Inject constructor(
             val currentUserId = userDataSource.getCurrentUserId()
             if (currentUserId != null) {
                 val user = userDataSource.getUserById(currentUserId)
+                val commentId = UUID.randomUUID().toString()
                 val commentDto = CommentDto(
-                    commentId = UUID.randomUUID().toString(),
+                    commentId = commentId,
                     userId = currentUserId,
                     username = user?.username ?: "",
                     userProfileImage = user?.profilePicture ?: "",
@@ -304,6 +342,10 @@ class PostRepositoryImpl @Inject constructor(
                     timestamp = System.currentTimeMillis()
                 )
                 val createdComment = postDataSource.addComment(postId, commentDto)
+                
+                // Create notification for post owner (if not self)
+                createCommentNotification(postId, currentUserId, commentId, commentText)
+                
                 Resource.Success(createdComment.toDomain(""))
             } else {
                 Resource.Error("User not logged in")
@@ -317,9 +359,47 @@ class PostRepositoryImpl @Inject constructor(
         return try {
             val commentDto = comment.toDto()
             val createdComment = postDataSource.addComment(postId, commentDto)
+            
+            // Create notification for post owner (if not self)
+            createCommentNotification(postId, comment.userId, comment.commentId, comment.content)
+            
             Resource.Success(createdComment.toDomain(""))
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to add comment")
+        }
+    }
+    
+    /**
+     * Creates a comment notification for the post owner.
+     * Does not create notification if the commenter is the post owner.
+     */
+    private suspend fun createCommentNotification(
+        postId: String,
+        commenterId: String,
+        commentId: String,
+        commentText: String
+    ) {
+        try {
+            val post = postDataSource.getPostById(postId) ?: return
+            
+            // Don't notify self
+            if (post.userId == commenterId) return
+            
+            val commenter = userDataSource.getUserById(commenterId) ?: return
+            
+            notificationDataSource.createNotification(
+                recipientId = post.userId,
+                actorId = commenterId,
+                actorUsername = commenter.username,
+                actorProfileImage = commenter.profilePicture ?: "",
+                type = "comment",
+                postId = postId,
+                postThumbnail = post.postImageUrl,
+                commentId = commentId,
+                commentText = commentText.take(100) // Limit to 100 chars
+            )
+        } catch (_: Exception) {
+            // Silently fail - don't break the comment operation
         }
     }
     

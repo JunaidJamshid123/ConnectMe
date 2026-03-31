@@ -8,6 +8,6 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:scaleType="centerCrop"
-        android:background="#FAFAFA"
+        android:background="@color/background_secondary"
         android:contentDescription="Post image" />
 </FrameLayout>

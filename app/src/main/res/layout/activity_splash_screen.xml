@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     tools:context=".splashScreen">
 
     <!-- Centered Logo -->
@@ -38,7 +38,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="from"
-            android:textColor="@color/instagram_text_gray"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
         <TextView
@@ -47,7 +47,7 @@
             android:layout_marginTop="4dp"
             android:fontFamily="@font/pacifico"
             android:text="ConnectMe"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 

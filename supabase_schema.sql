@@ -480,6 +480,64 @@ DROP POLICY IF EXISTS "Users can delete searches" ON recent_searches;
 CREATE POLICY "Users can delete searches" ON recent_searches FOR DELETE USING (auth.uid()::text = user_id::text);
 
 -- =====================================================
+-- NOTIFICATIONS TABLE
+-- =====================================================
+CREATE TABLE IF NOT EXISTS notifications (
+    id BIGSERIAL PRIMARY KEY,
+    notification_id UUID UNIQUE NOT NULL DEFAULT uuid_generate_v4(),
+    
+    -- Recipient (who receives the notification)
+    recipient_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    
+    -- Actor (who triggered the notification)
+    actor_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    actor_username TEXT NOT NULL,
+    actor_profile_image TEXT DEFAULT '',
+    
+    -- Notification type: 'like', 'comment', 'follow', 'mention', 'story_view', 'like_comment'
+    type TEXT NOT NULL,
+    
+    -- Related content (optional based on type)
+    post_id UUID,
+    post_thumbnail TEXT DEFAULT '',
+    story_id UUID,
+    comment_id UUID,
+    comment_text TEXT DEFAULT '',
+    
+    -- Status
+    is_read BOOLEAN DEFAULT false,
+    
+    -- Timestamp
+    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT
+);
+
+-- Indexes for notifications
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient ON notifications(recipient_id);
+CREATE INDEX IF NOT EXISTS idx_notifications_recipient_read ON notifications(recipient_id, is_read);
+CREATE INDEX IF NOT EXISTS idx_notifications_created ON notifications(created_at DESC);
+CREATE INDEX IF NOT EXISTS idx_notifications_type ON notifications(type);
+
+-- Enable RLS
+ALTER TABLE notifications ENABLE ROW LEVEL SECURITY;
+
+-- Policies for notifications
+DROP POLICY IF EXISTS "Users can view their own notifications" ON notifications;
+CREATE POLICY "Users can view their own notifications" ON notifications 
+    FOR SELECT USING (auth.uid()::text = recipient_id::text);
+
+DROP POLICY IF EXISTS "Users can create notifications for others" ON notifications;
+CREATE POLICY "Users can create notifications for others" ON notifications 
+    FOR INSERT WITH CHECK (auth.uid()::text = actor_id::text);
+
+DROP POLICY IF EXISTS "Users can update their own notifications" ON notifications;
+CREATE POLICY "Users can update their own notifications" ON notifications 
+    FOR UPDATE USING (auth.uid()::text = recipient_id::text);
+
+DROP POLICY IF EXISTS "Users can delete their own notifications" ON notifications;
+CREATE POLICY "Users can delete their own notifications" ON notifications 
+    FOR DELETE USING (auth.uid()::text = recipient_id::text);
+
+-- =====================================================
 -- ENABLE REALTIME
 -- =====================================================
 -- Run these in your Supabase dashboard -> Database -> Replication
@@ -493,6 +551,7 @@ CREATE POLICY "Users can delete searches" ON recent_searches FOR DELETE USING (a
 -- ALTER PUBLICATION supabase_realtime ADD TABLE active_calls;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE followers;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE conversations;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE notifications;  -- 🆕 For real-time notifications
 
 -- =====================================================
 -- STORAGE BUCKETS

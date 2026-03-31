@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#E5E5E5"
+    android:background="@color/input_background"
     tools:context=".newPostNext">
 
     <RelativeLayout
@@ -27,7 +27,7 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:text="Create Story"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold" />
 
@@ -73,7 +73,7 @@
         android:minHeight="100dp"
         android:gravity="top"
         android:padding="12dp"
-        android:textColor="@color/black"
+        android:textColor="@color/text_primary"
         android:textColorHint="#808080" />
 
     <RelativeLayout
@@ -111,7 +111,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="5dp"
             android:text="Upload Photo"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="16sp" />
     </RelativeLayout>
 

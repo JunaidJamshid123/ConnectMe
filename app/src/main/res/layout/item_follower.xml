@@ -16,7 +16,7 @@
         android:layout_height="54dp"
         android:src="@drawable/default_profile"
         app:civ_border_width="0.5dp"
-        app:civ_border_color="#DBDBDB" />
+        app:civ_border_color="@color/divider" />
 
     <!-- User Info -->
     <LinearLayout
@@ -32,7 +32,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:fontFamily="sans-serif-medium" />
 
@@ -42,7 +42,7 @@
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -55,15 +55,15 @@
         android:minWidth="100dp"
         android:text="Follow"
         android:textSize="14sp"
-        android:textColor="#FFFFFF"
+        android:textColor="@color/white"
         android:textAllCaps="false"
         android:fontFamily="sans-serif-medium"
         android:paddingHorizontal="20dp"
         android:insetTop="0dp"
         android:insetBottom="0dp"
-        app:backgroundTint="#0095F6"
+        app:backgroundTint="@color/instagram_blue"
         app:cornerRadius="8dp"
-        app:rippleColor="#330095F6"
+        app:rippleColor="@color/instagram_blue"
         app:strokeWidth="0dp" />
 
     <!-- Remove button (for own followers) -->
@@ -75,7 +75,7 @@
         android:background="?attr/selectableItemBackgroundBorderless"
         android:contentDescription="@string/remove"
         android:src="@drawable/ic_more_vert"
-        app:tint="#262626"
+        app:tint="@color/text_primary"
         android:visibility="gone" />
 
 </LinearLayout>

@@ -63,6 +63,7 @@ class HomeFragmentNew : Fragment() {
     private var shimmerStories: ShimmerFrameLayout? = null
     private var shimmerPosts: ShimmerFrameLayout? = null
     private var staggeredAnimator: StaggeredFadeAnimator? = null
+    private var notificationBadge: TextView? = null
     
     // Video playback components
     private var playerPool: ExoPlayerPool? = null
@@ -89,6 +90,8 @@ class HomeFragmentNew : Fragment() {
         val addStory = view.findViewById<FrameLayout>(R.id.addStroy)
         val dms = view.findViewById<ImageView>(R.id.DMs)
         val notificationsIcon = view.findViewById<ImageView>(R.id.notifications_icon)
+        val notificationContainer = view.findViewById<FrameLayout>(R.id.notification_container)
+        notificationBadge = view.findViewById(R.id.notification_badge)
         val currentUserImage = view.findViewById<ImageView>(R.id.current_user_image)
         val logoText = view.findViewById<TextView>(R.id.instagram_logo)
         val nestedScrollView = view.findViewById<androidx.core.widget.NestedScrollView>(R.id.nested_scroll_view)
@@ -116,7 +119,8 @@ class HomeFragmentNew : Fragment() {
             startActivity(DmsActivity.newIntent(requireContext()))
         }
         
-        notificationsIcon.setOnClickListener {
+        // Use the container for better tap target
+        notificationContainer.setOnClickListener {
             // Open Notifications Activity
             startActivity(NotificationsActivity.newIntent(requireContext()))
         }
@@ -308,6 +312,23 @@ class HomeFragmentNew : Fragment() {
             emptyStateView?.visibility = View.GONE
             recyclerView.visibility = View.VISIBLE
         }
+        
+        // Update notification badge
+        updateNotificationBadge(state.unreadNotificationCount)
+    }
+    
+    /**
+     * Updates the notification badge visibility and count.
+     */
+    private fun updateNotificationBadge(count: Int) {
+        notificationBadge?.let { badge ->
+            if (count > 0) {
+                badge.visibility = View.VISIBLE
+                badge.text = if (count > 99) "99+" else count.toString()
+            } else {
+                badge.visibility = View.GONE
+            }
+        }
     }
     
     /**
@@ -392,6 +413,8 @@ class HomeFragmentNew : Fragment() {
         super.onResume()
         // Resume video auto-play when fragment becomes visible
         videoAutoPlayManager?.resume()
+        // Refresh notification count (e.g., after viewing notifications)
+        viewModel.refreshNotificationCount()
     }
     
     override fun onPause() {

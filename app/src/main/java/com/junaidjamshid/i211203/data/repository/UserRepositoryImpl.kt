@@ -2,6 +2,7 @@ package com.junaidjamshid.i211203.data.repository
 
 import com.junaidjamshid.i211203.data.mapper.UserMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.UserMapper.toUpdateMap
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseNotificationDataSource
 import com.junaidjamshid.i211203.data.remote.supabase.SupabaseUserDataSource
 import com.junaidjamshid.i211203.domain.model.User
 import com.junaidjamshid.i211203.domain.repository.UserRepository
@@ -18,7 +19,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class UserRepositoryImpl @Inject constructor(
-    private val userDataSource: SupabaseUserDataSource
+    private val userDataSource: SupabaseUserDataSource,
+    private val notificationDataSource: SupabaseNotificationDataSource
 ) : UserRepository {
     
     override suspend fun getUserById(userId: String): Resource<User> {
@@ -118,9 +120,32 @@ class UserRepositoryImpl @Inject constructor(
                 return Resource.Error("Cannot follow yourself")
             }
             userDataSource.followUser(currentUserId, targetUserId)
+            
+            // Create follow notification
+            createFollowNotification(currentUserId, targetUserId)
+            
             Resource.Success(Unit)
         } catch (e: Exception) {
             Resource.Error(e.message ?: "Failed to follow user")
+        }
+    }
+    
+    /**
+     * Creates a follow notification for the target user.
+     */
+    private suspend fun createFollowNotification(followerId: String, targetUserId: String) {
+        try {
+            val follower = userDataSource.getUserById(followerId) ?: return
+            
+            notificationDataSource.createNotification(
+                recipientId = targetUserId,
+                actorId = followerId,
+                actorUsername = follower.username,
+                actorProfileImage = follower.profilePicture ?: "",
+                type = "follow"
+            )
+        } catch (_: Exception) {
+            // Silently fail - don't break the follow operation
         }
     }
     
@@ -264,6 +289,10 @@ class UserRepositoryImpl @Inject constructor(
                     return Resource.Error("Cannot follow yourself")
                 }
                 userDataSource.followUser(currentUserId, targetUserId)
+                
+                // Create follow notification
+                createFollowNotification(currentUserId, targetUserId)
+                
                 Resource.Success(Unit)
             } else {
                 Resource.Error("User not logged in")

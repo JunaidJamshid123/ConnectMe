@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/background_primary">
 
     <!-- ====== HEADER: profile pic, username/location/music, menu ====== -->
     <LinearLayout
@@ -22,7 +22,7 @@
             android:layout_height="32dp"
             android:src="@drawable/default_profile"
             app:civ_border_width="0.5dp"
-            app:civ_border_color="#EFEFEF" />
+            app:civ_border_color="@color/divider" />
 
         <LinearLayout
             android:layout_width="0dp"
@@ -36,7 +36,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="username"
-                android:textColor="#262626"
+                android:textColor="@color/text_primary"
                 android:textSize="13sp"
                 android:fontFamily="sans-serif-medium"
                 android:textStyle="bold" />
@@ -48,7 +48,7 @@
                 android:layout_height="wrap_content"
                 android:ellipsize="end"
                 android:maxLines="1"
-                android:textColor="#262626"
+                android:textColor="@color/text_primary"
                 android:textSize="11sp"
                 android:visibility="gone" />
         </LinearLayout>
@@ -60,7 +60,7 @@
             android:layout_height="wrap_content"
             android:layout_marginEnd="12dp"
             android:text="Follow"
-            android:textColor="#0095F6"
+            android:textColor="@color/instagram_blue"
             android:textSize="13sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="bold"
@@ -95,7 +95,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:scaleType="centerCrop"
-                android:background="#FAFAFA"
+                android:background="@color/background_secondary"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -118,7 +118,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:visibility="gone"
-                android:background="#000000"
+                android:background="@color/background_primary"
                 app:use_controller="false"
                 app:surface_type="texture_view"
                 app:resize_mode="zoom"
@@ -133,7 +133,7 @@
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:scaleType="centerCrop"
-                android:background="#FAFAFA"
+                android:background="@color/background_secondary"
                 android:visibility="gone"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -377,7 +377,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="0 likes"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="13sp"
             android:fontFamily="sans-serif-medium"
             android:textStyle="bold" />
@@ -391,7 +391,7 @@
         android:lineSpacingExtra="3dp"
         android:paddingHorizontal="14dp"
         android:paddingTop="4dp"
-        android:textColor="#262626"
+        android:textColor="@color/text_primary"
         android:textSize="13sp" />
 
     <!-- ====== VIEW ALL COMMENTS ====== -->
@@ -402,7 +402,7 @@
         android:paddingHorizontal="14dp"
         android:paddingTop="4dp"
         android:text="View all comments"
-        android:textColor="#8E8E8E"
+        android:textColor="@color/text_secondary"
         android:textSize="13sp"
         android:background="?attr/selectableItemBackground" />
 
@@ -429,7 +429,7 @@
             android:layout_height="wrap_content"
             android:layout_marginStart="8dp"
             android:text="Add a comment..."
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="13sp" />
     </LinearLayout>
 
@@ -444,7 +444,7 @@
         android:paddingBottom="14dp"
         android:text="2 HOURS AGO"
         android:textAllCaps="true"
-        android:textColor="#8E8E8E"
+        android:textColor="@color/text_secondary"
         android:textSize="10sp" />
 
 </LinearLayout>

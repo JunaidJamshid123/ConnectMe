@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true">
 
     <!-- Top Bar -->
@@ -24,14 +24,14 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/back"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:id="@+id/user_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginStart="16dp"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="20sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium" />
@@ -60,7 +60,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -68,7 +68,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/followers"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -87,7 +87,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="0"
-                android:textColor="#8E8E8E"
+                android:textColor="@color/text_secondary"
                 android:textSize="16sp"
                 android:textStyle="bold" />
 
@@ -95,7 +95,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/following"
-                android:textColor="#8E8E8E"
+                android:textColor="@color/text_secondary"
                 android:textSize="14sp" />
 
         </LinearLayout>
@@ -107,7 +107,7 @@
         android:id="@+id/tab_indicator"
         android:layout_width="0dp"
         android:layout_height="2dp"
-        android:background="#000000"
+        android:background="@color/background_primary"
         app:layout_constraintTop_toBottomOf="@id/tabLayout"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guideline_center" />
@@ -124,7 +124,7 @@
         android:id="@+id/divider"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB"
+        android:background="@color/divider"
         app:layout_constraintTop_toBottomOf="@id/tab_indicator" />
 
     <!-- Search Bar -->
@@ -141,8 +141,8 @@
         android:hint="@string/search"
         android:inputType="text"
         android:paddingHorizontal="12dp"
-        android:textColor="#000000"
-        android:textColorHint="#8E8E8E"
+        android:textColor="@color/text_primary"
+        android:textColorHint="@color/text_hint"
         android:textSize="14sp"
         app:layout_constraintTop_toBottomOf="@id/divider" />
 
@@ -189,7 +189,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/no_followers_yet"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
 
@@ -201,7 +201,7 @@
             android:gravity="center"
             android:paddingHorizontal="48dp"
             android:text="@string/followers_will_appear_here"
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
 
     </LinearLayout>

@@ -14,6 +14,7 @@ data class HomeUiState(
     val suggestedUsers: List<User> = emptyList(),
     val followingUserIds: Set<String> = emptySet(),
     val currentUserHasStory: Boolean = false,
+    val unreadNotificationCount: Int = 0,
     val isLoadingPosts: Boolean = false,
     val isLoadingStories: Boolean = false,
     val postsError: String? = null,

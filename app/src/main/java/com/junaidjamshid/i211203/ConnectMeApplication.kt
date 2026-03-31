@@ -1,6 +1,7 @@
 package com.junaidjamshid.i211203
 
 import android.app.Application
+import androidx.appcompat.app.AppCompatDelegate
 import androidx.lifecycle.DefaultLifecycleObserver
 import androidx.lifecycle.LifecycleOwner
 import androidx.lifecycle.ProcessLifecycleOwner
@@ -35,6 +36,10 @@ class ConnectMeApplication : Application(), DefaultLifecycleObserver {
     
     override fun onCreate() {
         super<Application>.onCreate()
+        
+        // Follow system dark/light theme
+        AppCompatDelegate.setDefaultNightMode(AppCompatDelegate.MODE_NIGHT_FOLLOW_SYSTEM)
+        
         // Initialize Supabase client with application context for session persistence
         SupabaseClientProvider.initialize(this)
         

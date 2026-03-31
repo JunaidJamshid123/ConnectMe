@@ -1,12 +1,17 @@
 package com.junaidjamshid.i211203.presentation.main
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.WindowInsetsController
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.core.view.WindowCompat
 import androidx.fragment.app.Fragment
@@ -17,6 +22,7 @@ import com.junaidjamshid.i211203.presentation.post.AddPostFragmentNew
 import com.junaidjamshid.i211203.presentation.profile.ProfileFragmentNew
 import com.junaidjamshid.i211203.presentation.reels.ReelsFragment
 import com.junaidjamshid.i211203.presentation.search.SearchFragmentNew
+import com.junaidjamshid.i211203.service.NotificationService
 import dagger.hilt.android.AndroidEntryPoint
 
 /**
@@ -38,6 +44,19 @@ class MainActivityNew : AppCompatActivity() {
     
     private var activeFragment: Fragment = homeFragment
     
+    // Permission launcher for Android 13+ notification permission
+    private val notificationPermissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        Log.d("MainActivityNew", "Permission result: isGranted=$isGranted")
+        if (isGranted) {
+            // Permission granted, start notification service
+            startNotificationService()
+        } else {
+            Log.w("MainActivityNew", "Notification permission denied by user")
+        }
+    }
+    
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main_new)
@@ -46,8 +65,50 @@ class MainActivityNew : AppCompatActivity() {
         setupBottomNavigation()
         setupFragments()
         
+        // Request notification permission and start service
+        requestNotificationPermissionAndStartService()
+        
         // Handle navigation intent (e.g., from UserProfileActivity when viewing own profile)
         handleNavigationIntent(intent)
+    }
+    
+    private fun requestNotificationPermissionAndStartService() {
+        Log.d("MainActivityNew", "Checking notification permission...")
+        
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            when {
+                ContextCompat.checkSelfPermission(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED -> {
+                    // Permission already granted
+                    Log.d("MainActivityNew", "Notification permission already granted")
+                    startNotificationService()
+                }
+                ActivityCompat.shouldShowRequestPermissionRationale(
+                    this,
+                    Manifest.permission.POST_NOTIFICATIONS
+                ) -> {
+                    // Show rationale if needed, then request
+                    Log.d("MainActivityNew", "Showing permission rationale...")
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+                else -> {
+                    // Request permission
+                    Log.d("MainActivityNew", "Requesting notification permission...")
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
+            }
+        } else {
+            // No permission needed for Android < 13
+            Log.d("MainActivityNew", "Android < 13, no permission needed")
+            startNotificationService()
+        }
+    }
+    
+    private fun startNotificationService() {
+        Log.d("MainActivityNew", "Starting NotificationService...")
+        NotificationService.start(this)
     }
     
     override fun onNewIntent(intent: Intent) {

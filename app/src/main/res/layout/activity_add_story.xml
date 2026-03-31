@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#000000">
+    android:background="@color/background_primary">
 
     <!-- Camera/Gallery Preview -->
     <ImageView
@@ -112,7 +112,7 @@
             android:textAllCaps="false"
             android:textSize="15sp"
             android:visibility="gone"
-            app:backgroundTint="#0095F6"
+            app:backgroundTint="@color/instagram_blue"
             app:cornerRadius="26dp" />
 
         <!-- Loading indicator -->

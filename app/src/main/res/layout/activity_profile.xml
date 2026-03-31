@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     tools:context=".ProfileActivity">
 
     <LinearLayout
@@ -27,7 +27,7 @@
                 android:text="My Profile"
                 android:textSize="@dimen/text_xlarge"
                 android:textStyle="bold"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:layout_centerVertical="true" />
 
             <ImageView
@@ -77,7 +77,7 @@
                 android:text="username"
                 android:textSize="@dimen/text_xlarge"
                 android:textStyle="bold"
-                android:textColor="@color/black" />
+                android:textColor="@color/text_primary" />
 
             <TextView
                 android:layout_width="wrap_content"
@@ -85,7 +85,7 @@
                 android:layout_height="wrap_content"
                 android:text="two bananas for a pound, three bananas for a euro"
                 android:textSize="@dimen/text_small"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:layout_marginTop="@dimen/spacing_xsmall"
                 android:gravity="center" />
         </LinearLayout>
@@ -112,14 +112,14 @@
                     android:text="0"
                     android:textSize="@dimen/text_large"
                     android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="posts"
                     android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
 
             <LinearLayout
@@ -137,14 +137,14 @@
                     android:text="0"
                     android:textSize="@dimen/text_large"
                     android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="followers"
                     android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
 
             <LinearLayout
@@ -162,14 +162,14 @@
                     android:text="0"
                     android:textSize="@dimen/text_large"
                     android:textStyle="bold"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="following"
                     android:textSize="@dimen/text_small"
-                    android:textColor="@color/black" />
+                    android:textColor="@color/text_primary" />
             </LinearLayout>
         </LinearLayout>
 

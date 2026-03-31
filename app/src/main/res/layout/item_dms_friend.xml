@@ -51,7 +51,7 @@
             android:ellipsize="end"
             android:fontFamily="sans-serif"
             android:maxLines="1"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="15sp"
             tools:text="junaidjamshid" />
 
@@ -63,7 +63,7 @@
             android:layout_marginTop="2dp"
             android:ellipsize="end"
             android:maxLines="1"
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp"
             tools:text="Junaid Jamshid" />
     </LinearLayout>

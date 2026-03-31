@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:background="@color/white">
+    android:background="@color/background_primary">
 
     <!-- Header skeleton: profile circle + username lines -->
     <LinearLayout
@@ -55,7 +55,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:background="#EFEFEF"
+            android:background="@color/input_background"
             android:tag="square_placeholder" />
     </FrameLayout>
 

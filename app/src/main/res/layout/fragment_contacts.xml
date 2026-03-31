@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_primary"
     android:orientation="vertical"
     tools:context=".presentation.contacts.ContactsFragmentNew">
 
@@ -12,7 +12,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="56dp"
-        android:background="#FFFFFF"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:paddingHorizontal="16dp">
 
@@ -44,7 +44,7 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="sans-serif-medium"
                 android:text="username"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="20sp"
                 android:textStyle="bold" />
 
@@ -88,7 +88,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#E0E0E0" />
+        android:background="@color/divider" />
 
     <!-- ====== TAB BAR: Messages | Channels | Requests ====== -->
     <LinearLayout
@@ -108,7 +108,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Messages"
-            android:textColor="#FFFFFF"
+            android:textColor="@color/white"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -122,7 +122,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Channels"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -136,7 +136,7 @@
             android:paddingHorizontal="16dp"
             android:paddingVertical="8dp"
             android:text="Requests"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="14sp"
             android:textStyle="bold" />
 
@@ -146,7 +146,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#EFEFEF" />
+        android:background="@color/input_background" />
 
     <!-- ====== CHAT LIST ====== -->
     <androidx.recyclerview.widget.RecyclerView

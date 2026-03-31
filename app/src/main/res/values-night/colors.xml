@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Base colors - Dark mode variants -->
+    <color name="purple_200">#FFBB86FC</color>
+    <color name="purple_500">#FF6200EE</color>
+    <color name="purple_700">#FF3700B3</color>
+    <color name="teal_200">#FF03DAC5</color>
+    <color name="teal_700">#FF018786</color>
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+    <color name="gray">#808080</color>
+    <color name="dark_gray">#B0B0B0</color>
+    <color name="gray_border">#3D3D3D</color>
+    <color name="follow_color">#9E9E9E</color>
+    <color name="unfollow_color">#9E9E9E</color>
+    <color name="bottom_nav_icon_color">#9E9E9E</color>
+
+    <!-- Instagram-like colors - Dark mode -->
+    <color name="instagram_blue">#0095F6</color>
+    <color name="instagram_blue_dark">#4DA8FF</color>
+    <color name="instagram_text_gray">#A8A8A8</color>
+    <color name="instagram_border_gray">#3D3D3D</color>
+    <color name="instagram_bg_gray">#121212</color>
+    <color name="instagram_input_bg">#262626</color>
+    <color name="instagram_gradient_start">#F58529</color>
+    <color name="instagram_gradient_center">#DD2A7B</color>
+    <color name="instagram_gradient_end">#8134AF</color>
+    <color name="instagram_pink">#E1306C</color>
+    <color name="instagram_orange">#F77737</color>
+    <color name="instagram_gray">#A8A8A8</color>
+    <color name="instagram_dark">#FAFAFA</color>
+    <color name="instagram_error_red">#ED4956</color>
+    <color name="instagram_success_green">#4CAF50</color>
+    <color name="facebook_blue">#1877F2</color>
+
+    <!-- Theme-aware semantic colors for Dark Mode -->
+    <color name="background_primary">#000000</color>
+    <color name="background_secondary">#121212</color>
+    <color name="background_card">#1E1E1E</color>
+    <color name="text_primary">#FFFFFF</color>
+    <color name="text_secondary">#A8A8A8</color>
+    <color name="text_hint">#6E6E6E</color>
+    <color name="divider">#3D3D3D</color>
+    <color name="input_background">#262626</color>
+    <color name="surface">#121212</color>
+    <color name="on_surface">#FFFFFF</color>
+    <color name="shimmer">#2D2D2D</color>
+    <color name="button_secondary_bg">#3D3D3D</color>
+    <color name="ripple_dark">#33000000</color>
+    <color name="ripple_light">#33FFFFFF</color>
+</resources>

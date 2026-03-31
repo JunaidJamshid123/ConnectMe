@@ -32,7 +32,7 @@
             android:textStyle="bold"
             android:textSize="20dp"
             android:layout_centerInParent="true"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:layout_height="wrap_content">
         </TextView>
 
@@ -44,7 +44,7 @@
             android:layout_marginEnd="20dp"
             android:text="Next"
             android:id="@+id/next_text"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="20dp"
             android:textStyle="bold">
 
@@ -80,7 +80,7 @@
                 android:text="Recent"
                 android:textSize="20dp"
                 android:id="@+id/Recent"
-                android:textColor="@color/black"
+                android:textColor="@color/text_primary"
                 android:textStyle="normal"
                 android:layout_height="wrap_content">
             </TextView>

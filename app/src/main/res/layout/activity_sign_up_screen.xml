@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:fillViewport="true">
 
     <LinearLayout
@@ -26,7 +26,7 @@
             android:layout_height="wrap_content"
             android:fontFamily="@font/pacifico"
             android:text="ConnectMe"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textSize="42sp" />
 
         <!-- Subtitle -->
@@ -36,7 +36,7 @@
             android:layout_marginTop="16dp"
             android:gravity="center"
             android:text="Sign up to see photos and videos\nfrom your friends."
-            android:textColor="@color/instagram_text_gray"
+            android:textColor="@color/text_secondary"
             android:textSize="16sp"
             android:lineSpacingExtra="4dp" />
 
@@ -71,14 +71,14 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="@color/instagram_border_gray" />
+                android:background="@color/divider" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="16dp"
                 android:text="OR"
-                android:textColor="@color/instagram_text_gray"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:textStyle="bold" />
 
@@ -86,7 +86,7 @@
                 android:layout_width="0dp"
                 android:layout_height="1dp"
                 android:layout_weight="1"
-                android:background="@color/instagram_border_gray" />
+                android:background="@color/divider" />
         </LinearLayout>
 
         <!-- Email Input Field -->
@@ -99,7 +99,7 @@
             android:hint="Email"
             android:inputType="textEmailAddress"
             android:paddingHorizontal="16dp"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/instagram_text_gray"
             android:textSize="14sp" />
 
@@ -113,7 +113,7 @@
             android:hint="Full Name"
             android:inputType="textPersonName"
             android:paddingHorizontal="16dp"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/instagram_text_gray"
             android:textSize="14sp" />
 
@@ -127,7 +127,7 @@
             android:hint="Username"
             android:inputType="text"
             android:paddingHorizontal="16dp"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/instagram_text_gray"
             android:textSize="14sp" />
 
@@ -141,7 +141,7 @@
             android:hint="Phone Number"
             android:inputType="phone"
             android:paddingHorizontal="16dp"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/instagram_text_gray"
             android:textSize="14sp" />
 
@@ -155,7 +155,7 @@
             android:hint="Password"
             android:inputType="textPassword"
             android:paddingHorizontal="16dp"
-            android:textColor="@color/black"
+            android:textColor="@color/text_primary"
             android:textColorHint="@color/instagram_text_gray"
             android:textSize="14sp" />
 
@@ -167,7 +167,7 @@
             android:gravity="center"
             android:lineSpacingExtra="4dp"
             android:text="By signing up, you agree to our Terms,\nPrivacy Policy and Cookies Policy."
-            android:textColor="@color/instagram_text_gray"
+            android:textColor="@color/text_secondary"
             android:textSize="12sp" />
 
         <!-- Sign Up Button - Instagram Blue -->
@@ -208,7 +208,7 @@
         <View
             android:layout_width="match_parent"
             android:layout_height="1dp"
-            android:background="@color/instagram_border_gray" />
+            android:background="@color/divider" />
 
         <!-- Login Link at Bottom -->
         <LinearLayout
@@ -222,7 +222,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Have an account? "
-                android:textColor="@color/instagram_text_gray"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp" />
 
             <TextView

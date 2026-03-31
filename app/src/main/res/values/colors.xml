@@ -31,4 +31,20 @@
     <color name="instagram_error_red">#ED4956</color>
     <color name="instagram_success_green">#4CAF50</color>
     <color name="facebook_blue">#1877F2</color>
+
+    <!-- Theme-aware semantic colors for Light Mode -->
+    <color name="background_primary">#FFFFFF</color>
+    <color name="background_secondary">#FAFAFA</color>
+    <color name="background_card">#FFFFFF</color>
+    <color name="text_primary">#262626</color>
+    <color name="text_secondary">#8E8E8E</color>
+    <color name="text_hint">#C7C7C7</color>
+    <color name="divider">#DBDBDB</color>
+    <color name="input_background">#FAFAFA</color>
+    <color name="surface">#FFFFFF</color>
+    <color name="on_surface">#262626</color>
+    <color name="shimmer">#EFEFEF</color>
+    <color name="button_secondary_bg">#EFEFEF</color>
+    <color name="ripple_dark">#33000000</color>
+    <color name="ripple_light">#33FFFFFF</color>
 </resources>

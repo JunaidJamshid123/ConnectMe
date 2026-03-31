@@ -53,7 +53,22 @@ enum class NotificationType {
     FOLLOW_REQUEST, // Someone requested to follow you
     MENTION,        // Someone mentioned you
     LIKE_COMMENT,   // Someone liked your comment
-    TAG             // Someone tagged you in a post
+    TAG;            // Someone tagged you in a post
+    
+    companion object {
+        fun fromString(type: String): NotificationType {
+            return when (type.lowercase()) {
+                "like" -> LIKE
+                "comment" -> COMMENT
+                "follow" -> FOLLOW
+                "follow_request" -> FOLLOW_REQUEST
+                "mention" -> MENTION
+                "like_comment" -> LIKE_COMMENT
+                "tag" -> TAG
+                else -> LIKE
+            }
+        }
+    }
 }
 
 /**

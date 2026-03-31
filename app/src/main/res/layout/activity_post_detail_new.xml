@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#FFFFFF"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true">
 
     <!-- Top Bar -->
@@ -24,7 +24,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:id="@+id/title"
@@ -33,7 +33,7 @@
             android:layout_marginStart="16dp"
             android:layout_weight="1"
             android:text="Comments"
-            android:textColor="#000000"
+            android:textColor="@color/text_primary"
             android:textSize="18sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium" />
@@ -45,7 +45,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Share"
             android:src="@drawable/ic_share"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
     </LinearLayout>
 
     <!-- Divider -->
@@ -53,7 +53,7 @@
         android:id="@+id/divider_top"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB"
+        android:background="@color/divider"
         app:layout_constraintTop_toBottomOf="@id/topBar" />
 
     <!-- Comments List -->
@@ -85,7 +85,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="No comments yet"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="22sp"
             android:textStyle="bold" />
 
@@ -94,7 +94,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Start the conversation."
-            android:textColor="#8E8E8E"
+            android:textColor="@color/text_secondary"
             android:textSize="14sp" />
     </LinearLayout>
 
@@ -103,7 +103,7 @@
         android:id="@+id/divider_bottom"
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB"
+        android:background="@color/divider"
         app:layout_constraintBottom_toTopOf="@id/comment_input_container" />
 
     <!-- Comment Input Section -->
@@ -111,7 +111,7 @@
         android:id="@+id/comment_input_container"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#FFFFFF"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:minHeight="56dp"
         android:orientation="horizontal"
@@ -126,7 +126,7 @@
             android:layout_height="36dp"
             android:src="@drawable/default_profile"
             app:civ_border_width="0.5dp"
-            app:civ_border_color="#DBDBDB" />
+            app:civ_border_color="@color/divider" />
 
         <!-- Comment Input Field -->
         <EditText
@@ -141,8 +141,8 @@
             android:inputType="textMultiLine"
             android:maxLines="4"
             android:minHeight="40dp"
-            android:textColor="#262626"
-            android:textColorHint="#8E8E8E"
+            android:textColor="@color/text_primary"
+            android:textColorHint="@color/text_hint"
             android:textSize="14sp" />
 
         <!-- Post Button -->
@@ -154,7 +154,7 @@
             android:paddingHorizontal="8dp"
             android:paddingVertical="8dp"
             android:text="Post"
-            android:textColor="#0095F6"
+            android:textColor="@color/instagram_blue"
             android:textSize="14sp"
             android:textStyle="bold"
             android:fontFamily="sans-serif-medium"

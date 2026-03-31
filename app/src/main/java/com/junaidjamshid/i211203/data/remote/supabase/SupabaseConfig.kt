@@ -23,6 +23,7 @@ object SupabaseConfig {
     const val LIKES_TABLE = "likes"
     const val STORY_VIEWERS_TABLE = "story_viewers"
     const val RECENT_SEARCHES_TABLE = "recent_searches"
+    const val NOTIFICATIONS_TABLE = "notifications"
     
     // Storage buckets
     const val PROFILE_IMAGES_BUCKET = "profile-images"

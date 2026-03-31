@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true"
     android:orientation="vertical">
 
@@ -13,7 +13,7 @@
         android:id="@+id/chatToolbar"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="@color/white"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:orientation="horizontal"
         android:paddingStart="4dp"
@@ -28,7 +28,7 @@
             android:contentDescription="Back"
             android:padding="10dp"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <!-- Profile image -->
         <de.hdodenhof.circleimageview.CircleImageView
@@ -52,7 +52,7 @@
                 android:ellipsize="end"
                 android:fontFamily="sans-serif-medium"
                 android:maxLines="1"
-                android:textColor="#000000"
+                android:textColor="@color/text_primary"
                 android:textSize="16sp"
                 tools:text="junaidjamshid" />
 
@@ -60,7 +60,7 @@
                 android:id="@+id/txtOnlineStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textColor="#8E8E8E"
+                android:textColor="@color/text_secondary"
                 android:textSize="12sp"
                 android:visibility="visible" />
         </LinearLayout>
@@ -74,7 +74,7 @@
             android:contentDescription="Voice call"
             android:padding="10dp"
             android:src="@drawable/ic_phone"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <ImageView
             android:id="@+id/btnVideoCall"
@@ -84,7 +84,7 @@
             android:contentDescription="Video call"
             android:padding="10dp"
             android:src="@drawable/ic_video_call"
-            app:tint="#000000" />
+            app:tint="@color/text_primary" />
 
         <!-- Vanish mode (hidden by default, can be enabled) -->
         <ImageView
@@ -98,7 +98,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB" />
+        android:background="@color/divider" />
 
     <!-- ====== MESSAGES LIST ====== -->
     <FrameLayout
@@ -121,7 +121,7 @@
             android:id="@+id/recyclerViewChats"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:background="@color/white"
+            android:background="@color/background_primary"
             android:clipToPadding="false"
             android:overScrollMode="never"
             android:paddingHorizontal="12dp"
@@ -143,7 +143,7 @@
         android:id="@+id/messageInputLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@color/background_primary"
         android:gravity="center_vertical"
         android:minHeight="56dp"
         android:orientation="horizontal"
@@ -182,8 +182,8 @@
                 android:hint="Message..."
                 android:inputType="textCapSentences|textMultiLine"
                 android:maxLines="4"
-                android:textColor="#262626"
-                android:textColorHint="#8E8E8E"
+                android:textColor="@color/text_primary"
+                android:textColorHint="@color/text_hint"
                 android:textSize="16sp" />
 
             <!-- Sticker button -->
@@ -194,7 +194,7 @@
                 android:layout_marginStart="8dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_sticker"
-                app:tint="#262626" />
+                app:tint="@color/text_primary" />
 
             <!-- Gallery button -->
             <ImageView
@@ -204,7 +204,7 @@
                 android:layout_marginStart="12dp"
                 android:background="?attr/selectableItemBackgroundBorderless"
                 android:src="@drawable/ic_gallery"
-                app:tint="#262626" />
+                app:tint="@color/text_primary" />
         </LinearLayout>
 
         <!-- Send / Mic button -->

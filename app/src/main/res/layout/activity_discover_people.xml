@@ -5,7 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/white"
+    android:background="@color/background_primary"
     android:fitsSystemWindows="true"
     android:orientation="vertical"
     tools:context=".presentation.discover.DiscoverPeopleActivity">
@@ -14,7 +14,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="48dp"
-        android:background="@color/white"
+        android:background="@color/background_primary"
         android:paddingHorizontal="16dp">
 
         <ImageView
@@ -26,7 +26,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="Back"
             android:src="@drawable/ic_back_arrow"
-            app:tint="#262626" />
+            app:tint="@color/text_primary" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_centerInParent="true"
             android:fontFamily="sans-serif-medium"
             android:text="Discover people"
-            android:textColor="#262626"
+            android:textColor="@color/text_primary"
             android:textSize="16sp"
             android:textStyle="bold" />
     </RelativeLayout>
@@ -43,7 +43,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0.5dp"
-        android:background="#DBDBDB" />
+        android:background="@color/divider" />
 
     <!-- Shimmer loading -->
     <com.facebook.shimmer.ShimmerFrameLayout
@@ -91,7 +91,7 @@
         android:layout_height="wrap_content"
         android:layout_gravity="center"
         android:paddingTop="100dp"
-        android:textColor="#8E8E8E"
+        android:textColor="@color/text_secondary"
         android:textSize="14sp"
         android:visibility="gone" />
 

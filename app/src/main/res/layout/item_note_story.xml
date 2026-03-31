@@ -23,7 +23,7 @@
         android:paddingHorizontal="8dp"
         android:paddingVertical="5dp"
         android:text=""
-        android:textColor="#262626"
+        android:textColor="@color/text_primary"
         android:textSize="10sp"
         android:visibility="gone" />
 
@@ -73,7 +73,7 @@
         android:gravity="center"
         android:maxLines="1"
         android:text="Your note"
-        android:textColor="#262626"
+        android:textColor="@color/text_primary"
         android:textSize="11sp" />
 
 </LinearLayout>
