@@ -1,20 +1,26 @@
 package com.junaidjamshid.i211203.presentation.chat
 
+import android.Manifest
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.BitmapFactory
 import android.graphics.Color
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.MotionEvent
 import android.view.View
 import android.view.animation.AccelerateDecelerateInterpolator
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
@@ -24,14 +30,17 @@ import com.junaidjamshid.i211203.R
 import com.junaidjamshid.i211203.databinding.ActivityChatsBinding
 import com.junaidjamshid.i211203.presentation.call.VideoCallActivity
 import com.junaidjamshid.i211203.presentation.chat.adapter.MessageAdapterNew
+import com.junaidjamshid.i211203.util.VoiceRecorderHelper
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
+import java.io.ByteArrayOutputStream
 
 /**
  * Clean Architecture Chat Activity.
+ * Supports text, image, and voice messages.
  */
 @AndroidEntryPoint
 class ChatActivity : AppCompatActivity() {
@@ -42,6 +51,29 @@ class ChatActivity : AppCompatActivity() {
     private lateinit var messageAdapter: MessageAdapterNew
     private var receiverUserId: String = ""
     private var typingAnimationJob: Job? = null
+    
+    // Voice recording
+    private var voiceRecorderHelper: VoiceRecorderHelper? = null
+    private var recordingJob: Job? = null
+    private var isRecording = false
+    
+    // Image picker
+    private val imagePickerLauncher = registerForActivityResult(
+        ActivityResultContracts.GetContent()
+    ) { uri: Uri? ->
+        uri?.let { handleSelectedImage(it) }
+    }
+    
+    // Permission launcher
+    private val permissionLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestPermission()
+    ) { isGranted: Boolean ->
+        if (isGranted) {
+            startVoiceRecording()
+        } else {
+            Toast.makeText(this, "Microphone permission required for voice messages", Toast.LENGTH_SHORT).show()
+        }
+    }
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,10 +94,16 @@ class ChatActivity : AppCompatActivity() {
             return
         }
         
+        voiceRecorderHelper = VoiceRecorderHelper(this)
+        
         setupRecyclerView()
         setupClickListeners()
         setupTextWatcher()
+        setupVoiceRecording()
         observeUiState()
+        
+        // Initialize with mic icon (no text)
+        updateSendButton(false)
         
         viewModel.initializeChat(receiverUserId)
     }
@@ -133,7 +171,11 @@ class ChatActivity : AppCompatActivity() {
         }
         
         binding.btnSendMessage.setOnClickListener {
-            sendMessage()
+            val messageText = binding.editTextMessage.text.toString().trim()
+            if (messageText.isNotEmpty()) {
+                sendMessage()
+            }
+            // If empty, voice recording is handled by touch listener
         }
         
         binding.btnVideoCall.setOnClickListener {
@@ -148,6 +190,147 @@ class ChatActivity : AppCompatActivity() {
             viewModel.toggleVanishMode()
             updateVanishModeUI()
         }
+        
+        // Gallery button - pick image
+        binding.btnGallery.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
+        }
+        
+        // Camera button - pick image from camera (using gallery for now)
+        binding.btnCamera.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
+        }
+    }
+    
+    @Suppress("ClickableViewAccessibility")
+    private fun setupVoiceRecording() {
+        binding.btnSendMessage.setOnTouchListener { _, event ->
+            val messageText = binding.editTextMessage.text.toString().trim()
+            
+            // Only handle voice recording when there's no text
+            if (messageText.isNotEmpty()) {
+                return@setOnTouchListener false
+            }
+            
+            when (event.action) {
+                MotionEvent.ACTION_DOWN -> {
+                    checkMicPermissionAndRecord()
+                    true
+                }
+                MotionEvent.ACTION_UP, MotionEvent.ACTION_CANCEL -> {
+                    if (isRecording) {
+                        stopVoiceRecording()
+                    }
+                    true
+                }
+                else -> false
+            }
+        }
+    }
+    
+    private fun checkMicPermissionAndRecord() {
+        when {
+            ContextCompat.checkSelfPermission(
+                this, Manifest.permission.RECORD_AUDIO
+            ) == PackageManager.PERMISSION_GRANTED -> {
+                startVoiceRecording()
+            }
+            else -> {
+                permissionLauncher.launch(Manifest.permission.RECORD_AUDIO)
+            }
+        }
+    }
+    
+    private fun startVoiceRecording() {
+        try {
+            voiceRecorderHelper?.startRecording()
+            isRecording = true
+            viewModel.setRecordingState(true)
+            
+            // Show recording indicator
+            showRecordingIndicator(true)
+            
+            // Start duration update
+            recordingJob = lifecycleScope.launch {
+                var duration = 0L
+                while (isActive && isRecording) {
+                    delay(100)
+                    duration += 100
+                    viewModel.setRecordingState(true, duration)
+                    updateRecordingDuration(duration)
+                }
+            }
+            
+            Toast.makeText(this, "Recording... Release to send", Toast.LENGTH_SHORT).show()
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to start recording: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun stopVoiceRecording() {
+        recordingJob?.cancel()
+        isRecording = false
+        viewModel.setRecordingState(false)
+        showRecordingIndicator(false)
+        
+        val result = voiceRecorderHelper?.stopRecording()
+        result?.let { (file, duration) ->
+            if (file != null && duration > 500) { // Minimum 0.5 second
+                // Read file bytes and send
+                val audioBytes = file.readBytes()
+                viewModel.sendVoiceMessage(audioBytes, duration)
+                Toast.makeText(this, "Sending voice message...", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(this, "Recording too short", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+    
+    private fun showRecordingIndicator(show: Boolean) {
+        // Update UI to show recording state
+        if (show) {
+            binding.editTextMessage.hint = "Recording..."
+            binding.editTextMessage.isEnabled = false
+            binding.btnSendMessage.setColorFilter(Color.RED)
+        } else {
+            binding.editTextMessage.hint = "Message..."
+            binding.editTextMessage.isEnabled = true
+            binding.btnSendMessage.clearColorFilter()
+        }
+    }
+    
+    private fun updateRecordingDuration(duration: Long) {
+        val seconds = (duration / 1000).toInt()
+        val minutes = seconds / 60
+        val secs = seconds % 60
+        binding.editTextMessage.hint = String.format("Recording... %d:%02d", minutes, secs)
+    }
+    
+    private fun handleSelectedImage(uri: Uri) {
+        try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val bytes = ByteArrayOutputStream()
+            inputStream?.copyTo(bytes)
+            val imageBytes = bytes.toByteArray()
+            inputStream?.close()
+            
+            // Show confirmation dialog with preview
+            showImagePreviewDialog(imageBytes)
+        } catch (e: Exception) {
+            Toast.makeText(this, "Failed to load image: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+    
+    private fun showImagePreviewDialog(imageBytes: ByteArray) {
+        val builder = AlertDialog.Builder(this)
+        builder.setTitle("Send Image?")
+        builder.setMessage("Do you want to send this image?")
+        builder.setPositiveButton("Send") { _, _ ->
+            viewModel.sendImageMessage(imageBytes)
+            Toast.makeText(this, "Sending image...", Toast.LENGTH_SHORT).show()
+        }
+        builder.setNegativeButton("Cancel", null)
+        builder.show()
     }
     
     private fun observeUiState() {
@@ -196,6 +379,15 @@ class ChatActivity : AppCompatActivity() {
         
         // Update typing indicator
         updateTypingIndicator(state.isOtherUserTyping)
+        
+        // Handle sending media loading state
+        if (state.isSendingMedia) {
+            binding.btnSendMessage.isEnabled = false
+            binding.btnSendMessage.alpha = 0.5f
+        } else {
+            binding.btnSendMessage.isEnabled = true
+            binding.btnSendMessage.alpha = 1f
+        }
         
         // Update messages
         messageAdapter.submitList(state.messages) {
@@ -338,10 +530,16 @@ class ChatActivity : AppCompatActivity() {
     override fun onPause() {
         super.onPause()
         viewModel.onUserStoppedTyping()
+        if (isRecording) {
+            voiceRecorderHelper?.cancelRecording()
+            isRecording = false
+        }
     }
     
     override fun onDestroy() {
         super.onDestroy()
         stopTypingAnimation()
+        voiceRecorderHelper?.release()
+        messageAdapter.releasePlayer()
     }
 }

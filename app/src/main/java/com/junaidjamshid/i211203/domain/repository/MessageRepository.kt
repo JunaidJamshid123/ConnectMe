@@ -23,6 +23,14 @@ interface MessageRepository {
         imageBase64: String
     ): Resource<Message>
     
+    suspend fun sendVoiceMessage(
+        conversationId: String,
+        senderId: String,
+        receiverId: String,
+        audioBytes: ByteArray,
+        durationMs: Long
+    ): Resource<Message>
+    
     suspend fun deleteMessage(messageId: String, conversationId: String): Resource<Unit>
     
     suspend fun markMessageAsRead(messageId: String, conversationId: String): Resource<Unit>

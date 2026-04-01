@@ -14,7 +14,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
@@ -77,14 +76,6 @@ class NotificationService : Service() {
         subscriptionJob?.cancel()
         subscriptionJob = serviceScope.launch {
             Log.d(TAG, "Starting notification subscription...")
-            
-            // Show test notification after 2 seconds to verify system works
-            // Comment this out in production
-            delay(2000)
-            Log.d(TAG, "Showing test notification to verify system...")
-            launch(Dispatchers.Main) {
-                notificationHelper.showTestNotification()
-            }
             
             notificationRepository.subscribeToNewNotifications()
                 .catch { e ->

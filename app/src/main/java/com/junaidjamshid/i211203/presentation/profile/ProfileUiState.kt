@@ -1,6 +1,7 @@
 package com.junaidjamshid.i211203.presentation.profile
 
 import com.junaidjamshid.i211203.domain.model.Post
+import com.junaidjamshid.i211203.domain.model.StoryHighlight
 import com.junaidjamshid.i211203.domain.model.User
 
 /**
@@ -13,6 +14,7 @@ data class ProfileUiState(
     val imagePosts: List<Post> = emptyList(),      // Only image posts (no videos)
     val reelPosts: List<Post> = emptyList(),       // Only video/reel posts
     val savedPosts: List<Post> = emptyList(),      // Saved posts
+    val highlights: List<StoryHighlight> = emptyList(), // Story highlights
     val postsCount: Int = 0,
     val followersCount: Int = 0,
     val followingCount: Int = 0,

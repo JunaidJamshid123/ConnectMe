@@ -70,6 +70,16 @@ class SupabaseStorageDataSource @Inject constructor(
     }
     
     /**
+     * Upload a voice message
+     * NOTE: Using message-images bucket temporarily until voice-messages bucket is set up
+     */
+    suspend fun uploadVoiceMessage(conversationId: String, audioBytes: ByteArray): String {
+        val fileName = "voice_${conversationId}_${UUID.randomUUID()}.3gp"
+        // Use message-images bucket (same as images) - change to VOICE_MESSAGES_BUCKET when bucket is ready
+        return uploadFile(SupabaseConfig.MESSAGE_IMAGES_BUCKET, fileName, audioBytes)
+    }
+    
+    /**
      * Generic file upload
      */
     private suspend fun uploadFile(bucket: String, fileName: String, fileBytes: ByteArray): String {

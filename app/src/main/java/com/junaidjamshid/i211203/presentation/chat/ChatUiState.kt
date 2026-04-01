@@ -17,8 +17,60 @@ data class ChatUiState(
     val isOtherUserTyping: Boolean = false,
     // Online status
     val isOtherUserOnline: Boolean = false,
-    val lastSeenTimestamp: Long? = null
-)
+    val lastSeenTimestamp: Long? = null,
+    // Voice recording state
+    val isRecording: Boolean = false,
+    val recordingDuration: Long = 0,
+    val isSendingMedia: Boolean = false,
+    // Image preview state
+    val selectedImageUri: String? = null,
+    val selectedImageBytes: ByteArray? = null
+) {
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as ChatUiState
+
+        if (isLoading != other.isLoading) return false
+        if (messages != other.messages) return false
+        if (otherUser != other.otherUser) return false
+        if (isVanishModeEnabled != other.isVanishModeEnabled) return false
+        if (messageSent != other.messageSent) return false
+        if (error != other.error) return false
+        if (isOtherUserTyping != other.isOtherUserTyping) return false
+        if (isOtherUserOnline != other.isOtherUserOnline) return false
+        if (lastSeenTimestamp != other.lastSeenTimestamp) return false
+        if (isRecording != other.isRecording) return false
+        if (recordingDuration != other.recordingDuration) return false
+        if (isSendingMedia != other.isSendingMedia) return false
+        if (selectedImageUri != other.selectedImageUri) return false
+        if (selectedImageBytes != null) {
+            if (other.selectedImageBytes == null) return false
+            if (!selectedImageBytes.contentEquals(other.selectedImageBytes)) return false
+        } else if (other.selectedImageBytes != null) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = isLoading.hashCode()
+        result = 31 * result + messages.hashCode()
+        result = 31 * result + (otherUser?.hashCode() ?: 0)
+        result = 31 * result + isVanishModeEnabled.hashCode()
+        result = 31 * result + messageSent.hashCode()
+        result = 31 * result + (error?.hashCode() ?: 0)
+        result = 31 * result + isOtherUserTyping.hashCode()
+        result = 31 * result + isOtherUserOnline.hashCode()
+        result = 31 * result + (lastSeenTimestamp?.hashCode() ?: 0)
+        result = 31 * result + isRecording.hashCode()
+        result = 31 * result + recordingDuration.hashCode()
+        result = 31 * result + isSendingMedia.hashCode()
+        result = 31 * result + (selectedImageUri?.hashCode() ?: 0)
+        result = 31 * result + (selectedImageBytes?.contentHashCode() ?: 0)
+        return result
+    }
+}
 
 /**
  * UI State for conversations list (DMs).

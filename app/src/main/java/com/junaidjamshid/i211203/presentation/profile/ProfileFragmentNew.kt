@@ -1,5 +1,6 @@
 package com.junaidjamshid.i211203.presentation.profile
 
+import android.app.Activity
 import android.app.AlertDialog
 import android.content.ClipData
 import android.content.ClipboardManager
@@ -12,6 +13,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.PopupMenu
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
@@ -27,6 +29,8 @@ import com.junaidjamshid.i211203.databinding.FragmentProfileBinding
 import com.junaidjamshid.i211203.presentation.auth.LoginActivity
 import com.junaidjamshid.i211203.presentation.follow.FollowersActivity
 import com.junaidjamshid.i211203.presentation.follow.FollowingActivity
+import com.junaidjamshid.i211203.presentation.highlight.CreateHighlightActivity
+import com.junaidjamshid.i211203.presentation.highlight.ViewHighlightActivity
 import com.junaidjamshid.i211203.presentation.profile.adapter.PostGridAdapterNew
 import com.junaidjamshid.i211203.presentation.profile.adapter.StoryHighlightAdapter
 import com.junaidjamshid.i211203.presentation.story.AddStoryActivity
@@ -55,6 +59,16 @@ class ProfileFragmentNew : Fragment() {
     // Tab state: 0 = Posts, 1 = Reels, 2 = Saved
     private var activeTab = 0
     private var hasShownContent = false
+    
+    // Activity result launcher for creating highlights
+    private val createHighlightLauncher = registerForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        if (result.resultCode == Activity.RESULT_OK) {
+            // Refresh highlights after creating a new one
+            viewModel.refreshHighlights()
+        }
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -115,10 +129,24 @@ class ProfileFragmentNew : Fragment() {
     private fun setupHighlights() {
         highlightAdapter = StoryHighlightAdapter(
             onHighlightClick = { highlight ->
-                Toast.makeText(requireContext(), "Opening: ${highlight.name}", Toast.LENGTH_SHORT).show()
+                // Open highlight viewer
+                val userId = viewModel.uiState.value.user?.userId ?: return@StoryHighlightAdapter
+                val isOwner = viewModel.uiState.value.isCurrentUser
+                startActivity(
+                    ViewHighlightActivity.newIntent(
+                        requireContext(),
+                        highlight.highlightId,
+                        userId,
+                        isOwner
+                    )
+                )
             },
             onAddHighlightClick = {
-                Toast.makeText(requireContext(), "Create new highlight", Toast.LENGTH_SHORT).show()
+                // Navigate to create highlight screen
+                val userId = viewModel.uiState.value.user?.userId ?: return@StoryHighlightAdapter
+                createHighlightLauncher.launch(
+                    CreateHighlightActivity.newIntent(requireContext(), userId)
+                )
             }
         )
 
@@ -127,8 +155,7 @@ class ProfileFragmentNew : Fragment() {
             adapter = highlightAdapter
         }
 
-        // No hardcoded highlights — only the "New" (+) button shows via the adapter
-        // Real highlights would come from the ViewModel / backend when available
+        // Highlights will be loaded from ViewModel
         highlightAdapter.submitList(emptyList())
     }
 
@@ -385,8 +412,11 @@ class ProfileFragmentNew : Fragment() {
         binding.followersCount.text = formatCount(state.followersCount)
         binding.followingCount.text = formatCount(state.followingCount)
 
+        // Story highlights
+        highlightAdapter.submitList(state.highlights)
+        
         // Highlights subtitle — show only when user has no highlights yet
-        binding.highlightsSubtitle.isVisible = highlightAdapter.itemCount <= 1
+        binding.highlightsSubtitle.isVisible = state.highlights.isEmpty()
 
         // Submit posts to adapters (filtered by type)
         postGridAdapter.submitList(state.imagePosts)

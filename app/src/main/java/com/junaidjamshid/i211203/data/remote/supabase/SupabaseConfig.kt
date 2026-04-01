@@ -24,10 +24,14 @@ object SupabaseConfig {
     const val STORY_VIEWERS_TABLE = "story_viewers"
     const val RECENT_SEARCHES_TABLE = "recent_searches"
     const val NOTIFICATIONS_TABLE = "notifications"
+    const val STORY_HIGHLIGHTS_TABLE = "story_highlights"
+    const val HIGHLIGHT_STORIES_TABLE = "highlight_stories"
     
     // Storage buckets
     const val PROFILE_IMAGES_BUCKET = "profile-images"
     const val POST_IMAGES_BUCKET = "post-images"
     const val STORY_IMAGES_BUCKET = "story-images"
     const val MESSAGE_IMAGES_BUCKET = "message-images"
+    const val HIGHLIGHT_IMAGES_BUCKET = "highlight-images"
+    const val VOICE_MESSAGES_BUCKET = "voice-messages"
 }

@@ -135,6 +135,96 @@ class ChatViewModel @Inject constructor(
     }
     
     /**
+     * Send an image message
+     */
+    fun sendImageMessage(imageBytes: ByteArray) {
+        val receiver = receiverId ?: return
+        val currentId = currentUserId ?: return
+        val conversationId = currentConversationId ?: getConversationId(currentId, receiver)
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSendingMedia = true) }
+            
+            val imageBase64 = android.util.Base64.encodeToString(imageBytes, android.util.Base64.DEFAULT)
+            val result = messageRepository.sendImageMessage(
+                conversationId = conversationId,
+                senderId = currentId,
+                receiverId = receiver,
+                imageBase64 = imageBase64
+            )
+            
+            when (result) {
+                is Resource.Success -> {
+                    _uiState.update { 
+                        it.copy(
+                            messageSent = true, 
+                            isSendingMedia = false,
+                            selectedImageUri = null,
+                            selectedImageBytes = null
+                        ) 
+                    }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(error = result.message, isSendingMedia = false) }
+                }
+                else -> { /* Loading state */ }
+            }
+        }
+    }
+    
+    /**
+     * Send a voice message
+     */
+    fun sendVoiceMessage(audioBytes: ByteArray, durationMs: Long) {
+        val receiver = receiverId ?: return
+        val currentId = currentUserId ?: return
+        val conversationId = currentConversationId ?: getConversationId(currentId, receiver)
+        
+        viewModelScope.launch {
+            _uiState.update { it.copy(isSendingMedia = true) }
+            
+            val result = messageRepository.sendVoiceMessage(
+                conversationId = conversationId,
+                senderId = currentId,
+                receiverId = receiver,
+                audioBytes = audioBytes,
+                durationMs = durationMs
+            )
+            
+            when (result) {
+                is Resource.Success -> {
+                    _uiState.update { it.copy(messageSent = true, isSendingMedia = false) }
+                }
+                is Resource.Error -> {
+                    _uiState.update { it.copy(error = result.message, isSendingMedia = false) }
+                }
+                else -> { /* Loading state */ }
+            }
+        }
+    }
+    
+    /**
+     * Set selected image for preview
+     */
+    fun setSelectedImage(uri: String?, bytes: ByteArray?) {
+        _uiState.update { it.copy(selectedImageUri = uri, selectedImageBytes = bytes) }
+    }
+    
+    /**
+     * Clear selected image
+     */
+    fun clearSelectedImage() {
+        _uiState.update { it.copy(selectedImageUri = null, selectedImageBytes = null) }
+    }
+    
+    /**
+     * Update recording state
+     */
+    fun setRecordingState(isRecording: Boolean, duration: Long = 0) {
+        _uiState.update { it.copy(isRecording = isRecording, recordingDuration = duration) }
+    }
+    
+    /**
      * Toggle vanish mode
      */
     fun toggleVanishMode() {

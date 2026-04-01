@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/receivedMessageLayout"
     android:layout_width="match_parent"
@@ -29,6 +30,7 @@
             android:layout_height="wrap_content"
             android:orientation="vertical">
 
+            <!-- Text Message -->
             <TextView
                 android:id="@+id/txtReceivedMessage"
                 android:layout_width="wrap_content"
@@ -41,6 +43,76 @@
                 android:textSize="15sp"
                 android:lineSpacingExtra="2dp"
                 tools:text="I am doing great, thanks!" />
+
+            <!-- Image Message -->
+            <com.google.android.material.card.MaterialCardView
+                android:id="@+id/cardReceivedImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="0dp"
+                app:strokeWidth="0dp">
+
+                <ImageView
+                    android:id="@+id/imgReceivedMessage"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:scaleType="centerCrop"
+                    tools:src="@drawable/default_profile" />
+
+            </com.google.android.material.card.MaterialCardView>
+
+            <!-- Voice Message -->
+            <LinearLayout
+                android:id="@+id/layoutReceivedVoice"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/bg_received_message_instagram"
+                android:gravity="center_vertical"
+                android:minWidth="180dp"
+                android:orientation="horizontal"
+                android:paddingHorizontal="12dp"
+                android:paddingVertical="10dp"
+                android:visibility="gone">
+
+                <ImageView
+                    android:id="@+id/btnPlayReceivedVoice"
+                    android:layout_width="36dp"
+                    android:layout_height="36dp"
+                    android:background="@drawable/bg_circle_blue"
+                    android:padding="8dp"
+                    android:src="@drawable/ic_play"
+                    app:tint="@color/white" />
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="10dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <SeekBar
+                        android:id="@+id/seekBarReceivedVoice"
+                        android:layout_width="100dp"
+                        android:layout_height="24dp"
+                        android:max="100"
+                        android:progress="0"
+                        android:progressDrawable="@drawable/seekbar_voice_progress"
+                        android:thumb="@drawable/seekbar_voice_thumb"
+                        android:thumbOffset="0dp" />
+
+                    <TextView
+                        android:id="@+id/txtReceivedVoiceDuration"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textColor="@color/text_primary"
+                        android:textSize="11sp"
+                        tools:text="0:15" />
+
+                </LinearLayout>
+
+            </LinearLayout>
 
             <TextView
                 android:id="@+id/txtReceivedMessageTime"

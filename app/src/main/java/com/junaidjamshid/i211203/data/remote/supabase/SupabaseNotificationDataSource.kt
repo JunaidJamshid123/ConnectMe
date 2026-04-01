@@ -242,24 +242,22 @@ class SupabaseNotificationDataSource @Inject constructor(
     fun subscribeToNotifications(userId: String): Flow<NotificationDto> = callbackFlow {
         Log.d(TAG, "========================================")
         Log.d(TAG, "Setting up realtime subscription for user: $userId")
-        Log.d(TAG, "Realtime status BEFORE connect: ${supabaseClient.realtime.status.value}")
         Log.d(TAG, "========================================")
         
         // Ensure realtime is connected
         try {
             supabaseClient.realtime.connect()
-            Log.d(TAG, "Realtime connected successfully")
+            Log.d(TAG, "Realtime connected, status: ${supabaseClient.realtime.status.value}")
         } catch (e: Exception) {
-            Log.d(TAG, "Realtime connect note: ${e.message}")
+            Log.e(TAG, "Realtime connect error: ${e.message}")
         }
-        Log.d(TAG, "Realtime status AFTER connect: ${supabaseClient.realtime.status.value}")
         
-        val channelName = "notifications_$userId"
+        val channelName = "notifications_user_$userId"
         Log.d(TAG, "Creating channel: $channelName")
         val channel = supabaseClient.realtime.channel(channelName)
         
         try {
-            Log.d(TAG, "Setting up postgres change flow for table: ${SupabaseConfig.NOTIFICATIONS_TABLE}")
+            // Listen for INSERT events on notifications table
             val changeFlow = channel.postgresChangeFlow<PostgresAction.Insert>(
                 schema = "public"
             ) {
@@ -267,17 +265,15 @@ class SupabaseNotificationDataSource @Inject constructor(
             }
             
             // Subscribe to the channel
-            Log.d(TAG, "About to subscribe to channel...")
+            Log.d(TAG, "Subscribing to channel...")
             channel.subscribe()
             Log.d(TAG, ">>> SUBSCRIBED TO NOTIFICATION CHANNEL <<<")
-            Log.d(TAG, "Channel status after subscribe: ${channel.status.value}")
             
             // Collect changes in a separate coroutine
             launch {
                 changeFlow.collect { change ->
                     try {
                         val record = change.record
-                        Log.d(TAG, "Received realtime change: $record")
                         
                         // Filter for the specific user on the client side
                         val recipientId = record["recipient_id"]?.toString() ?: ""
@@ -286,9 +282,11 @@ class SupabaseNotificationDataSource @Inject constructor(
                             return@collect
                         }
                         
+                        Log.d(TAG, ">>> Received realtime notification: ${record["type"]} from ${record["actor_username"]}")
+                        
                         val notification = SupabaseNotification(
                             notification_id = record["notification_id"]?.toString() ?: "",
-                            recipient_id = recipientId,
+                            recipient_id = record["recipient_id"]?.toString() ?: "",
                             actor_id = record["actor_id"]?.toString() ?: "",
                             actor_username = record["actor_username"]?.toString() ?: "",
                             actor_profile_image = record["actor_profile_image"]?.toString() ?: "",

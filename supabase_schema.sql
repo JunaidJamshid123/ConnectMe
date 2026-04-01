@@ -537,6 +537,91 @@ DROP POLICY IF EXISTS "Users can delete their own notifications" ON notification
 CREATE POLICY "Users can delete their own notifications" ON notifications 
     FOR DELETE USING (auth.uid()::text = recipient_id::text);
 
+-- Enable realtime for notifications table
+-- This allows real-time push notifications when likes/comments/follows happen
+-- Run this command to add to realtime publication:
+-- ALTER PUBLICATION supabase_realtime ADD TABLE notifications;
+
+-- =====================================================
+-- STORY HIGHLIGHTS TABLE (Instagram-like highlights)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS story_highlights (
+    id BIGSERIAL PRIMARY KEY,
+    highlight_id UUID UNIQUE NOT NULL DEFAULT uuid_generate_v4(),
+    user_id UUID NOT NULL REFERENCES users(user_id) ON DELETE CASCADE,
+    name TEXT NOT NULL,
+    cover_image_url TEXT DEFAULT '',
+    created_at BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
+    updated_at BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
+    position INT DEFAULT 0  -- For ordering highlights on profile
+);
+
+CREATE INDEX IF NOT EXISTS idx_story_highlights_highlight_id ON story_highlights(highlight_id);
+CREATE INDEX IF NOT EXISTS idx_story_highlights_user_id ON story_highlights(user_id);
+CREATE INDEX IF NOT EXISTS idx_story_highlights_position ON story_highlights(user_id, position);
+
+-- Enable RLS
+ALTER TABLE story_highlights ENABLE ROW LEVEL SECURITY;
+
+-- Policies for story_highlights
+DROP POLICY IF EXISTS "Highlights are viewable by everyone" ON story_highlights;
+CREATE POLICY "Highlights are viewable by everyone" ON story_highlights 
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users can create their own highlights" ON story_highlights;
+CREATE POLICY "Users can create their own highlights" ON story_highlights 
+    FOR INSERT WITH CHECK (auth.uid()::text = user_id::text);
+
+DROP POLICY IF EXISTS "Users can update their own highlights" ON story_highlights;
+CREATE POLICY "Users can update their own highlights" ON story_highlights 
+    FOR UPDATE USING (auth.uid()::text = user_id::text);
+
+DROP POLICY IF EXISTS "Users can delete their own highlights" ON story_highlights;
+CREATE POLICY "Users can delete their own highlights" ON story_highlights 
+    FOR DELETE USING (auth.uid()::text = user_id::text);
+
+-- =====================================================
+-- HIGHLIGHT STORIES TABLE (Stories within a highlight)
+-- =====================================================
+CREATE TABLE IF NOT EXISTS highlight_stories (
+    id BIGSERIAL PRIMARY KEY,
+    highlight_id UUID NOT NULL REFERENCES story_highlights(highlight_id) ON DELETE CASCADE,
+    story_image_url TEXT NOT NULL,
+    timestamp BIGINT DEFAULT (EXTRACT(EPOCH FROM NOW()) * 1000)::BIGINT,
+    position INT DEFAULT 0  -- For ordering stories within a highlight
+);
+
+CREATE INDEX IF NOT EXISTS idx_highlight_stories_highlight ON highlight_stories(highlight_id);
+CREATE INDEX IF NOT EXISTS idx_highlight_stories_position ON highlight_stories(highlight_id, position);
+
+-- Enable RLS
+ALTER TABLE highlight_stories ENABLE ROW LEVEL SECURITY;
+
+-- Policies for highlight_stories (linked to parent highlight ownership)
+DROP POLICY IF EXISTS "Highlight stories are viewable by everyone" ON highlight_stories;
+CREATE POLICY "Highlight stories are viewable by everyone" ON highlight_stories 
+    FOR SELECT USING (true);
+
+DROP POLICY IF EXISTS "Users can add stories to their highlights" ON highlight_stories;
+CREATE POLICY "Users can add stories to their highlights" ON highlight_stories 
+    FOR INSERT WITH CHECK (
+        EXISTS (
+            SELECT 1 FROM story_highlights 
+            WHERE story_highlights.highlight_id = highlight_stories.highlight_id 
+            AND auth.uid()::text = story_highlights.user_id::text
+        )
+    );
+
+DROP POLICY IF EXISTS "Users can delete stories from their highlights" ON highlight_stories;
+CREATE POLICY "Users can delete stories from their highlights" ON highlight_stories 
+    FOR DELETE USING (
+        EXISTS (
+            SELECT 1 FROM story_highlights 
+            WHERE story_highlights.highlight_id = highlight_stories.highlight_id 
+            AND auth.uid()::text = story_highlights.user_id::text
+        )
+    );
+
 -- =====================================================
 -- ENABLE REALTIME
 -- =====================================================
@@ -548,6 +633,7 @@ CREATE POLICY "Users can delete their own notifications" ON notifications
 -- ALTER PUBLICATION supabase_realtime ADD TABLE messages;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE stories;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE calls;
+-- ALTER PUBLICATION supabase_realtime ADD TABLE story_highlights;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE active_calls;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE followers;
 -- ALTER PUBLICATION supabase_realtime ADD TABLE conversations;

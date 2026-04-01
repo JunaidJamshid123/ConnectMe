@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/sentMessageLayout"
     android:layout_width="match_parent"
@@ -14,6 +15,7 @@
         android:layout_gravity="end"
         android:orientation="vertical">
 
+        <!-- Text Message -->
         <TextView
             android:id="@+id/txtSentMessage"
             android:layout_width="wrap_content"
@@ -26,6 +28,76 @@
             android:textSize="15sp"
             android:lineSpacingExtra="2dp"
             tools:text="Hey! How are you?" />
+
+        <!-- Image Message -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/cardSentImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone"
+            app:cardCornerRadius="16dp"
+            app:cardElevation="0dp"
+            app:strokeWidth="0dp">
+
+            <ImageView
+                android:id="@+id/imgSentMessage"
+                android:layout_width="200dp"
+                android:layout_height="200dp"
+                android:scaleType="centerCrop"
+                tools:src="@drawable/default_profile" />
+
+        </com.google.android.material.card.MaterialCardView>
+
+        <!-- Voice Message -->
+        <LinearLayout
+            android:id="@+id/layoutSentVoice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/bg_sent_message_instagram"
+            android:gravity="center_vertical"
+            android:minWidth="180dp"
+            android:orientation="horizontal"
+            android:paddingHorizontal="12dp"
+            android:paddingVertical="10dp"
+            android:visibility="gone">
+
+            <ImageView
+                android:id="@+id/btnPlaySentVoice"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
+                android:background="@drawable/bg_circle_white"
+                android:padding="8dp"
+                android:src="@drawable/ic_play"
+                app:tint="#0095F6" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="10dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <SeekBar
+                    android:id="@+id/seekBarSentVoice"
+                    android:layout_width="100dp"
+                    android:layout_height="24dp"
+                    android:max="100"
+                    android:progress="0"
+                    android:progressDrawable="@drawable/seekbar_voice_progress"
+                    android:thumb="@drawable/seekbar_voice_thumb"
+                    android:thumbOffset="0dp" />
+
+                <TextView
+                    android:id="@+id/txtSentVoiceDuration"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/white"
+                    android:textSize="11sp"
+                    tools:text="0:15" />
+
+            </LinearLayout>
+
+        </LinearLayout>
 
         <!-- Time and Status Row -->
         <LinearLayout

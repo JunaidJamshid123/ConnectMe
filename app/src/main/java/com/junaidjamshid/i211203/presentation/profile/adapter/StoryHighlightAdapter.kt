@@ -5,8 +5,12 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
 import android.widget.TextView
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.junaidjamshid.i211203.R
+import com.junaidjamshid.i211203.domain.model.StoryHighlight
 
 /**
  * Adapter for Instagram-style story highlights on the profile screen.
@@ -51,11 +55,17 @@ class StoryHighlightAdapter(
     inner class AddViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val image: ImageView = itemView.findViewById(R.id.highlight_image)
         private val name: TextView = itemView.findViewById(R.id.highlight_name)
+        private val highlightRing: View? = itemView.findViewById(R.id.highlightRing)
 
         fun bind() {
-            image.setImageResource(R.drawable.ic_add_circle_outline)
-            image.setPadding(16, 16, 16, 16)
+            // Show simple border for add button, not gradient
+            highlightRing?.background = ContextCompat.getDrawable(itemView.context, R.drawable.bg_highlight_add_border)
+            
+            image.setImageResource(R.drawable.ic_add)
+            image.setPadding(24, 24, 24, 24)
+            image.setColorFilter(ContextCompat.getColor(itemView.context, R.color.text_secondary))
             name.text = "New"
+            name.setTextColor(ContextCompat.getColor(itemView.context, R.color.text_secondary))
             itemView.setOnClickListener { onAddHighlightClick() }
         }
     }
@@ -63,26 +73,41 @@ class StoryHighlightAdapter(
     inner class HighlightViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
         private val image: ImageView = itemView.findViewById(R.id.highlight_image)
         private val name: TextView = itemView.findViewById(R.id.highlight_name)
+        private val highlightRing: View? = itemView.findViewById(R.id.highlightRing)
 
         fun bind(highlight: StoryHighlight) {
             name.text = highlight.name
-            if (highlight.coverImageResId != 0) {
-                image.setImageResource(highlight.coverImageResId)
+            name.setTextColor(ContextCompat.getColor(itemView.context, R.color.text_primary))
+            
+            // Show gradient ring for highlights
+            highlightRing?.background = ContextCompat.getDrawable(itemView.context, R.drawable.bg_highlight_ring_gradient)
+            
+            // Load cover image from URL using Glide with smooth transition
+            image.setPadding(0, 0, 0, 0)
+            image.clearColorFilter()
+            
+            if (highlight.coverImageUrl.isNotEmpty()) {
+                Glide.with(itemView.context)
+                    .load(highlight.coverImageUrl)
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .centerCrop()
+                    .transition(DrawableTransitionOptions.withCrossFade(200))
+                    .into(image)
+            } else if (highlight.stories.isNotEmpty()) {
+                // Use first story image as cover if no cover set
+                Glide.with(itemView.context)
+                    .load(highlight.stories.first().storyImageUrl)
+                    .placeholder(R.drawable.default_profile)
+                    .error(R.drawable.default_profile)
+                    .centerCrop()
+                    .transition(DrawableTransitionOptions.withCrossFade(200))
+                    .into(image)
             } else {
                 image.setImageResource(R.drawable.default_profile)
             }
-            image.setPadding(0, 0, 0, 0)
+            
             itemView.setOnClickListener { onHighlightClick(highlight) }
         }
     }
 }
-
-/**
- * Data class representing a story highlight.
- */
-data class StoryHighlight(
-    val id: String = "",
-    val name: String = "",
-    val coverImageResId: Int = 0,
-    val coverImageUrl: String = ""
-)

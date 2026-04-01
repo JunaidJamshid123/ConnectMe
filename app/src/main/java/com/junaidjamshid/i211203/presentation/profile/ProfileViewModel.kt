@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.junaidjamshid.i211203.domain.repository.AuthRepository
 import com.junaidjamshid.i211203.domain.repository.PostRepository
+import com.junaidjamshid.i211203.domain.repository.StoryHighlightRepository
 import com.junaidjamshid.i211203.domain.repository.StoryRepository
 import com.junaidjamshid.i211203.domain.repository.UserRepository
 import com.junaidjamshid.i211203.util.Resource
@@ -23,7 +24,8 @@ class ProfileViewModel @Inject constructor(
     private val authRepository: AuthRepository,
     private val userRepository: UserRepository,
     private val postRepository: PostRepository,
-    private val storyRepository: StoryRepository
+    private val storyRepository: StoryRepository,
+    private val storyHighlightRepository: StoryHighlightRepository
 ) : ViewModel() {
     
     private val _uiState = MutableStateFlow(ProfileUiState())
@@ -97,6 +99,11 @@ class ProfileViewModel @Inject constructor(
             launch {
                 checkActiveStories(userId)
             }
+            
+            // Load story highlights
+            launch {
+                loadHighlights(userId)
+            }
 
             // Check follow status if viewing another user
             if (!isCurrentUser) {
@@ -165,6 +172,34 @@ class ProfileViewModel @Inject constructor(
                 }
             }
         }
+    }
+    
+    /**
+     * Load story highlights for a user
+     */
+    private fun loadHighlights(userId: String) {
+        viewModelScope.launch {
+            val result = storyHighlightRepository.getUserHighlights(userId)
+            when (result) {
+                is Resource.Success -> {
+                    _uiState.update { state ->
+                        state.copy(highlights = result.data ?: emptyList())
+                    }
+                }
+                is Resource.Error -> {
+                    // Silently fail for highlights - not critical
+                }
+                else -> { /* Loading state */ }
+            }
+        }
+    }
+    
+    /**
+     * Refresh highlights (called after creating a new highlight)
+     */
+    fun refreshHighlights() {
+        val userId = _uiState.value.user?.userId ?: currentUserId ?: return
+        loadHighlights(userId)
     }
 
     private fun checkFollowStatus(userId: String) {

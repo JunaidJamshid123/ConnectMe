@@ -3,6 +3,7 @@ package com.junaidjamshid.i211203.data.repository
 import com.junaidjamshid.i211203.data.mapper.MessageMapper.toDomain
 import com.junaidjamshid.i211203.data.mapper.MessageMapper.toDto
 import com.junaidjamshid.i211203.data.remote.supabase.SupabaseMessageDataSource
+import com.junaidjamshid.i211203.data.remote.supabase.SupabaseStorageDataSource
 import com.junaidjamshid.i211203.domain.model.Conversation
 import com.junaidjamshid.i211203.domain.model.Message
 import com.junaidjamshid.i211203.domain.repository.MessageRepository
@@ -19,7 +20,8 @@ import javax.inject.Singleton
  */
 @Singleton
 class MessageRepositoryImpl @Inject constructor(
-    private val messageDataSource: SupabaseMessageDataSource
+    private val messageDataSource: SupabaseMessageDataSource,
+    private val storageDataSource: SupabaseStorageDataSource
 ) : MessageRepository {
     
     override fun getConversations(userId: String): Flow<Resource<List<Conversation>>> {
@@ -77,19 +79,73 @@ class MessageRepositoryImpl @Inject constructor(
         receiverId: String,
         imageBase64: String
     ): Resource<Message> {
-        return messageDataSource.sendMessage(
-            receiverId = receiverId,
-            messageText = "",
-            messageType = "IMAGE",
-            mediaUrl = imageBase64
-        ).fold(
-            onSuccess = { messageDto ->
-                Resource.Success(messageDto.toDomain())
-            },
-            onFailure = { e ->
-                Resource.Error(e.message ?: "Failed to send image")
+        return try {
+            // Decode Base64 to bytes
+            val imageBytes = android.util.Base64.decode(imageBase64, android.util.Base64.DEFAULT)
+            
+            // Upload image and get URL
+            val imageUrl = try {
+                storageDataSource.uploadMessageImage(conversationId, imageBytes)
+            } catch (storageError: Exception) {
+                return Resource.Error("Storage error: ${storageError.message}")
             }
-        )
+            
+            // Send message with image URL
+            messageDataSource.sendMessage(
+                receiverId = receiverId,
+                messageText = "📷 Photo",
+                messageType = "IMAGE",
+                mediaUrl = imageUrl
+            ).fold(
+                onSuccess = { messageDto ->
+                    Resource.Success(messageDto.toDomain())
+                },
+                onFailure = { e ->
+                    Resource.Error(e.message ?: "Failed to send image message")
+                }
+            )
+        } catch (e: Exception) {
+            Resource.Error("Failed to send image: ${e.message}")
+        }
+    }
+    
+    override suspend fun sendVoiceMessage(
+        conversationId: String,
+        senderId: String,
+        receiverId: String,
+        audioBytes: ByteArray,
+        durationMs: Long
+    ): Resource<Message> {
+        return try {
+            // Upload voice and get URL
+            val voiceUrl = try {
+                storageDataSource.uploadVoiceMessage(conversationId, audioBytes)
+            } catch (storageError: Exception) {
+                return Resource.Error("Storage error: ${storageError.message}")
+            }
+            
+            // Format duration for display
+            val seconds = (durationMs / 1000).toInt()
+            val minutes = seconds / 60
+            val secs = seconds % 60
+            val durationText = String.format("%d:%02d", minutes, secs)
+            
+            messageDataSource.sendMessage(
+                receiverId = receiverId,
+                messageText = "🎤 Voice message ($durationText)",
+                messageType = "VOICE",
+                mediaUrl = voiceUrl
+            ).fold(
+                onSuccess = { messageDto ->
+                    Resource.Success(messageDto.toDomain())
+                },
+                onFailure = { e ->
+                    Resource.Error(e.message ?: "Failed to send voice message")
+                }
+            )
+        } catch (e: Exception) {
+            Resource.Error("Failed to send voice: ${e.message}")
+        }
     }
     
     override suspend fun deleteMessage(messageId: String, conversationId: String): Resource<Unit> {
